@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import Navbar from "@/components/general/Navbar"
 import { 
   Calendar, 
   Target, 
@@ -56,6 +57,7 @@ const Dashboard = () => {
   })
   const { toast } = useToast()
   
+  // These should also be fetched from your database eventually
   const todayEarnings = 8500
   const monthlyGoal = 50000
   const progress = (todayEarnings / monthlyGoal) * 100
@@ -82,32 +84,34 @@ const Dashboard = () => {
         .order('appointment_time', { ascending: true })
 
       if (tasksError) {
-        console.log('Tasks error:', tasksError)
-        // Show sample data for demo purposes
-        setTasks([
-          { id: '1', title: "Restock foundation shades", priority: "high", completed: false, created_at: new Date().toISOString(), user_id: 'demo', updated_at: new Date().toISOString() },
-          { id: '2', title: "Client consultation - Sarah", priority: "medium", completed: true, created_at: new Date().toISOString(), user_id: 'demo', updated_at: new Date().toISOString() },
-          { id: '3', title: "Post Instagram reel", priority: "low", completed: false, created_at: new Date().toISOString(), user_id: 'demo', updated_at: new Date().toISOString() }
-        ])
+        console.error('Tasks error:', tasksError)
+        toast({
+          title: "Error",
+          description: "Failed to fetch tasks. Please try again.",
+          variant: "destructive"
+        })
+        setTasks([])
       } else {
         setTasks(tasksData as Task[] || [])
       }
 
       if (appointmentsError) {
-        console.log('Appointments error:', appointmentsError)
-        // Show sample data for demo purposes
-        setAppointments([
-          { id: '1', client_name: "Priya Sharma", service: "Bridal Makeup", appointment_time: new Date().toISOString(), status: "confirmed", created_at: new Date().toISOString(), user_id: 'demo', updated_at: new Date().toISOString() },
-          { id: '2', client_name: "Meera Patel", service: "Hair Styling", appointment_time: new Date().toISOString(), status: "pending", created_at: new Date().toISOString(), user_id: 'demo', updated_at: new Date().toISOString() }
-        ])
+        console.error('Appointments error:', appointmentsError)
+        toast({
+          title: "Error", 
+          description: "Failed to fetch appointments. Please try again.",
+          variant: "destructive"
+        })
+        setAppointments([])
       } else {
         setAppointments(appointmentsData as Appointment[] || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)
       toast({
-        title: "Info",
-        description: "Using demo data. Please implement authentication for full functionality.",
+        title: "Error",
+        description: "Failed to load dashboard data. Please refresh the page.",
+        variant: "destructive"
       })
     } finally {
       setLoading(false)
@@ -154,21 +158,10 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error adding task:', error)
-      // Add to demo data for now
-      const newTask: Task = {
-        id: Math.random().toString(),
-        title: newTaskTitle.trim(),
-        priority: 'medium',
-        completed: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-      setTasks(prev => [newTask, ...prev])
-      setNewTaskTitle('')
-      setShowAddTask(false)
       toast({
-        title: "Demo Mode",
-        description: "Task added to demo data. Implement authentication for persistence.",
+        title: "Error",
+        description: "Failed to add task. Please try again.",
+        variant: "destructive"
       })
     }
   }
@@ -192,13 +185,10 @@ const Dashboard = () => {
       })
     } catch (error) {
       console.error('Error updating task:', error)
-      // Update demo data
-      setTasks(prev => prev.map(task => 
-        task.id === taskId ? { ...task, completed: !completed } : task
-      ))
       toast({
-        title: "Demo Mode",
-        description: `Task ${!completed ? 'completed' : 'reopened'} in demo mode.`
+        title: "Error",
+        description: "Failed to update task. Please try again.",
+        variant: "destructive"
       })
     }
   }
@@ -253,24 +243,10 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error adding appointment:', error)
-      // Add to demo data
-      const newAppointment: Appointment = {
-        id: Math.random().toString(),
-        ...newAppointmentData,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-      setAppointments(prev => [...prev, newAppointment])
-      setNewAppointmentData({
-        client_name: '',
-        service: '',
-        appointment_time: ''
-      })
-      setShowAddAppointment(false)
       toast({
-        title: "Demo Mode",
-        description: "Appointment added to demo data. Implement authentication for persistence.",
+        title: "Error",
+        description: "Failed to add appointment. Please try again.",
+        variant: "destructive"
       })
     }
   }
@@ -294,13 +270,10 @@ const Dashboard = () => {
       })
     } catch (error) {
       console.error('Error updating appointment:', error)
-      // Update demo data
-      setAppointments(prev => prev.map(appointment => 
-        appointment.id === appointmentId ? { ...appointment, status: newStatus } : appointment
-      ))
       toast({
-        title: "Demo Mode",
-        description: `Appointment ${newStatus} in demo mode.`
+        title: "Error",
+        description: "Failed to update appointment status. Please try again.",
+        variant: "destructive"
       })
     }
   }
@@ -313,43 +286,26 @@ const Dashboard = () => {
         hour12: true
       })
     } catch {
-      return '2:00 PM'
+      return 'Invalid time'
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-6 w-6 text-primary animate-spin" />
+          <span>Loading your dashboard...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                GlamFlow
-              </span>
-            </div>
-            <nav className="hidden md:flex gap-6">
-              <Button variant="ghost" className="bg-primary/10 text-primary">Dashboard</Button>
-              <Button variant="ghost">Tasks</Button>
-              <Button variant="ghost">Calendar</Button>
-              <Button variant="ghost">Analytics</Button>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button 
-              size="sm" 
-              className="bg-gradient-primary"
-              onClick={() => setShowAddTask(true)}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Quick Add
-            </Button>
-          </div>
-        </div>
-      </header>
-
+      <Navbar/>
+        
       <div className="container mx-auto p-6 space-y-8">
         {/* Welcome Section */}
         <div className="space-y-2">
@@ -419,27 +375,31 @@ const Dashboard = () => {
               <CardDescription>Your upcoming beauty sessions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {appointments.map((appointment) => (
-                <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="space-y-1">
-                    <p className="font-medium">{appointment.client_name}</p>
-                    <p className="text-sm text-muted-foreground">{appointment.service}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge 
-                      variant={appointment.status === "confirmed" ? "default" : "secondary"}
-                      className="cursor-pointer"
-                      onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
-                    >
-                      {appointment.status}
-                    </Badge>
-                    <div className="text-sm font-medium flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatTime(appointment.appointment_time)}
+              {appointments.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No appointments scheduled for today</p>
+              ) : (
+                appointments.map((appointment) => (
+                  <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="space-y-1">
+                      <p className="font-medium">{appointment.client_name}</p>
+                      <p className="text-sm text-muted-foreground">{appointment.service}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge 
+                        variant={appointment.status === "confirmed" ? "default" : "secondary"}
+                        className="cursor-pointer"
+                        onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
+                      >
+                        {appointment.status}
+                      </Badge>
+                      <div className="text-sm font-medium flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatTime(appointment.appointment_time)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
               
               {showAddAppointment && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
@@ -485,28 +445,32 @@ const Dashboard = () => {
               <CardDescription>Your beauty business to-dos</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {tasks.map((task) => (
-                <div key={task.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                  <button onClick={() => toggleTask(task.id, task.completed)}>
-                    {task.completed ? (
-                      <CheckCircle2 className="h-4 w-4 text-success" />
-                    ) : (
-                      <div className="h-4 w-4 border-2 rounded-full"></div>
-                    )}
-                  </button>
-                  <div className="flex-1">
-                    <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                      {task.title}
-                    </p>
+              {tasks.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No tasks yet. Add your first task!</p>
+              ) : (
+                tasks.map((task) => (
+                  <div key={task.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <button onClick={() => toggleTask(task.id, task.completed)}>
+                      {task.completed ? (
+                        <CheckCircle2 className="h-4 w-4 text-success" />
+                      ) : (
+                        <div className="h-4 w-4 border-2 rounded-full"></div>
+                      )}
+                    </button>
+                    <div className="flex-1">
+                      <p className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                        {task.title}
+                      </p>
+                    </div>
+                    <Badge 
+                      variant={task.priority === "high" ? "destructive" : task.priority === "medium" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {task.priority}
+                    </Badge>
                   </div>
-                  <Badge 
-                    variant={task.priority === "high" ? "destructive" : task.priority === "medium" ? "default" : "secondary"}
-                    className="text-xs"
-                  >
-                    {task.priority}
-                  </Badge>
-                </div>
-              ))}
+                ))
+              )}
               
               {showAddTask && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
@@ -534,32 +498,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Monthly Progress */}
-        {/* <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Monthly Goal Progress
-            </CardTitle>
-            <CardDescription>Track your earnings goal for this month</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>Current: ₹{todayEarnings.toLocaleString()}</span>
-                <span>Goal: ₹{monthlyGoal.toLocaleString()}</span>
-              </div>
-              <Progress value={progress} className="h-3" />
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Star className="h-3 w-3" />
-                  You're doing great! Keep it up! 💄
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card> */}
 
         {/* Quick Actions */}
         <Card className="bg-gradient-hero border-primary/20">

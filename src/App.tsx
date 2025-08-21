@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Auth } from "./pages/Auth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ProfilePage from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/app" element={<ProtectedRoute />}>
               <Route path="/app" element={<Dashboard />} />
             </Route>
