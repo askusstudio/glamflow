@@ -536,7 +536,7 @@ const Dashboard = () => {
         </div>
 
         {/* Monthly Progress */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -559,7 +559,7 @@ const Dashboard = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Quick Actions */}
         <Card className="bg-gradient-hero border-primary/20">

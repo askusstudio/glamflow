@@ -47,40 +47,7 @@ const Landing = () => {
     }
   ]
 
-  if (showLoginForm) {
-    return (
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-elegant">
-          <CardHeader className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                GlamFlow
-              </span>
-            </div>
-            <CardTitle>Welcome to your beauty business</CardTitle>
-            <CardDescription>Sign in to manage your gigs and grow your freelance career</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Button 
-                onClick={() => window.location.href = '/app'}
-                className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
-              >
-                Continue to App
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-            <div className="text-center">
-              <Button variant="ghost" onClick={() => setShowLoginForm(false)}>
-                Back to landing page
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  
 
   return (
     <div className="min-h-screen">
@@ -95,7 +62,7 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Button onClick={() => setShowLoginForm(true)} className="bg-gradient-primary hover:shadow-glow transition-all">
+            <Button onClick={() => window.location.href = '/auth'} className="bg-gradient-primary hover:shadow-glow transition-all">
               Get Started
             </Button>
           </div>
@@ -127,7 +94,7 @@ const Landing = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
-                  onClick={() => setShowLoginForm(true)}
+                  onClick={() => window.location.href = '/auth'}
                   className="bg-gradient-primary hover:shadow-glow transition-all duration-300"
                 >
                   Start Free Trial
@@ -239,7 +206,7 @@ const Landing = () => {
           </p>
           <Button 
             size="lg" 
-            onClick={() => setShowLoginForm(true)}
+            onClick={() => window.location.href = '/auth'}
             className="bg-gradient-primary hover:shadow-glow transition-all duration-300"
           >
             Get Started for Free
