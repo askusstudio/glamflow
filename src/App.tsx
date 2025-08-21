@@ -10,6 +10,9 @@ import NotFound from "./pages/NotFound";
 import { Auth } from "./pages/Auth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ProfilePage from "./pages/Profile";
+import TasksPage from "./pages/Tasks";
+import CalendarPage from "./pages/Calendar";
+import AnalyticsPage from "./pages/Analytics.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,9 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/app" element={<ProtectedRoute />}>
               <Route path="/app" element={<Dashboard />} />
             </Route>

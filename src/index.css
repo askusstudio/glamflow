@@ -8,6 +8,7 @@
   :root {
     /* Base Colors - Light Theme */
     --background: 0 0% 100%;
+    /* --background: 0 0% 100%; */
     --foreground: 220 13% 18%;
 
     /* Card & Surface Colors */

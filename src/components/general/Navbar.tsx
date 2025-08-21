@@ -1,47 +1,58 @@
-import { Button } from "@/components/ui/button"
-import { useState, useRef, useEffect } from "react"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Plus, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Plus, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client"; // Adjust to your Supabase client import
+import { useNavigate } from "react-router-dom"; // Add this if using react-router-dom for navigation
 
 const Navbar = () => {
-  const [showAddTask, setShowAddTask] = useState(false)
-  const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const profileMenuRef = useRef(null)
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null);
+  const navigate = useNavigate(); // For redirect after logout (if using router)
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-        setShowProfileMenu(false)
+        setShowProfileMenu(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  const handleProfileAction = (action) => {
-    setShowProfileMenu(false)
-    
+  const handleProfileAction = async (action) => {
+    setShowProfileMenu(false);
+
     switch (action) {
-      case 'profile':
+      case "profile":
         // Navigate to profile page
-        console.log('Navigate to profile')
-        break
-      case 'settings':
+        console.log("Navigate to profile");
+        navigate("/profile"); // Or use window.location if not using router
+        break;
+      case "settings":
         // Navigate to settings page
-        console.log('Navigate to settings')
-        break
-      case 'logout':
-        // Handle logout logic
-        console.log('Handle logout')
-        break
+        console.log("Navigate to settings");
+        break;
+      case "logout":
+        // Handle logout logic with Supabase
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error("Logout error:", error.message);
+          // Optionally show a toast/error message
+        } else {
+          console.log("Logged out successfully");
+          navigate("/"); // Redirect to home/login page
+        }
+        break;
       default:
-        break
+        break;
     }
-  }
+  };
 
   return (
     <div>
@@ -55,23 +66,29 @@ const Navbar = () => {
               </span>
             </div>
             <nav className="hidden md:flex gap-6">
-              <Button variant="ghost" className="bg-primary/10 text-primary">Dashboard</Button>
-              <Button variant="ghost">Tasks</Button>
-              <Button variant="ghost">Calendar</Button>
-              <Button variant="ghost">Analytics</Button>
+              <Button
+                variant="ghost"
+                className="bg-primary/10 text-primary"
+                onClick={() => window.location.assign("/app")}
+              >
+                Dashboard
+              </Button>
+              <Button variant="ghost" onClick={() => window.location.assign("/tasks")}>Tasks</Button>
+              <Button variant="ghost" onClick={() => window.location.assign("/calendar")}>Calendar</Button>
+              <Button variant="ghost" onClick={() => window.location.assign("/analytics")}>Analytics</Button>
             </nav>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Button 
-              size="sm" 
+            {/* <Button
+              size="sm"
               className="bg-gradient-primary"
               onClick={() => setShowAddTask(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
               Quick Add
-            </Button>
-            
+            </Button> */}
+
             {/* Profile Dropdown */}
             <div className="relative" ref={profileMenuRef}>
               <Button
@@ -99,28 +116,28 @@ const Navbar = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="py-2">
                     <button
-                      onClick={() => handleProfileAction('profile')}
+                      onClick={() => window.location.href = "/profile"}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
                       <UserCircle className="h-4 w-4" />
                       Profile
                     </button>
-                    
+
                     <button
-                      onClick={() => handleProfileAction('settings')}
+                      onClick={() => handleProfileAction("settings")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
                       <Settings className="h-4 w-4" />
                       Settings
                     </button>
                   </div>
-                  
+
                   <div className="border-t py-2">
                     <button
-                      onClick={() => handleProfileAction('logout')}
+                      onClick={() => handleProfileAction("logout")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
@@ -134,7 +151,7 @@ const Navbar = () => {
         </div>
       </header>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
