@@ -2,14 +2,44 @@ import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Plus, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client"; // Adjust to your Supabase client import
-import { useNavigate } from "react-router-dom"; // Add this if using react-router-dom for navigation
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [showAddTask, setShowAddTask] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
-  const navigate = useNavigate(); // For redirect after logout (if using router)
+  const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState("Beauty Artist");
+  const [email, setEmail] = useState("artist@glamflow.com");
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setEmail(user.email || "No email");
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("full_name, avatar_url")
+          .eq("id", user.id)
+          .single();
+        
+        if (!error && data) {
+          setFullName(data.full_name || "User");
+          setAvatarUrl(data.avatar_url || null);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUserProfile();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -30,23 +60,19 @@ const Navbar = () => {
 
     switch (action) {
       case "profile":
-        // Navigate to profile page
         console.log("Navigate to profile");
-        navigate("/profile"); // Or use window.location if not using router
+        navigate("/profile");
         break;
       case "settings":
-        // Navigate to settings page
         console.log("Navigate to settings");
         break;
       case "logout":
-        // Handle logout logic with Supabase
         const { error } = await supabase.auth.signOut();
         if (error) {
           console.error("Logout error:", error.message);
-          // Optionally show a toast/error message
         } else {
           console.log("Logged out successfully");
-          navigate("/"); // Redirect to home/login page
+          navigate("/");
         }
         break;
       default:
@@ -98,7 +124,11 @@ const Navbar = () => {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
                 <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="h-8 w-8 rounded-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4 text-white" />
+                  )}
                 </div>
               </Button>
 
@@ -107,12 +137,16 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-2 w-56 bg-card border rounded-md shadow-lg z-50 animate-in fade-in-0 zoom-in-95">
                   <div className="p-3 border-b">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                        <User className="h-5 w-5 text-white" />
+                      <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center overflow-hidden">
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="Avatar" className="h-10 w-10 object-cover" />
+                        ) : (
+                          <User className="h-5 w-5 text-white" />
+                        )}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">Beauty Artist</p>
-                        <p className="text-xs text-muted-foreground">artist@glamflow.com</p>
+                        <p className="font-medium text-sm">{fullName}</p>
+                        <p className="text-xs text-muted-foreground">{email}</p>
                       </div>
                     </div>
                   </div>

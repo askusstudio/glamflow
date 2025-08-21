@@ -65,12 +65,23 @@ export default function ProfilePage() {
 
   const uploadImage = async (file: File, isAvatar: boolean) => {
     setUploading(true);
-    const filePath = `${(await supabase.auth.getUser()).data.user?.id}/${file.name}`;
-    const bucket = isAvatar ? "avatars" : "portfolio"; // Assumes 'portfolio' bucket exists
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file);
-    if (!error && data) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setUploading(false);
+      console.error("No user logged in.");
+      return;
+    }
+    // Ensure file.name is always set
+    const fileName = file.name || `${Date.now()}.png`;
+    const filePath = `${user.id}/${fileName}`;
+    const bucket = isAvatar ? "avatars" : "portfolio";
+  
+    const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
+    if (error) {
+      console.error("Upload error:", error.message);
+    }
+  
+    if (data) {
       const url = supabase.storage.from(bucket).getPublicUrl(filePath).data.publicUrl;
       if (isAvatar) {
         handleInputChange("avatar_url", url);
@@ -80,7 +91,7 @@ export default function ProfilePage() {
     }
     setUploading(false);
   };
-
+  
   if (loading) return <div className="text-center">Loading...</div>;
 
   return (
