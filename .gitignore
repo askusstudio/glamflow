@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# @thinking.md HERE ALSO
+thinking.md

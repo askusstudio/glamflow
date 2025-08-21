@@ -117,6 +117,19 @@ const Dashboard = () => {
   const addTask = async () => {
     if (!newTaskTitle.trim()) return
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to add a task.",
+        variant: "destructive"
+      })
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('tasks')
@@ -124,7 +137,7 @@ const Dashboard = () => {
           title: newTaskTitle.trim(),
           priority: 'medium' as const,
           completed: false,
-          user_id: 'dummy-user-id' // This should be auth.uid() when auth is implemented
+          user_id: user.id
         }])
         .select()
 
@@ -148,7 +161,6 @@ const Dashboard = () => {
         priority: 'medium',
         completed: false,
         created_at: new Date().toISOString(),
-        user_id: 'demo',
         updated_at: new Date().toISOString()
       }
       setTasks(prev => [newTask, ...prev])
@@ -201,12 +213,25 @@ const Dashboard = () => {
       return
     }
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to add an appointment.",
+        variant: "destructive"
+      })
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('appointments')
         .insert([{
           ...newAppointmentData,
-          user_id: 'dummy-user-id', // This should be auth.uid() when auth is implemented
+          user_id: user.id,
           status: 'pending' as const
         }])
         .select()
@@ -234,7 +259,6 @@ const Dashboard = () => {
         ...newAppointmentData,
         status: 'pending',
         created_at: new Date().toISOString(),
-        user_id: 'demo',
         updated_at: new Date().toISOString()
       }
       setAppointments(prev => [...prev, newAppointment])
