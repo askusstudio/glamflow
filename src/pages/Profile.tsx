@@ -147,10 +147,18 @@ export default function ProfilePage() {
         return;
       }
 
-      const updates = { ...formData, id: user.id };
+      const updates = { 
+        ...formData, 
+        id: user.id,
+        social_accounts: formData.social_accounts || {}
+      };
+      
       const { error } = await supabase.from("profiles").upsert(updates);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
       
       setProfile(formData as Profile);
       toast({
@@ -161,7 +169,7 @@ export default function ProfilePage() {
       console.error("Error saving profile:", error);
       toast({
         title: "Error",
-        description: "Failed to save profile changes.",
+        description: `Failed to save profile changes: ${error.message || 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {

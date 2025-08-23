@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Plus, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react";
+import { Menu, X, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  const [showAddTask, setShowAddTask] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [fullName, setFullName] = useState("Beauty Artist");
   const [email, setEmail] = useState("artist@glamflow.com");
@@ -60,7 +61,6 @@ const Navbar = () => {
 
     switch (action) {
       case "profile":
-        console.log("Navigate to profile");
         navigate("/profile");
         break;
       case "settings":
@@ -71,7 +71,6 @@ const Navbar = () => {
         if (error) {
           console.error("Logout error:", error.message);
         } else {
-          console.log("Logged out successfully");
           navigate("/");
         }
         break;
@@ -80,40 +79,57 @@ const Navbar = () => {
     }
   };
 
+  const getNavItemClass = (path) => {
+    const isActive = location.pathname === path;
+    return `${isActive ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'} transition-colors`;
+  };
+
+  const navItems = [
+    { label: "Dashboard", path: "/app" },
+    { label: "Tasks", path: "/tasks" },
+    { label: "Calendar", path: "/calendar" },
+    { label: "Analytics", path: "/analytics" },
+  ];
+
   return (
     <div>
       <header className="border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                GlamFlow
-              </span>
-            </div>
-            <nav className="hidden md:flex gap-6">
-              <Button
-                variant="ghost"
-                className="bg-primary/10 text-primary"
-                onClick={() => window.location.assign("/app")}
-              >
-                Dashboard
-              </Button>
-              <Button variant="ghost" onClick={() => window.location.assign("/tasks")}>Tasks</Button>
-              <Button variant="ghost" onClick={() => window.location.assign("/calendar")}>Calendar</Button>
-              <Button variant="ghost" onClick={() => window.location.assign("/analytics")}>Analytics</Button>
-            </nav>
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              GlamFlow
+            </span>
           </div>
-          <div className="flex items-center gap-4">
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex gap-2">
+            {navItems.map((item) => (
+              <Button
+                key={item.path}
+                variant="ghost"
+                className={getNavItemClass(item.path)}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </nav>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-2">
             <ThemeToggle />
-            {/* <Button
+            
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
               size="sm"
-              className="bg-gradient-primary"
-              onClick={() => setShowAddTask(true)}
+              className="md:hidden h-9 w-9 p-0"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Quick Add
-            </Button> */}
+              {showMobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
 
             {/* Profile Dropdown */}
             <div className="relative" ref={profileMenuRef}>
@@ -132,7 +148,7 @@ const Navbar = () => {
                 </div>
               </Button>
 
-              {/* Dropdown Menu */}
+              {/* Profile Dropdown Menu */}
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-56 bg-card border rounded-md shadow-lg z-50 animate-in fade-in-0 zoom-in-95">
                   <div className="p-3 border-b">
@@ -153,7 +169,7 @@ const Navbar = () => {
 
                   <div className="py-2">
                     <button
-                      onClick={() => window.location.href = "/profile"}
+                      onClick={() => handleProfileAction("profile")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
                       <UserCircle className="h-4 w-4" />
@@ -183,6 +199,27 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {showMobileMenu && (
+          <div className="md:hidden border-t bg-card/95 backdrop-blur">
+            <nav className="container mx-auto px-4 py-4 space-y-2">
+              {navItems.map((item) => (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  className={`w-full justify-start ${getNavItemClass(item.path)}`}
+                  onClick={() => {
+                    navigate(item.path);
+                    setShowMobileMenu(false);
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </nav>
+          </div>
+        )}
       </header>
     </div>
   );
