@@ -47,6 +47,54 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          available_days: string[] | null
+          avatar_url: string | null
+          bio: string | null
+          category: string | null
+          city: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          portfolio_images: string[] | null
+          price_range: string | null
+          services: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          available_days?: string[] | null
+          avatar_url?: string | null
+          bio?: string | null
+          category?: string | null
+          city?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          price_range?: string | null
+          services?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          available_days?: string[] | null
+          avatar_url?: string | null
+          bio?: string | null
+          category?: string | null
+          city?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          price_range?: string | null
+          services?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           completed: boolean

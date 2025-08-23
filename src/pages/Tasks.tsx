@@ -32,10 +32,14 @@ export default function TasksPage() {
 
   const handleAddOrEdit = async () => {
     if (!form.title) return;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
     if (editingTask) {
       await supabase.from("tasks").update(form).eq("id", editingTask.id);
     } else {
-      await supabase.from("tasks").insert([form]);
+      await supabase.from("tasks").insert([{ ...form, user_id: user.id }]);
     }
     setForm({ title: "", priority: "medium" });
     setShowAdd(false);
@@ -68,21 +72,21 @@ export default function TasksPage() {
   return (
     <>
       <Navbar />
-      <div className="bg-background min-h-screen p-8">
-        <div className="max-w-7xl mx-auto rounded-xl shadow-lg bg-card p-6">
+      <div className="bg-background min-h-screen p-4 md:p-8">
+        <div className="max-w-7xl mx-auto rounded-xl shadow-lg bg-card p-4 md:p-6">
           {/* Filter & Add bar */}
-          <div className="flex items-center mb-6 justify-between flex-wrap gap-3">
-            <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 justify-between gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Input
                 placeholder="Filter tasks..."
-                className="min-w-[250px] max-w-xs"
+                className="w-full sm:min-w-[200px] sm:max-w-xs"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
               <select
                 value={priority}
                 onChange={e => setPriority(e.target.value)}
-                className="px-3 py-2 rounded bg-background border focus:outline-primary text-foreground"
+                className="px-3 py-2 rounded bg-background border focus:outline-primary text-foreground w-full sm:w-auto"
               >
                 <option value="">All Priorities</option>
                 {PRIORITIES.map(p => <option key={p} value={p}>{p[0].toUpperCase()+p.slice(1)}</option>)}
@@ -90,10 +94,11 @@ export default function TasksPage() {
             </div>
             <Button
               onClick={() => setShowAdd(true)}
-              className="bg-primary rounded-lg px-5 py-2 flex gap-2 items-center hover:bg-primary/90"
+              className="bg-primary rounded-lg px-5 py-2 flex gap-2 items-center hover:bg-primary/90 w-full sm:w-auto justify-center"
             >
               <Plus className="h-4 w-4" />
-              Add Task
+              <span className="hidden sm:inline">Add Task</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
 
@@ -111,10 +116,15 @@ export default function TasksPage() {
               <TableBody>
                 {tasks.map((task) => (
                   <TableRow key={task.id} className="hover:bg-muted/20">
-                    <TableCell className="px-4 py-3">{task.title}</TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="px-2 md:px-4 py-3">
+                      <div className="font-medium">{task.title}</div>
+                      <div className="block md:hidden text-xs text-muted-foreground mt-1">
+                        {new Date(task.created_at).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-2 md:px-4 py-3 hidden sm:table-cell">
                       <span className={`
-                        px-3 py-1 rounded font-semibold text-xs
+                        px-2 md:px-3 py-1 rounded font-semibold text-xs
                         ${task.priority === "high" ? "bg-red-300/70 text-red-900" :
                           task.priority === "medium" ? "bg-yellow-200 text-yellow-900" :
                           "bg-green-200 text-green-900"}
@@ -122,14 +132,14 @@ export default function TasksPage() {
                         {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                       </span>
                     </TableCell>
-                    <TableCell className="px-4 py-3">{task.completed ? "Done" : "Pending"}</TableCell>
-                    <TableCell className="px-4 py-3">{new Date(task.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="px-4 py-3 flex justify-center items-center gap-2 relative">
+                    <TableCell className="px-2 md:px-4 py-3 hidden md:table-cell">{task.completed ? "Done" : "Pending"}</TableCell>
+                    <TableCell className="px-2 md:px-4 py-3 hidden md:table-cell">{new Date(task.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="px-2 md:px-4 py-3 flex justify-center items-center gap-2 relative">
                       <Button variant="ghost" size="icon" onClick={() => toggleActions(task.id)}>
                         <MoreVertical />
                       </Button>
                       {showActions[task.id] && (
-                        <div className="absolute right-0 top-10 w-36 bg-card border rounded-md shadow-lg z-20">
+                        <div className="absolute right-0 top-10 w-32 md:w-36 bg-card border rounded-md shadow-lg z-20">
                           <button
                             onClick={() => openEdit(task)}
                             className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"

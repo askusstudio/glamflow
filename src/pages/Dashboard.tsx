@@ -290,6 +290,15 @@ const Dashboard = () => {
     }
   }
 
+  const handleQuickAdd = () => {
+    // Toggle between showing add task or add appointment
+    if (Math.random() > 0.5) {
+      setShowAddTask(true)
+    } else {
+      setShowAddAppointment(true)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -306,15 +315,24 @@ const Dashboard = () => {
       {/* Header */}
       <Navbar/>
         
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Welcome Section */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Welcome back, Beautiful! ✨</h1>
-          <p className="text-muted-foreground">Here's what's happening with your beauty business today.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold">Welcome back, Beautiful! ✨</h1>
+            <p className="text-muted-foreground text-sm md:text-base">Here's what's happening with your beauty business today.</p>
+          </div>
+          <Button
+            onClick={handleQuickAdd}
+            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full sm:w-auto"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Quick Add
+          </Button>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Today's Earnings</CardTitle>
@@ -365,7 +383,7 @@ const Dashboard = () => {
         </div>
 
         {/* Today's Schedule */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -379,15 +397,15 @@ const Dashboard = () => {
                 <p className="text-muted-foreground text-center py-4">No appointments scheduled for today</p>
               ) : (
                 appointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="space-y-1">
+                  <div key={appointment.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg gap-3">
+                    <div className="space-y-1 flex-1">
                       <p className="font-medium">{appointment.client_name}</p>
                       <p className="text-sm text-muted-foreground">{appointment.service}</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                       <Badge 
                         variant={appointment.status === "confirmed" ? "default" : "secondary"}
-                        className="cursor-pointer"
+                        className="cursor-pointer w-full sm:w-auto justify-center"
                         onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
                       >
                         {appointment.status}
@@ -506,7 +524,7 @@ const Dashboard = () => {
             <CardDescription>Speed up your workflow with these shortcuts</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <Button 
                 variant="outline" 
                 className="h-auto flex-col gap-2 p-4"
