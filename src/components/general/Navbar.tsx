@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Menu, X, Sparkles, User, Settings, LogOut, UserCircle } from "lucide-react";
+import { Menu, X, Sparkles, User, Settings, LogOut, UserCircle, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -16,6 +16,7 @@ const Navbar = () => {
   const [email, setEmail] = useState("artist@glamflow.com");
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
 
   // Fetch user profile data
   useEffect(() => {
@@ -23,6 +24,7 @@ const Navbar = () => {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserId(user.id);
         setEmail(user.email || "No email");
         
         const { data, error } = await supabase
@@ -62,6 +64,11 @@ const Navbar = () => {
     switch (action) {
       case "profile":
         navigate("/profile");
+        break;
+      case "public-profile":
+        if (userId) {
+          window.open(`/public-profile/${userId}`, '_blank');
+        }
         break;
       case "settings":
         console.log("Navigate to settings");
@@ -174,6 +181,14 @@ const Navbar = () => {
                     >
                       <UserCircle className="h-4 w-4" />
                       Profile
+                    </button>
+
+                    <button
+                      onClick={() => handleProfileAction("public-profile")}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      View Public Profile
                     </button>
 
                     <button
