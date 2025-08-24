@@ -1,14 +1,32 @@
 // FooterSection.tsx
-import { Link } from 'react-router-dom';
-
 const links = [
-  { title: 'Features', href: '/#features' },
-  { title: 'FAQs', href: '/#faq' },
-  { title: 'Pricing', href: '/#pricing' },
-  { title: 'About', href: '/#about' },
-  { title: 'Privacy Policy', href: '/PrivacyPolicy', external: true },
-  { title: 'Terms & Conditions', href: '/TermsPage', external: true },
-];
+  {
+    title: 'Features',
+    href: '#features',
+  },
+  {
+    title: 'FAQs',
+    href: '#faq',
+  },
+  {
+    title: 'Pricing',
+    href: '#pricing',
+  },
+  {
+    title: 'About',
+    href: '#about',
+  },
+  {
+    title: 'Privacy Policy',
+    href: '/PrivacyPolicy',
+    external: true,
+  },
+  {
+    title: 'Terms & Conditions',
+    href: '/TermsPage',
+    external: true,
+  },
+]
 
 export default function FooterSection() {
   return (
@@ -19,30 +37,18 @@ export default function FooterSection() {
             © {new Date().getFullYear()} GlamFlow, All rights reserved
           </span>
           <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
-            {links.map((link, idx) =>
-              link.external ? (
-                <a
-                  key={idx}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-muted-foreground hover:text-primary block duration-150"
-                >
-                  {link.title}
-                </a>
-              ) : (
-                <Link
-                  key={idx}
-                  to={link.href}
-                  className="text-muted-foreground hover:text-primary block duration-150"
-                >
-                  {link.title}
-                </Link>
-              )
-            )}
+            {links.map((link, index) => (
+              <a
+                key={index}
+                href={link.href}
+                className="text-muted-foreground hover:text-primary block duration-150"
+              >
+                <span>{link.title}</span>
+              </a>
+            ))}
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }
