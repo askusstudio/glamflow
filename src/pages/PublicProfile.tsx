@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Star, ExternalLink, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import BookingModal from '@/components/app/BookingModal';
 
 interface Profile {
   id: string;
@@ -27,6 +28,7 @@ const PublicProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -119,16 +121,16 @@ const PublicProfile = () => {
                 </p>
               )}
 
-              {/* Contact Button */}
+              {/* Contact Button - Now opens modal */}
               {profile.email && (
-                <Button size="lg" className="mb-4">
+                <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
                   <Mail className="w-4 h-4 mr-2" />
-                  Contact Me
+                  Book Me
                 </Button>
               )}
 
               {/* Social Links */}
-              {Object.keys(socialAccounts).length > 0 && (
+              {/* {Object.keys(socialAccounts).length > 0 && (
                 <div className="flex flex-wrap justify-center lg:justify-start gap-3">
                   {Object.entries(socialAccounts).map(([platform, url]) => (
                     url && (
@@ -146,7 +148,7 @@ const PublicProfile = () => {
                     )
                   ))}
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -247,6 +249,13 @@ const PublicProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Render Booking Modal */}
+      <BookingModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        profile={profile}
+      />
     </div>
   );
 };

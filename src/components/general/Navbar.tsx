@@ -94,8 +94,8 @@ const Navbar = () => {
   const navItems = [
     { label: "Dashboard", path: "/app" },
     { label: "Tasks", path: "/tasks" },
-    { label: "Calendar", path: "/calendar" },
-    { label: "Analytics", path: "/analytics" },
+    { label: "Bookings", path: "/bookings" },
+    // { label: "Analytics", path: "/analytics" },
   ];
 
   return (

@@ -1,238 +1,304 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Sparkles, Calendar, Target, TrendingUp, Users, Palette, Star, ArrowRight } from "lucide-react"
-import heroImage from "@/assets/hero-beauty.jpg"
+// App.jsx
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-const Landing = () => {
-  const [showLoginForm, setShowLoginForm] = useState(false)
-
-  const features = [
-    {
-      icon: Calendar,
-      title: "Smart Scheduling",
-      description: "Manage appointments, avoid conflicts, and sync with your calendar seamlessly."
-    },
-    {
-      icon: Target,
-      title: "Task Management",
-      description: "Organize your beauty kit, client prep, and marketing tasks effortlessly."
-    },
-    {
-      icon: TrendingUp,
-      title: "Earnings Analytics",
-      description: "Track your income, identify top services, and optimize your pricing."
-    },
-    {
-      icon: Users,
-      title: "Client Management",
-      description: "Store client preferences, track repeat customers, and grow your business."
-    }
-  ]
-
-  const testimonials = [
-    {
-      name: "Priya Sharma",
-      role: "Bridal Makeup Artist",
-      content: "GlamFlow helped me organize my wedding season bookings perfectly. No more double bookings!",
-      rating: 5
-    },
-    {
-      name: "Meera Patel",
-      role: "Hair Stylist",
-      content: "The earnings tracker showed me which services are most profitable. I increased my income by 40%!",
-      rating: 5
-    }
-  ]
-
-  
-
+function App() {
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              GlamFlow
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button onClick={() => window.location.href = '/auth'} className="bg-gradient-primary hover:shadow-glow transition-all">
-              Get Started
-            </Button>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-cyan-50 to-violet-50 font-sans antialiased">
+      {/* Navbar */}
+      <header className="w-full py-6 flex items-center justify-between px-8 bg-white shadow-sm">
+        <div className="flex items-center gap-2 text-2xl font-bold text-pink-600">
+          <span className="rounded-full bg-pink-100 p-2">💄</span>
+          GlamManage
+        </div>
+        <nav className="flex gap-8 font-medium text-gray-700">
+          <a href="#features">Features</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div className="flex gap-3">
+          <Button variant="ghost" className="text-pink-600">Sign in</Button>
+          <Button className="bg-pink-600 hover:bg-pink-500">Register</Button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-hero">
-        <div className="container mx-auto px-4 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <Badge variant="secondary" className="w-fit">
-                <Palette className="h-3 w-3 mr-1" />
-                For Beauty Professionals
-              </Badge>
-              
-              <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                  Manage your beauty 
-                  <span className="bg-gradient-primary bg-clip-text text-transparent"> freelance </span>
-                  business with elegance
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-lg">
-                  The all-in-one platform designed specifically for beauty freelancers. 
-                  Schedule appointments, manage tasks, track earnings, and grow your business.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  onClick={() => window.location.href = '/auth'}
-                  className="bg-gradient-primary hover:shadow-glow transition-all duration-300"
-                >
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button size="lg" variant="outline">
-                  Watch Demo
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-accent text-accent" />
-                  <span>4.9/5 rating</span>
-                </div>
-                <div>500+ beauty professionals</div>
-                <div>Free 14-day trial</div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <img 
-                src={heroImage} 
-                alt="Beauty workspace with professional tools"
-                className="rounded-2xl shadow-elegant w-full"
-              />
-              <div className="absolute inset-0 bg-gradient-primary/10 rounded-2xl"></div>
-            </div>
-          </div>
+      <motion.section
+        className="mx-auto max-w-4xl text-center py-24 px-4"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        <h1 className="text-5xl font-bold mb-4 text-gray-900 tracking-tight">
+          Empower Your Beauty Business 
+          <br />
+          with Smart Work Management
+        </h1>
+        <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+          All-in-one platform for makeup artists, salons, and freelancers. Manage appointments, clients, invoices and more — effortlessly.
+        </p>
+        <div className="flex justify-center gap-4 mt-8">
+          <Button size="lg" className="bg-pink-600 hover:bg-pink-500">Start Free Trial</Button>
+          <Button size="lg" variant="outline" className="text-pink-600 border-pink-200 hover:bg-pink-50">Watch Demo</Button>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">
-              Features
-            </Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Everything you need to succeed
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Built specifically for beauty professionals with features that understand your unique business needs.
-            </p>
-          </div>
+      {/* Placeholder Dashboard Image */}
+      <motion.div
+        className="mx-auto max-w-5xl rounded-xl overflow-hidden shadow-xl my-12"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.7 }}
+      >
+        <img
+          src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80"
+          alt="Dashboard Preview"
+          style={{ width: '100%', height: '500px', objectFit: 'cover' }}
+        />
+      </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-soft transition-all duration-300">
-                <CardHeader>
-                  <div className="mx-auto w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Loved by beauty professionals
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              See how GlamFlow is transforming beauty businesses across India
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-soft transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-4 italic">
-                    "{testimonial.content}"
-                  </p>
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-hero">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Ready to elevate your beauty business?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join hundreds of beauty professionals who are already growing their business with GlamFlow.
-          </p>
-          <Button 
-            size="lg" 
-            onClick={() => window.location.href = '/auth'}
-            className="bg-gradient-primary hover:shadow-glow transition-all duration-300"
+      {/* Features */}
+      <motion.section
+        id="features"
+        className="mx-auto max-w-6xl py-16 px-6 grid md:grid-cols-3 gap-8"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          hidden: { opacity: 0, y: 50 },
+          visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.2 } }
+        }}
+      >
+        {[
+          {
+            icon: '📅',
+            title: 'Appointment Scheduling',
+            desc: 'Easy, intuitive calendar for clients and artists.',
+          },
+          {
+            icon: '🤝',
+            title: 'Client Management',
+            desc: 'Organize client info, preferences, and booking history.',
+          },
+          {
+            icon: '💰',
+            title: 'Payments & Invoices',
+            desc: 'Generate, send, and track payments seamlessly.',
+          },
+        ].map((feature, i) => (
+          <motion.div
+            key={feature.title}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + i * 0.15 }}
           >
-            Get Started for Free
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="text-center">
+                <span className="text-4xl mb-2 bg-pink-100 p-3 rounded-full inline-block">{feature.icon}</span>
+                <CardTitle>{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-center">{feature.desc}</CardDescription>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.section>
+
+      {/* Solutions Section */}
+      <motion.section
+        id="solutions"
+        className="mx-auto max-w-6xl py-16 px-6"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Solutions for Beauty Professionals</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {[
+            { title: 'For Freelance Makeup Artists', desc: 'Streamline bookings, track client preferences, and manage payments on the go.' },
+            { title: 'For Hairstylists & Salons', desc: 'Coordinate team schedules, handle group appointments, and automate invoicing.' },
+            { title: 'For Beauty Academies', desc: 'Manage classes, student progress, and enterprise-level integrations.' },
+            { title: 'For Enterprise Teams', desc: 'Custom workflows, analytics, and scalability for large operations.' },
+          ].map((solution, i) => (
+            <Card key={i}>
+              <CardHeader>
+                <CardTitle className="text-pink-600">{solution.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{solution.desc}</CardDescription>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </section>
+      </motion.section>
+
+      {/* Pricing Section */}
+      <motion.section
+        id="pricing"
+        className="mx-auto max-w-6xl py-16 px-6 grid md:grid-cols-3 gap-8"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          hidden: { opacity: 0, y: 50 },
+          visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.2 } }
+        }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 col-span-full">Pricing Plans</h2>
+        {[
+          {
+            title: 'Basic',
+            price: '₹499',
+            desc: 'Perfect for individual freelancers starting out.',
+            features: ['1 User', 'Basic Scheduling', 'Client Management', 'Email Support'],
+          },
+          {
+            title: 'Team',
+            price: '₹999',
+            desc: 'For small teams up to 5 members.',
+            features: ['Up to 5 Users', 'Advanced Scheduling', 'Payments & Invoices', 'Priority Support'],
+          },
+          {
+            title: 'Academy/Enterprise',
+            price: 'Custom',
+            desc: 'Tailored for academies and large enterprises.',
+            features: ['Unlimited Users', 'Custom Integrations', 'Analytics Dashboard', 'Dedicated Support'],
+          },
+        ].map((plan, i) => (
+          <motion.div
+            key={plan.title}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + i * 0.15 }}
+          >
+            <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl">{plan.title}</CardTitle>
+                <p className="text-3xl font-bold text-pink-600 mt-2">{plan.price}</p>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <CardDescription className="text-center mb-6">{plan.desc}</CardDescription>
+                <ul className="space-y-2">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="text-gray-600">• {feature}</li>
+                  ))}
+                </ul>
+              </CardContent>
+              <div className="p-6 pt-0 mt-auto">
+                <Button className="w-full bg-pink-600 hover:bg-pink-500">Choose Plan</Button>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.section>
+
+      {/* Testimonials Section */}
+      <motion.section
+        className="mx-auto max-w-6xl py-16 px-6"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">What Our Users Say</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { quote: 'GlamManage transformed my freelance makeup business!', author: 'Priya S., Makeup Artist' },
+            { quote: 'Easy scheduling and payments—highly recommend!', author: 'Rahul K., Hairstylist' },
+            { quote: 'Perfect for our salon team management.', author: 'Aisha M., Salon Owner' },
+          ].map((testimonial, i) => (
+            <Card key={i}>
+              <CardContent className="pt-6 text-center">
+                <p className="text-gray-600 mb-4">"{testimonial.quote}"</p>
+                <p className="font-semibold text-pink-600">{testimonial.author}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* FAQ Section */}
+      <motion.section
+        id="faq"
+        className="mx-auto max-w-4xl py-16 px-6"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Frequently Asked Questions</h2>
+        <Accordion type="single" collapsible className="w-full">
+          {[
+            { q: 'What is GlamManage?', a: 'An all-in-one work management platform for beauty freelancers like makeup artists and hairstylists.' },
+            { q: 'Is there a free trial?', a: 'Yes, start with a 14-day free trial, no credit card required.' },
+            { q: 'Can I integrate with other tools?', a: 'Yes, we support integrations with calendars, payment gateways, and more.' },
+          ].map((faq, i) => (
+            <AccordionItem key={i} value={`item-${i}`}>
+              <AccordionTrigger>{faq.q}</AccordionTrigger>
+              <AccordionContent>{faq.a}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </motion.section>
+
+      {/* Call to Action */}
+      <motion.section
+        className="py-16 text-center bg-pink-50 mt-14"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <h2 className="text-3xl font-bold mb-3 text-pink-600">Ready to transform your beauty business?</h2>
+        <p className="text-lg text-gray-600 mb-6 max-w-xl mx-auto">Sign up and get instant access. No credit card required.</p>
+        <Button size="lg" className="bg-pink-600 hover:bg-pink-500">Get Started Free</Button>
+      </motion.section>
 
       {/* Footer */}
-      <footer className="border-t bg-card">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <span className="font-semibold bg-gradient-primary bg-clip-text text-transparent">
-                GlamFlow
-              </span>
+      <footer className="bg-gray-900 text-white py-12 px-8">
+        <div className="mx-auto max-w-6xl grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 text-xl font-bold mb-4">
+              <span className="rounded-full bg-pink-600 p-2">💄</span>
+              GlamManage
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 GlamFlow. Built for beauty professionals.
-            </p>
+            <p className="text-sm">Empowering beauty freelancers with smart tools.</p>
           </div>
+          <div>
+            <h4 className="font-bold mb-4">Product</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#features" className="hover:text-pink-300">Features</a></li>
+              <li><a href="#solutions" className="hover:text-pink-300">Solutions</a></li>
+              <li><a href="#pricing" className="hover:text-pink-300">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4">Company</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#faq" className="hover:text-pink-300">FAQ</a></li>
+              <li><a href="#" className="hover:text-pink-300">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-pink-300">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4">Connect</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="hover:text-pink-300">Twitter</a></li>
+              <li><a href="#" className="hover:text-pink-300">Instagram</a></li>
+              <li><a href="#" className="hover:text-pink-300">LinkedIn</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="text-center mt-8 text-sm">
+          © 2025 GlamManage. All rights reserved.
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
-export default Landing
+export default App;

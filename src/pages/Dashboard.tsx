@@ -333,16 +333,16 @@ const Dashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <Card className="hover:shadow-soft transition-all">
+          {/* <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Today's Earnings</CardTitle>
               <DollarSign className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-success">₹{todayEarnings.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">+12% from yesterday</p>
+              {/* <div className="text-2xl font-bold text-success">₹{todayEarnings.toLocaleString()}</div> */}
+              {/* <p className="text-xs text-muted-foreground">+12% from yesterday</p>
             </CardContent>
-          </Card>
+          </Card> */} 
 
           <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -370,7 +370,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-soft transition-all">
+          {/* <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Monthly Progress</CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
@@ -379,7 +379,7 @@ const Dashboard = () => {
               <div className="text-2xl font-bold">{progress.toFixed(1)}%</div>
               <p className="text-xs text-muted-foreground">of ₹{monthlyGoal.toLocaleString()} goal</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Today's Schedule */}
@@ -518,7 +518,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card className="bg-gradient-hero border-primary/20">
+        {/* <Card className="bg-gradient-hero border-primary/20">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Speed up your workflow with these shortcuts</CardDescription>
@@ -551,7 +551,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   )

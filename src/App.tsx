@@ -14,6 +14,7 @@ import TasksPage from "./pages/Tasks";
 import CalendarPage from "./pages/Calendar";
 import AnalyticsPage from "./pages/Analytics.tsx";
 import PublicProfile from "./pages/PublicProfile";
+import BookingsTablePage from "./pages/BookingsTablePage"; // @BookingsTablePage.tsx
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/public-profile/:userId" element={<PublicProfile />} />
+            <Route path="/bookings" element={<BookingsTablePage />} /> {/* @BookingsTablePage.tsx */}
             <Route path="/app" element={<ProtectedRoute />}>
               <Route path="/app" element={<Dashboard />} />
             </Route>
