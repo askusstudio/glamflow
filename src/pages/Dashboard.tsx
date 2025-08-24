@@ -8,14 +8,14 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import Navbar from "@/components/general/Navbar"
-import { 
-  Calendar, 
-  Target, 
-  TrendingUp, 
-  Plus, 
-  Clock, 
-  DollarSign, 
-  Users, 
+import {
+  Calendar,
+  Target,
+  TrendingUp,
+  Plus,
+  Clock,
+  DollarSign,
+  Users,
   Sparkles,
   CheckCircle2,
   AlertCircle,
@@ -56,7 +56,7 @@ const Dashboard = () => {
     appointment_time: ''
   })
   const { toast } = useToast()
-  
+
   // These should also be fetched from your database eventually
   const todayEarnings = 8500
   const monthlyGoal = 50000
@@ -69,7 +69,7 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      
+
       const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select('*')
@@ -98,7 +98,7 @@ const Dashboard = () => {
       if (appointmentsError) {
         console.error('Appointments error:', appointmentsError)
         toast({
-          title: "Error", 
+          title: "Error",
           description: "Failed to fetch appointments. Please try again.",
           variant: "destructive"
         })
@@ -175,7 +175,7 @@ const Dashboard = () => {
 
       if (error) throw error
 
-      setTasks(prev => prev.map(task => 
+      setTasks(prev => prev.map(task =>
         task.id === taskId ? { ...task, completed: !completed } : task
       ))
 
@@ -260,7 +260,7 @@ const Dashboard = () => {
 
       if (error) throw error
 
-      setAppointments(prev => prev.map(appointment => 
+      setAppointments(prev => prev.map(appointment =>
         appointment.id === appointmentId ? { ...appointment, status: newStatus } : appointment
       ))
 
@@ -313,8 +313,8 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <Navbar/>
-        
+      <Navbar />
+
       <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -333,18 +333,18 @@ const Dashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {/* <Card className="hover:shadow-soft transition-all">
+          {/* <Card className="hover:shadow-soft transition-all bg-muted/5">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Today's Earnings</CardTitle>
               <DollarSign className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
               {/* <div className="text-2xl font-bold text-success">₹{todayEarnings.toLocaleString()}</div> */}
-              {/* <p className="text-xs text-muted-foreground">+12% from yesterday</p>
+          {/* <p className="text-xs text-muted-foreground">+12% from yesterday</p>
             </CardContent>
-          </Card> */} 
+          </Card> */}
 
-          <Card className="hover:shadow-soft transition-all">
+          <Card className="hover:shadow-soft transition-all bg-gray-50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Appointments Today</CardTitle>
               <Calendar className="h-4 w-4 text-primary" />
@@ -357,7 +357,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-soft transition-all">
+          <Card className="hover:shadow-soft transition-all bg-gray-50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
               <Target className="h-4 w-4 text-warning" />
@@ -370,7 +370,8 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* <Card className="hover:shadow-soft transition-all">
+
+          {/* <Card className="hover:shadow-soft transition-all bg-muted/5">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Monthly Progress</CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
@@ -384,7 +385,7 @@ const Dashboard = () => {
 
         {/* Today's Schedule */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <Card>
+          <Card className="bg-gray-50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
@@ -394,7 +395,8 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {appointments.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No appointments scheduled for today</p>
+                <p className="text-muted-foreground text-center py-4">
+                  No appointments scheduled for today</p>
               ) : (
                 appointments.map((appointment) => (
                   <div key={appointment.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg gap-3">
@@ -403,7 +405,7 @@ const Dashboard = () => {
                       <p className="text-sm text-muted-foreground">{appointment.service}</p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                      <Badge 
+                      <Badge
                         variant={appointment.status === "confirmed" ? "default" : "secondary"}
                         className="cursor-pointer w-full sm:w-auto justify-center"
                         onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
@@ -418,7 +420,7 @@ const Dashboard = () => {
                   </div>
                 ))
               )}
-              
+
               {showAddAppointment && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
                   <Input
@@ -442,9 +444,9 @@ const Dashboard = () => {
                   </div>
                 </div>
               )}
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => setShowAddAppointment(true)}
               >
@@ -454,7 +456,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gray-50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
@@ -480,7 +482,7 @@ const Dashboard = () => {
                         {task.title}
                       </p>
                     </div>
-                    <Badge 
+                    <Badge
                       variant={task.priority === "high" ? "destructive" : task.priority === "medium" ? "default" : "secondary"}
                       className="text-xs"
                     >
@@ -489,7 +491,7 @@ const Dashboard = () => {
                   </div>
                 ))
               )}
-              
+
               {showAddTask && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
                   <Input
@@ -504,9 +506,9 @@ const Dashboard = () => {
                   </div>
                 </div>
               )}
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => setShowAddTask(true)}
               >
@@ -518,7 +520,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        {/* <Card className="bg-gradient-hero border-primary/20">
+        {/* <Card className="bg-gradient-hero border-primary/20 bg-muted/5">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Speed up your workflow with these shortcuts</CardDescription>
