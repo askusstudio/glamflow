@@ -32,7 +32,7 @@ export default function LandingPage() {
       <header className="flex items-center justify-between px-6 py-4 border-b bg-transparent backdrop-blur relative z-10">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-white text-2xl font-bold">
-            <span>G</span>
+            <span>𝒢</span>
           </div>
           <span className="font-semibold text-xl tracking-tight">GlamFlow</span>
         </div>
@@ -52,8 +52,7 @@ export default function LandingPage() {
       <section className="flex flex-col md:items-center py-16 px-4 md:px-0 text-center space-y-6 max-w-2xl mx-auto relative z-10">
         <h1 className="text-3xl md:text-5xl font-bold leading-snug">
           Empower Your Work<br />
-          with Smarter HR Solutions
-        </h1>
+          with Smarter Solutions        </h1>
         <p className="text-muted-foreground text-lg">
           Smart solutions to hire, manage, and develop top talent seamlessly and efficiently in one intuitive platform.
         </p>
