@@ -55,7 +55,8 @@ const priceRanges = [
   'Budget ($-$$)',
   'Mid-range ($$$)',
   'Premium ($$$$)',
-  'Luxury ($$$$$)'
+  'Luxury ($$$$$)',
+  'Custom'
 ];
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -67,6 +68,7 @@ export default function ProfilePage() {
   });
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [customPrice, setCustomPrice] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -99,6 +101,12 @@ export default function ProfilePage() {
         };
         setProfile(profileData as Profile);
         setFormData(profileData);
+        
+        // If price_range is not one of the predefined options, it's a custom price
+        if (data.price_range && !priceRanges.slice(0, -1).includes(data.price_range)) {
+          setCustomPrice(data.price_range);
+          setFormData(prev => ({ ...prev, price_range: "Custom" }));
+        }
       } else if (error && error.code === 'PGRST116') {
         // Profile doesn't exist, create default
         const defaultProfile = {
@@ -150,7 +158,8 @@ export default function ProfilePage() {
       const updates = { 
         ...formData, 
         id: user.id,
-        social_accounts: formData.social_accounts || {}
+        social_accounts: formData.social_accounts || {},
+        price_range: formData.price_range === "Custom" ? customPrice : formData.price_range
       };
       
       const { error } = await supabase.from("profiles").upsert(updates);
@@ -398,7 +407,10 @@ export default function ProfilePage() {
                   <Label htmlFor="price_range">Price Range</Label>
                   <Select
                     value={formData.price_range || ""}
-                    onValueChange={(val) => handleInputChange("price_range", val)}
+                    onValueChange={(val) => {
+                      handleInputChange("price_range", val);
+                      if (val !== "Custom") setCustomPrice("");
+                    }}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select price range" />
@@ -409,6 +421,18 @@ export default function ProfilePage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {formData.price_range === "Custom" && (
+                    <div className="mt-3">
+                      <Label htmlFor="custom_price">Custom Price</Label>
+                      <Input
+                        id="custom_price"
+                        value={customPrice}
+                        placeholder="e.g., $50/hour, $200/day, $500 per session"
+                        onChange={(e) => setCustomPrice(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="bio">Bio</Label>
@@ -564,6 +588,7 @@ export default function ProfilePage() {
                 variant="outline"
                 onClick={() => {
                   setFormData(profile ? { ...profile, social_accounts: profile.social_accounts || {} } : { social_accounts: {} });
+                  setCustomPrice("");
                 }}
                 disabled={loading}
               >
