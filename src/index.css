@@ -20,9 +20,9 @@
     --popover-foreground: 220 13% 18%;
 
     /* Brand Colors - Elegant Beauty Theme */
-    --primary: 320 65% 52%; /* Rich Rose */
+    --primary: 320 40.62% 34.6%; /* Updated to new HSL value (darker magenta) */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 320 65% 65%;
+    --primary-glow: 320 40.62% 44.6%; /* Adjusted glow to be slightly brighter for visibility */
 
     /* Secondary Colors */
     --secondary: 15 25% 95%;
@@ -48,16 +48,16 @@
     /* Border & Input */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 320 65% 52%;
+    --ring: 320 40.62% 34.6%; /* Updated to match new primary */
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(320 65% 52%), hsl(340 75% 58%));
+    --gradient-primary: linear-gradient(135deg, hsl(320 40.62% 34.6%), hsl(340 75% 58%)); /* Updated primary in gradient */
     --gradient-secondary: linear-gradient(135deg, hsl(45 93% 84%), hsl(35 93% 74%));
-    --gradient-hero: linear-gradient(135deg, hsl(320 65% 52% / 0.1), hsl(45 93% 84% / 0.1));
+    --gradient-hero: linear-gradient(135deg, hsl(320 40.62% 34.6% / 0.1), hsl(45 93% 84% / 0.1)); /* Updated primary in hero gradient */
 
     /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(320 65% 52% / 0.3);
-    --shadow-glow: 0 0 40px hsl(320 65% 65% / 0.4);
+    --shadow-elegant: 0 10px 30px -10px hsl(320 40.62% 34.6% / 0.3); /* Updated to match new primary */
+    --shadow-glow: 0 0 40px hsl(320 40.62% 44.6% / 0.4); /* Updated glow */
     --shadow-soft: 0 4px 20px hsl(220 13% 18% / 0.1);
 
     /* Border Radius */
@@ -94,9 +94,9 @@
     --popover-foreground: 220 13% 95%;
 
     /* Brand Colors - Dark Mode */
-    --primary: 320 65% 58%; /* Brighter Rose for dark */
+    --primary: 320 40.62% 44.6%; /* Updated to brighter version of new HSL for dark mode visibility */
     --primary-foreground: 220 16% 8%;
-    --primary-glow: 320 65% 70%;
+    --primary-glow: 320 40.62% 54.6%; /* Adjusted glow for dark mode */
 
     /* Secondary Colors */
     --secondary: 220 16% 15%;
@@ -122,16 +122,16 @@
     /* Border & Input */
     --border: 220 16% 20%;
     --input: 220 16% 20%;
-    --ring: 320 65% 58%;
+    --ring: 320 40.62% 44.6%; /* Updated to match new dark primary */
 
     /* Dark Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(320 65% 58%), hsl(340 75% 65%));
+    --gradient-primary: linear-gradient(135deg, hsl(320 40.62% 44.6%), hsl(340 75% 65%)); /* Updated primary in gradient */
     --gradient-secondary: linear-gradient(135deg, hsl(45 93% 70%), hsl(35 93% 60%));
-    --gradient-hero: linear-gradient(135deg, hsl(320 65% 58% / 0.1), hsl(45 93% 70% / 0.1));
+    --gradient-hero: linear-gradient(135deg, hsl(320 40.62% 44.6% / 0.1), hsl(45 93% 70% / 0.1)); /* Updated primary in hero gradient */
 
     /* Dark Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(320 65% 58% / 0.4);
-    --shadow-glow: 0 0 40px hsl(320 65% 70% / 0.3);
+    --shadow-elegant: 0 10px 30px -10px hsl(320 40.62% 44.6% / 0.4); /* Updated to match new dark primary */
+    --shadow-glow: 0 0 40px hsl(320 40.62% 54.6% / 0.3); /* Updated glow */
     --shadow-soft: 0 4px 20px hsl(220 16% 8% / 0.5);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

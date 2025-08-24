@@ -15,6 +15,8 @@ import CalendarPage from "./pages/Calendar";
 import AnalyticsPage from "./pages/Analytics.tsx";
 import PublicProfile from "./pages/PublicProfile";
 import BookingsTablePage from "./pages/BookingsTablePage"; // @BookingsTablePage.tsx
+import PrivacyPolicy from "./pages/PrivacyPolicy"; // @BookingsTablePage.tsx
+import TermsPage from "./pages/TermsPage"; // @BookingsTablePage.tsx
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+            <Route path="/termspage" element={<TermsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/public-profile/:userId" element={<PublicProfile />} />
