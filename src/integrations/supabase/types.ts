@@ -61,6 +61,7 @@ export type Database = {
           portfolio_images: string[] | null
           price_range: string | null
           services: string | null
+          social_accounts: string | null
           updated_at: string | null
         }
         Insert: {
@@ -76,6 +77,7 @@ export type Database = {
           portfolio_images?: string[] | null
           price_range?: string | null
           services?: string | null
+          social_accounts?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           portfolio_images?: string[] | null
           price_range?: string | null
           services?: string | null
+          social_accounts?: string | null
           updated_at?: string | null
         }
         Relationships: []
