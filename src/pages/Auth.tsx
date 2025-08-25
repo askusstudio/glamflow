@@ -23,31 +23,76 @@ export function Auth() {
     setLoading(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
+        
         if (error) throw error;
+        
+        // Store credentials securely for persistence
+        if (data.session) {
+          localStorage.setItem('supabase-session', JSON.stringify(data.session));
+          localStorage.setItem('supabase-user', JSON.stringify(data.user));
+        }
+        
         toast({
-          title: "Logged in successfully!",
-          description: "Redirecting to your dashboard...",
+          title: "Welcome back!",
+          description: "You've been logged in successfully.",
         });
-        window.location.href = "/app";
+        
+        // Use navigate instead of window.location for better UX
+        setTimeout(() => {
+          window.location.href = "/app";
+        }, 1000);
       } else {
-        const { error } = await supabase.auth.signUp({
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
         });
+        
         if (error) throw error;
-        toast({
-          title: "Signed up successfully!",
-          description: "Please check your email for a confirmation link.",
-        });
+        
+        if (data.user && !data.session) {
+          toast({
+            title: "Check your email!",
+            description: "We've sent you a confirmation link to complete your registration.",
+          });
+        } else if (data.session) {
+          // Auto-login after signup
+          localStorage.setItem('supabase-session', JSON.stringify(data.session));
+          localStorage.setItem('supabase-user', JSON.stringify(data.user));
+          
+          toast({
+            title: "Account created!",
+            description: "Welcome to GlamFlow!",
+          });
+          
+          setTimeout(() => {
+            window.location.href = "/app";
+          }, 1000);
+        }
       }
     } catch (error: any) {
+      let errorMessage = error.message;
+      
+      // Handle specific auth errors
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials.';
+      } else if (error.message.includes('User already registered')) {
+        errorMessage = 'An account with this email already exists. Please sign in instead.';
+      } else if (error.message.includes('Password should be')) {
+        errorMessage = 'Password must be at least 6 characters long.';
+      }
+      
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Authentication Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

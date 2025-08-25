@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import { useEffect } from "react";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
@@ -14,40 +16,96 @@ import TasksPage from "./pages/Tasks";
 import CalendarPage from "./pages/Calendar";
 import AnalyticsPage from "./pages/Analytics.tsx";
 import PublicProfile from "./pages/PublicProfile";
-import BookingsTablePage from "./pages/BookingsTablePage"; // @BookingsTablePage.tsx
-import PrivacyPolicy from "./pages/PrivacyPolicy"; // @BookingsTablePage.tsx
-import TermsPage from "./pages/TermsPage"; // @BookingsTablePage.tsx
+import BookingsTablePage from "./pages/BookingsTablePage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsPage from "./pages/TermsPage";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/tasks" element={<TasksPage />} />
-            <Route path="/privacypolicy" element={<PrivacyPolicy />} />
-            <Route path="/termspage" element={<TermsPage />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/public-profile/:userId" element={<PublicProfile />} />
-            <Route path="/bookings" element={<BookingsTablePage />} /> {/* @BookingsTablePage.tsx */}
-            <Route path="/app" element={<ProtectedRoute />}>
-              <Route path="/app" element={<Dashboard />} />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New content is available, prompt user to refresh
+                    if (confirm('New version available! Refresh to update?')) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              }
+            });
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // Add manifest link
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = '/manifest.json';
+    document.head.appendChild(manifestLink);
+
+    // Add theme color meta tag
+    const themeColorMeta = document.createElement('meta');
+    themeColorMeta.name = 'theme-color';
+    themeColorMeta.content = '#8B5CF6';
+    document.head.appendChild(themeColorMeta);
+
+    // Add apple touch icon
+    const appleTouchIcon = document.createElement('link');
+    appleTouchIcon.rel = 'apple-touch-icon';
+    appleTouchIcon.href = '/icon-192x192.png';
+    document.head.appendChild(appleTouchIcon);
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider defaultTheme="light" enableSystem>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/tasks" element={<TasksPage />} />
+                <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+                <Route path="/termspage" element={<TermsPage />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/public-profile/:userId" element={<PublicProfile />} />
+                <Route path="/bookings" element={<BookingsTablePage />} />
+                <Route path="/app" element={<ProtectedRoute />}>
+                  <Route path="/app" element={<Dashboard />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
