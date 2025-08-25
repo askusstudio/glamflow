@@ -76,14 +76,10 @@ const BookingModal = ({ isOpen, onClose, profile }: BookingModalProps) => {
         .insert({
           user_id: profile.id,
           client_name: clientName,
-          client_email: clientEmail,
-          client_phone: clientPhone,
-          appointment_date: selectedDate.toISOString().split('T')[0],
-          location,
-          message,
+          appointment_time: selectedDate.toISOString(),
           service: profile.services || 'General',
           status: 'pending'
-        });
+        } as any);
 
       if (error) throw error;
       onClose();
@@ -99,7 +95,7 @@ const BookingModal = ({ isOpen, onClose, profile }: BookingModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Book {profile.full_name || 'Freelancer'}</DialogTitle>
+          <DialogTitle>Book Freelancer</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {error && <p className="text-destructive text-sm">{error}</p>}

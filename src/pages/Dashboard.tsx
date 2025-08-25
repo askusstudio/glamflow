@@ -222,8 +222,10 @@ const Dashboard = () => {
         .insert([{
           ...newAppointmentData,
           user_id: user.id,
-          status: 'pending' as const
-        }])
+          status: 'pending' as const,
+          client_email: 'temp@example.com',
+          client_phone: '0000000000'
+        } as any])
         .select()
 
       if (error) throw error

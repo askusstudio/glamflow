@@ -16,30 +16,45 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
-          appointment_time: string
+          appointment_date: string | null
+          appointment_time: string | null
+          client_email: string
           client_name: string
+          client_phone: string
           created_at: string
           id: string
+          location: string | null
+          message: string | null
           service: string
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
-          appointment_time: string
+          appointment_date?: string | null
+          appointment_time?: string | null
+          client_email: string
           client_name: string
+          client_phone: string
           created_at?: string
           id?: string
+          location?: string | null
+          message?: string | null
           service: string
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
-          appointment_time?: string
+          appointment_date?: string | null
+          appointment_time?: string | null
+          client_email?: string
           client_name?: string
+          client_phone?: string
           created_at?: string
           id?: string
+          location?: string | null
+          message?: string | null
           service?: string
           status?: string
           updated_at?: string

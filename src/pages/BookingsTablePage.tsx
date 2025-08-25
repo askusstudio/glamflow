@@ -48,9 +48,7 @@ const BookingsTablePage = () => {
 
       const { data, error } = await supabase
         .from('appointments')
-        .select(
-          'id,user_id,client_name,client_email,client_phone,appointment_date,appointment_time,location,message,status,service,created_at,updated_at'
-        )
+        .select('*')
         .order(sortKey, { ascending: sortOrder === 'asc' });
 
       setLoading(false);
@@ -62,7 +60,7 @@ const BookingsTablePage = () => {
       }
 
       if (Array.isArray(data)) {
-        setBookings(data as Booking[]);
+        setBookings(data as any);
       } else {
         setBookings([]);
       }
