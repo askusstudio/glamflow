@@ -40,62 +40,70 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        // Try to get session from Supabase first
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          if (session) {
+            console.log('Session found:', session);
+            setSession(session);
+            setUser(session.user);
+            // Store in localStorage for offline access
+            localStorage.setItem('supabase-session', JSON.stringify(session));
+            localStorage.setItem('supabase-user', JSON.stringify(session.user));
+          } else {
+            console.log('No active session found');
+            // Clear any stale data
+            localStorage.removeItem('supabase-session');
+            localStorage.removeItem('supabase-user');
+            setSession(null);
+            setUser(null);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error getting session:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session);
         
-        // Store auth data in localStorage for persistence
-        if (session) {
-          localStorage.setItem('supabase-session', JSON.stringify(session));
-          localStorage.setItem('supabase-user', JSON.stringify(session.user));
-        } else {
-          localStorage.removeItem('supabase-session');
-          localStorage.removeItem('supabase-user');
+        if (mounted) {
+          if (session) {
+            // Store session data
+            localStorage.setItem('supabase-session', JSON.stringify(session));
+            localStorage.setItem('supabase-user', JSON.stringify(session.user));
+            setSession(session);
+            setUser(session.user);
+          } else {
+            // Clear session data
+            localStorage.removeItem('supabase-session');
+            localStorage.removeItem('supabase-user');
+            setSession(null);
+            setUser(null);
+          }
+          setLoading(false);
         }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
       }
     );
 
-    // THEN check for existing session
-    const initializeAuth = async () => {
-      try {
-        // First try to get session from Supabase
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-          // Fallback to localStorage if Supabase fails
-          const savedSession = localStorage.getItem('supabase-session');
-          const savedUser = localStorage.getItem('supabase-user');
-          
-          if (savedSession && savedUser) {
-            const parsedSession = JSON.parse(savedSession);
-            const parsedUser = JSON.parse(savedUser);
-            
-            // Check if saved session is still valid
-            if (parsedSession.expires_at && new Date(parsedSession.expires_at * 1000) > new Date()) {
-              setSession(parsedSession);
-              setUser(parsedUser);
-            }
-          }
-        } else {
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    // Initialize auth
     initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
