@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import Landing from "./pages/Landing";
+import IndexPage from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Auth } from "./pages/Auth";
@@ -85,7 +85,7 @@ const App: React.FC = () => {
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<IndexPage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/tasks" element={<TasksPage />} />
