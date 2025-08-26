@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +18,37 @@ export function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Check URL parameters for pre-filled email and mode
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailParam = urlParams.get('email');
+    const modeParam = urlParams.get('mode');
+    
+    if (emailParam) {
+      setEmail(decodeURIComponent(emailParam));
+    }
+    if (modeParam === 'login') {
+      setIsLogin(true);
+    } else if (modeParam === 'signup') {
+      setIsLogin(false);
+    }
+  }, []);
+
+  const checkUserExists = async (email: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: 'dummy_password' // This will fail but tell us if user exists
+      });
+      return false; // If no error, user doesn't exist (shouldn't happen with dummy password)
+    } catch (error: any) {
+      if (error.message.includes('Invalid login credentials')) {
+        return true; // User exists but wrong password
+      }
+      return false; // User doesn't exist
+    }
+  };
 
   const handleAuth = async () => {
     setLoading(true);
@@ -46,6 +77,19 @@ export function Auth() {
           window.location.href = "/app";
         }, 1000);
       } else {
+        // Check if user already exists before signup
+        const userExists = await checkUserExists(email);
+        
+        if (userExists) {
+          toast({
+            title: "User already exists",
+            description: "An account with this email already exists. Please login instead.",
+            variant: "destructive",
+          });
+          setIsLogin(true); // Switch to login mode
+          return;
+        }
+        
         const redirectUrl = `${window.location.origin}/`;
         
         const { data, error } = await supabase.auth.signUp({
@@ -56,7 +100,18 @@ export function Auth() {
           }
         });
         
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('User already registered')) {
+            toast({
+              title: "User already exists",
+              description: "An account with this email already exists. Please login instead.",
+              variant: "destructive",
+            });
+            setIsLogin(true); // Switch to login mode
+            return;
+          }
+          throw error;
+        }
         
         if (data.user && !data.session) {
           toast({
@@ -86,6 +141,7 @@ export function Auth() {
         errorMessage = 'Invalid email or password. Please check your credentials.';
       } else if (error.message.includes('User already registered')) {
         errorMessage = 'An account with this email already exists. Please sign in instead.';
+        setIsLogin(true); // Switch to login mode
       } else if (error.message.includes('Password should be')) {
         errorMessage = 'Password must be at least 6 characters long.';
       }

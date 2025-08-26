@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import heroWomanModel from "@/assets/hero-woman-model.png";
+import EmailCheckModal from "@/components/EmailCheckModal";
 
 export default function IndexPage() {
   const navigate = useNavigate();
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   const handleAuthRedirect = () => {
-    navigate("/auth");
+    setShowEmailModal(true);
+  };
+
+  const handleEmailContinue = (email: string) => {
+    // User doesn't exist, redirect to signup with email pre-filled
+    navigate("/auth?email=" + encodeURIComponent(email) + "&mode=signup");
   };
 
   return (
@@ -77,6 +84,12 @@ export default function IndexPage() {
           GlamFlow is an all-in-one salon and beauty business management platform designed for freelancers, independent makeup artists, personal trainers, spas, and salons. It helps you book more clients, manage appointments, collect payments, and grow your business online – all from a simple app or web dashboard.
         </p>
       </section>
+
+      <EmailCheckModal 
+        isOpen={showEmailModal} 
+        onClose={() => setShowEmailModal(false)}
+        onContinue={handleEmailContinue}
+      />
     </div>
   );
 }
