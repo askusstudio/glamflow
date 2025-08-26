@@ -1,6 +1,4 @@
-// LandingPage.tsx
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import Features from "@/components/ui/Features";
 import Pricing from "@/components/ui/Pricing";
@@ -8,8 +6,9 @@ import Faq from "@/components/ui/Faqs";
 import ContentSection from "@/components/ui/ContentSection";
 import ContentSectionApp from "@/components/ui/ContentSectionApp";
 import Footer from "@/components/ui/FooterSection";
+import Navbar from "@/components/ui/Navbar";
+import { motion } from "framer-motion";
 
-// For Vite+React, use a normal <img> tag
 export default function LandingPage() {
   const navigate = useNavigate();
 
@@ -17,97 +16,162 @@ export default function LandingPage() {
     navigate("/auth");
   };
 
+  // Animation variants for fade-in and slide effects
+  const fadeInUp = {
+    initial: { opacity: 0, y: 50 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.8, ease: "easeOut" },
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -50 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8, ease: "easeOut" },
+  };
+
+  const fadeInRight = {
+    initial: { opacity: 0, x: 50 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8, ease: "easeOut" },
+  };
+
+  const staggerContainer = {
+    initial: {},
+    animate: {
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc]">
-      {/* Hero Wrapper: Confines the grid background to this section only */}
-      <div className="relative">
-        {/* Top Fade Grid Background - Now confined to hero wrapper */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-              linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
-            `,
-            backgroundSize: "20px 30px",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
-            maskImage:
-              "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
-          }}
-        />
+    <div className="w-full bg-white min-h-screen flex flex-col">
+      {/* Navbar with fade-in animation */}
+      <motion.div
+        variants={fadeInUp}
+        initial="initial"
+        animate="animate"
+        viewport={{ once: true }}
+      >
+        <Navbar />
+      </motion.div>
 
-        {/* Navbar */}
-        <header className="flex items-center justify-between px-6 py-4 border-b bg-transparent backdrop-blur relative z-10">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center text-white text-2xl font-bold">
-              <span>𝒢</span>
-            </div>
-            <span className="font-semibold text-xl tracking-tight">GlamFlow</span>
-          </div>
-          <nav className="hidden md:flex gap-8 items-center">
-            <a className="text-muted-foreground text-sm hover:text-foreground" href="#features">Feature</a>
-            <a className="text-muted-foreground text-sm hover:text-foreground" href="#faq">FAQs</a>
-            <a className="text-muted-foreground text-sm hover:text-foreground" href="#pricing">Pricing</a>
-            <a className="text-muted-foreground text-sm hover:text-foreground" href="#about">About</a>
-          </nav>
-          <div className="flex gap-4 items-center">
-            {/* <Button variant="ghost" className="px-4">Sign In</Button> */}
-            <Button className="px-6" onClick={handleAuthRedirect}>JOIN US</Button>
-          </div>
-        </header>
+      {/* Hero section with staggered animations */}
+      <motion.section
+        className="relative flex-1 flex items-center justify-center min-h-screen bg-gradient-to-br from-violet-100 to-pink-100 overflow-hidden"
+        style={{ color: "#fff" }}
+        variants={staggerContainer}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
+        <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 md:px-0 relative z-10">
+          {/* Text column with slide-in from left */}
+          <motion.div
+            className="w-full md:w-1/2 flex flex-col justify-center items-start space-y-6 py-10 md:pl-10"
+            variants={fadeInLeft}
+          >
+            <motion.h1
+              className="text-4xl md:text-5xl font-bold leading-snug text-gray-800"
+              variants={fadeInLeft}
+            >
+              Empower Your Work<br />
+              with Smarter Solutions
+            </motion.h1>
+            <motion.p
+              className="text-base md:text-lg text-gray-600"
+              variants={fadeInLeft}
+            >
+              Smart solutions to hire, manage, and develop top talent seamlessly and efficiently in one intuitive platform.
+            </motion.p>
+            <motion.div
+              className="flex flex-col sm:flex-row items-center gap-3"
+              variants={fadeInLeft}
+            >
+              <Button
+                size="lg"
+                className="w-52 bg-white text-[#7c3464] text-lg md:text-xl font-semibold rounded-lg md:rounded-xl px-7 py-3 font-sans border-2 border-white shadow-sm hover:bg-gray-100 transition tracking-wide"
+                onClick={handleAuthRedirect}
+                style={{
+                  fontFamily: '"Poppins", Arial, sans-serif',
+                  letterSpacing: ".025em",
+                }}
+              >
+                Get start
+              </Button>
+            </motion.div>
+          </motion.div>
 
-        {/* Hero Section */}
-        <section className="flex flex-col md:items-center py-16 px-4 md:px-0 text-center space-y-6 max-w-2xl mx-auto relative z-10">
-          <h1 className="text-3xl md:text-5xl font-bold leading-snug">
-            Empower Your Work<br />
-            with Smarter Solutions
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Smart solutions to hire, manage, and develop top talent seamlessly and efficiently in one intuitive platform.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
-            <Button size="lg" className="w-48" onClick={handleAuthRedirect}>Start for free</Button>
-            <Button size="lg" variant="outline" className="w-48">Connect with Us</Button>
-          </div>
-        </section>
+          {/* Image column with slide-in from right */}
+          <motion.div
+            className="w-full md:w-1/2 flex items-center justify-end relative h-[350px] md:h-[600px]"
+            variants={fadeInRight}
+          >
+            <img
+              src="/p2.jpeg"
+              alt="Makeup Model"
+              className="object-contain md:object-cover rounded-2xl border-none w-full h-full max-h-[600px]"
+              style={{
+                objectPosition: "bottom right",
+                background: "transparent",
+                marginTop: "100px",
+              }}
+            />
+          </motion.div>
+        </div>
+      </motion.section>
 
-        {/* App Dashboard Image */}
-        <section className="flex justify-center px-2 pb-12 relative z-10">
-          <Card className="max-w-4xl w-full border shadow-lg bg-white/80">
-            <CardContent className="p-0">
-              <img
-                src="/hero-img.png"
-                alt="Product Dashboard"
-                className="rounded-lg border-none shadow w-full"
-              />
-            </CardContent>
-          </Card>
-        </section>
-
-        <section className="flex flex-col md:items-center py-16 px-4 md:px-0 text-center space-y-6 max-w-2xl mx-auto relative z-10">
-          <h1 className="text-3xl md:text-5xl font-bold leading-snug" id="about">
-            What is GlamFlow?
-          </h1>
-          <p className="text-muted-foreground text-lg center">
-            GlamFlow is an all-in-one salon and beauty business management platform designed for freelancers, independent makeup artists, personal trainers, spas, and salons. It helps you book more clients, manage appointments, collect payments, and grow your business online – all from a simple app or web dashboard.
-          </p>
-        </section>
-      </div>
-
-      {/* Features Section */}
-      <div id="features">
+      {/* Rest of sections with fade-in animations and zero gaps */}
+      <motion.div
+        id="features"
+        className="m-0 p-0"
+        variants={fadeInUp}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
         <Features />
-      </div>
-      <ContentSection />
-      <ContentSectionApp />
-      <div id="pricing">
-      <Pricing />
-      </div>
-      <div id="faq">
-      <Faq />
-      </div>
-      <Footer />
+      </motion.div>
+      <motion.div
+        className="m-0 p-0"
+        variants={fadeInUp}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
+        <ContentSection />
+        <ContentSectionApp />
+      </motion.div>
+      <motion.div
+        id="pricing"
+        className="m-0 p-0"
+        variants={fadeInUp}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+        whileHover={{ scale: 1.05 }}
+      >
+        <Pricing />
+      </motion.div>
+      <motion.div
+        id="faq"
+        className="m-0 p-0"
+        variants={fadeInUp}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
+        <Faq />
+      </motion.div>
+      <motion.div
+        className="m-0 p-0"
+        variants={fadeInUp}
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
+        <Footer />
+      </motion.div>
     </div>
   );
 }

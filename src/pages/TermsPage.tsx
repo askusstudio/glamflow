@@ -3,7 +3,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] py-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
-        <h1 className="text-3xl md:text-5xl font-bold text-center mb-12">Terms & Conditions</h1>
+        <h1 className="text-3xl md:text-5xl font-bold text-center mb-12">Terms & Conditions</h1>ns2.vercel-dns.com
         
         <section className="space-y-4 mb-8">
           <h2 className="text-2xl font-semibold">Introduction</h2>
