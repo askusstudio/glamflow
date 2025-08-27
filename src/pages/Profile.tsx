@@ -158,11 +158,11 @@ export default function ProfilePage() {
       const updates = { 
         ...formData, 
         id: user.id,
-        social_accounts: formData.social_accounts || {},
+        social_accounts: JSON.stringify(formData.social_accounts || {}),
         price_range: formData.price_range === "Custom" ? customPrice : formData.price_range
       };
       
-      const { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase.from("profiles").upsert(updates as any);
       
       if (error) {
         console.error("Supabase error:", error);
