@@ -6,8 +6,8 @@ export default function ContentSection() {
         <section className="py-16 md:py-32">
             <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-12">
                 <img
-                    className="rounded-[var(--radius)] shadow-lg "
-                    src="/dash-img.png"
+                    className="rounded-[var(--radius)] shadow-lg border border-black"
+                    src="/hero-img.png"
                     alt="team image"
                     height=""
                     width=""
