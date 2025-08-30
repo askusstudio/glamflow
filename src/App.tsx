@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import IndexPage from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Auth } from "./pages/Auth";
@@ -19,38 +18,13 @@ import PublicProfile from "./pages/PublicProfile";
 import BookingsTablePage from "./pages/BookingsTablePage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsPage from "./pages/TermsPage";
+import LandingPage from "./pages/LandingPage.tsx";
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => {
-  useEffect(() => {
-    // Register service worker for PWA functionality
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-            
-            // Check for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content is available, prompt user to refresh
-                    if (confirm('New version available! Refresh to update?')) {
-                      window.location.reload();
-                    }
-                  }
-                });
-              }
-            });
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
+const App = () => {
+  React.useEffect(() => {
+    // Service worker is registered in src/main.tsx (prod only)
 
     // Add manifest link
     const manifestLink = document.createElement('link');
@@ -85,7 +59,7 @@ const App: React.FC = () => {
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<IndexPage />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/tasks" element={<TasksPage />} />

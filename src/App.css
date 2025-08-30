@@ -1,3 +1,66 @@
+:root, :host {
+    --background: oklch(0.98 0.02 240);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --color-yellow-400: oklch(.852 .199 91.936);
+    --color-green-500: oklch(.723 .219 149.579);
+    --color-teal-500: oklch(.704 .14 182.503);
+    --color-cyan-500: oklch(.715 .143 215.221);
+    --color-blue-500: oklch(.623 .214 259.815);
+    --color-indigo-500: oklch(.585 .233 277.117);
+    --color-purple-500: oklch(.627 .265 303.9);
+    --color-pink-50: oklch(.971 .014 343.198);
+    --color-pink-500: oklch(.656 .241 354.308);
+    --color-rose-50: oklch(.969 .015 12.422);
+    --color-rose-100: oklch(.941 .03 12.58);
+    --color-rose-200: oklch(.892 .058 10.001);
+    --color-rose-300: oklch(.81 .117 11.638);
+    --color-rose-400: oklch(.712 .194 13.428);
+    --color-rose-500: oklch(.645 .246 16.439);
+    --color-rose-600: oklch(.586 .253 17.585);
+    --color-gray-50: oklch(.985 .002 247.839);
+    --color-gray-100: oklch(.967 .003 264.542);
+    --color-gray-200: oklch(.928 .006 264.531);
+    --color-gray-300: oklch(.872 .01 258.338);
+    --color-gray-400: oklch(.707 .022 261.325);
+    --color-gray-500: oklch(.551 .027 264.364);
+    --color-gray-600: oklch(.446 .03 256.802);
+    --color-gray-700: oklch(.373 .034 259.733);
+    --color-gray-800: oklch(.278 .033 256.848);
+    --color-gray-900: oklch(.21 .034 264.665);
+    --color-black: #000;
+    --color-white: #fff;
+    --spacing: .25rem;
+    --container-md: 28rem;
+    --container-2xl: 42rem;
+    --container-3xl: 48rem;
+    --container-4xl: 56rem;
+    --container-7xl: 80rem;
+    --text-xs: .75rem;
+    --text-xs--line-height: calc(1 / .75);
+    --text-sm: .875rem;
+    --text-sm--line-height: calc(1.25 / .875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: 1.2;
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
+}
+
+/* In your global CSS (e.g., index.css or App.css) */
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: 'Karla', 'Roboto', 'ui-sans-serif', 'system-ui', sans-serif;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;

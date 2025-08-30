@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import * as React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 
@@ -10,15 +10,15 @@ interface AuthContextType {
   isOnline: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [isOnline, setIsOnline] = React.useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Handle online/offline status
     const handleOnline = () => {
       setIsOnline(true);
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let mounted = true;
 
     const initializeAuth = async () => {
@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

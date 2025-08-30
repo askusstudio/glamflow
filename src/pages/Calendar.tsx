@@ -57,13 +57,24 @@ export default function CalendarPage() {
 
   useEffect(() => {
     // Load events from localStorage
-    const savedEvents = localStorage.getItem('calendar-events');
-    if (savedEvents) {
-      const parsedEvents = JSON.parse(savedEvents).map((event: any) => ({
-        ...event,
-        date: new Date(event.date)
-      }));
-      setEvents(parsedEvents);
+    try {
+      const savedEvents = localStorage.getItem('calendar-events');
+      if (savedEvents) {
+        const parsedEvents = JSON.parse(savedEvents).map((event: any) => ({
+          ...event,
+          date: new Date(event.date)
+        }));
+        setEvents(parsedEvents);
+      }
+    } catch (error) {
+      console.error("Failed to parse calendar events from localStorage", error);
+      // Optionally, clear the corrupted storage
+      // localStorage.removeItem('calendar-events');
+      toast({
+        title: "Error Loading Events",
+        description: "Could not load saved events. They may be corrupted.",
+        variant: "destructive",
+      });
     }
   }, []);
 
