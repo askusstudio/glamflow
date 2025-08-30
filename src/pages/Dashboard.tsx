@@ -335,7 +335,7 @@ const Dashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {/* <Card className="hover:shadow-soft transition-all bg-muted/5">
+          {/* <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Today's Earnings</CardTitle>
               <DollarSign className="h-4 w-4 text-success" />
@@ -346,7 +346,7 @@ const Dashboard = () => {
             </CardContent>
           </Card> */}
 
-          <Card className="hover:shadow-soft transition-all bg-gray-50">
+          <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Appointments Today</CardTitle>
               <Calendar className="h-4 w-4 text-primary" />
@@ -358,9 +358,9 @@ const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
-          
 
-          <Card className="hover:shadow-soft transition-all bg-gray-50">
+
+          <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
               <Target className="h-4 w-4 text-warning" />
@@ -374,7 +374,7 @@ const Dashboard = () => {
           </Card>
 
 
-          {/* <Card className="hover:shadow-soft transition-all bg-muted/5">
+          {/* <Card className="hover:shadow-soft transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Monthly Progress</CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
@@ -384,47 +384,64 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground">of ₹{monthlyGoal.toLocaleString()} goal</p>
             </CardContent>
           </Card> */}
-          
+
         </div>
 
         {/* Today's Schedule */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <Card className="bg-gray-50">
+          {/* The main card container */}
+          <Card> {/* Removed bg-gray-50 for a cleaner white background */}
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
+              <CardTitle className="font-bold text-lg"> {/* Made title bolder */}
                 Today's Appointments
               </CardTitle>
-              <CardDescription>Your upcoming beauty sessions</CardDescription>
+              {/* CardDescription was removed to match the image */}
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3"> {/* Adjusted spacing */}
               {appointments.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
-                  No appointments scheduled for today</p>
+                  No appointments scheduled for today
+                </p>
               ) : (
                 appointments.map((appointment) => (
-                  <div key={appointment.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg gap-3">
-                    <div className="space-y-1 flex-1">
-                      <p className="font-medium">{appointment.client_name}</p>
-                      <p className="text-sm text-muted-foreground">{appointment.service}</p>
+                  // This is the updated appointment item card
+                  <div
+                    key={appointment.id}
+                    className="flex items-center justify-between p-3 bg-muted/40 rounded-lg"
+                  >
+                    {/* Left side: Avatar + Client Info */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-foreground text-primary font-bold shrink-0">
+                        {appointment.client_name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="space-y-0">
+                        <p className="font-semibold text-sm">{appointment.client_name}</p>
+                        <p className="text-xs text-muted-foreground">{appointment.service}</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+                    {/* Right side: Status Badge + Time */}
+                    <div className="flex flex-col items-end">
                       <Badge
-                        variant={appointment.status === "confirmed" ? "default" : "secondary"}
-                        className="cursor-pointer w-full sm:w-auto justify-center"
+                        className={`capitalize border-none text-xs font-semibold
+                  ${appointment.status === 'pending'
+                            ? 'bg-yellow-400/20 text-yellow-600 dark:bg-yellow-400/30 dark:text-yellow-400'
+                            : 'bg-green-400/20 text-green-600 dark:bg-green-400/30 dark:text-green-400'
+                          }`}
+                        // The onClick handler is kept from your original code
                         onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
                       >
                         {appointment.status}
                       </Badge>
-                      <div className="text-sm font-medium flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                      <p className="text-xs text-muted-foreground mt-1">
                         {formatTime(appointment.appointment_time)}
-                      </div>
+                      </p>
                     </div>
                   </div>
                 ))
               )}
 
+              {/* The "Add Appointment" form and button from your original code */}
               {showAddAppointment && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
                   <Input
@@ -460,25 +477,32 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-50">
+
+
+          <Card> {/* Removed bg-gray-50 for a clean white look */}
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+              <CardTitle className="font-bold text-lg"> {/* Bolder title */}
                 Priority Tasks
               </CardTitle>
-              <CardDescription>Your beauty business to-dos</CardDescription>
+              {/* CardDescription was removed to simplify the header */}
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {tasks.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No tasks yet. Add your first task!</p>
+                <p className="text-muted-foreground text-center py-4">
+                  No tasks yet. Add your first task!
+                </p>
               ) : (
                 tasks.map((task) => (
-                  <div key={task.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                  // This is the updated task item
+                  <div
+                    key={task.id}
+                    className="flex items-center gap-4 p-3 bg-muted/40 rounded-lg"
+                  >
                     <button onClick={() => toggleTask(task.id, task.completed)}>
                       {task.completed ? (
-                        <CheckCircle2 className="h-4 w-4 text-success" />
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                       ) : (
-                        <div className="h-4 w-4 border-2 rounded-full"></div>
+                        <div className="h-5 w-5 border-2 border-muted-foreground/50 rounded-full shrink-0"></div>
                       )}
                     </button>
                     <div className="flex-1">
@@ -487,8 +511,13 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <Badge
-                      variant={task.priority === "high" ? "destructive" : task.priority === "medium" ? "default" : "secondary"}
-                      className="text-xs"
+                      className={`capitalize border-none text-xs font-semibold
+                ${task.priority === "high"
+                          ? 'bg-red-400/20 text-red-600 dark:bg-red-400/30 dark:text-red-400'
+                          : task.priority === "medium"
+                            ? 'bg-blue-400/20 text-blue-600 dark:bg-blue-400/30 dark:text-blue-400'
+                            : 'bg-slate-400/20 text-slate-600 dark:bg-slate-400/30 dark:text-slate-400'
+                        }`}
                     >
                       {task.priority}
                     </Badge>
@@ -496,6 +525,7 @@ const Dashboard = () => {
                 ))
               )}
 
+              {/* The "Add Task" form and button from your original code */}
               {showAddTask && (
                 <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
                   <Input

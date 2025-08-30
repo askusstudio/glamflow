@@ -120,11 +120,14 @@ export default {
 				'gradient-secondary': 'var(--gradient-secondary)',
 				'gradient-hero': 'var(--gradient-hero)'
 			},
-			boxShadow: {
+						boxShadow: {
 				'elegant': 'var(--shadow-elegant)',
 				'glow': 'var(--shadow-glow)',
 				'soft': 'var(--shadow-soft)'
-			}
+			},
+      fontFamily: {
+        sans: ["sans-serif"],
+      },
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

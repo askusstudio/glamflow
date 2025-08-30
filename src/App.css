@@ -1,5 +1,5 @@
 :root, :host {
-    --background: oklch(0.98 0.02 240);
+    
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
     --color-yellow-400: oklch(.852 .199 91.936);
@@ -54,12 +54,7 @@
     --text-5xl--line-height: 1;
 }
 
-/* In your global CSS (e.g., index.css or App.css) */
-@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-body {
-  font-family: 'Karla', 'Roboto', 'ui-sans-serif', 'system-ui', sans-serif;
-}
 
 #root {
   max-width: 1280px;

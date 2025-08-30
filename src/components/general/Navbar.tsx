@@ -123,7 +123,7 @@ const Navbar = () => {
               })}
             </nav>
 
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             
             <Button
               variant="ghost"

@@ -6,34 +6,17 @@
 
 @layer base {
   :root {
-     /* Base Colors - Light Theme */
-     --background: 0 0% 100%;
-     --foreground: 220 13% 18%;
- 
-     /* Card & Surface Colors */
-     --card: 0 0% 100%;
-     --card-foreground: 220 13% 18%;
-     /* --- ADDED FOR CUSTOM CARDS --- */
-     --surface-pink: 345 100% 97%; /* Light pink background for appointments card */
-     --surface-yellow: 54 100% 96%; /* Light yellow background for tasks card */
-     /* --- END ADDED --- */
- 
-     /* Interactive Elements */
-     --popover: 0 0% 100%;
-     --popover-foreground: 220 13% 18%;
- 
-     /* Brand Colors - Elegant Beauty Theme */
-     --primary: 336 84% 48%; /* Changed to a more vibrant pink for icons/text */
-     --primary-foreground: 0 0% 100%;
-     --primary-glow: 336 84% 58%;
     /* Base Colors - Light Theme */
-    --background: 0 0% 100%;
-    /* --background: 0 0% 100%; */
-    --foreground: 220 13% 18%;
+    --background: 330 67% 95%;
+    --foreground: 330 67% 30%;
 
     /* Card & Surface Colors */
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card: 330 60% 97%;
+    --card-foreground: 330 67% 30%;
+    /* --- ADDED FOR CUSTOM CARDS --- */
+    --surface-pink: 345 100% 97%; /* Light pink background for appointments card */
+    --surface-yellow: 54 100% 96%; /* Light yellow background for tasks card */
+    /* --- END ADDED --- */
 
     /* Interactive Elements */
     --popover: 0 0% 100%;
@@ -84,19 +67,12 @@
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -112,22 +88,6 @@
     --surface-pink: 345 30% 12%; /* Dark pink background */
     --surface-yellow: 54 30% 12%;  /* Dark yellow background */
     /* --- END ADDED --- */
-
-    /* Interactive Elements */
-    --popover: 220 16% 10%;
-    --popover-foreground: 220 13% 95%;
-
-    /* Brand Colors - Dark Mode */
-    --primary: 336 84% 68%; /* Brighter pink for dark mode */
-    --primary-foreground: 220 16% 8%;
-    --primary-glow: 336 84% 78%;
-    /* Dark Theme Colors */
-    --background: 220 16% 8%;
-    --foreground: 220 13% 95%;
-
-    /* Card & Surface Colors */
-    --card: 220 16% 10%;
-    --card-foreground: 220 13% 95%;
 
     /* Interactive Elements */
     --popover: 220 16% 10%;
@@ -173,6 +133,7 @@
     --shadow-elegant: 0 10px 30px -10px hsl(320 40.62% 44.6% / 0.4); /* Updated to match new dark primary */
     --shadow-glow: 0 0 40px hsl(320 40.62% 54.6% / 0.3); /* Updated glow */
     --shadow-soft: 0 4px 20px hsl(220 16% 8% / 0.5);
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
