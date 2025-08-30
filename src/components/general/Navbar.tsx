@@ -86,17 +86,11 @@ const Navbar = () => {
     }
   };
 
-  const getNavItemClass = (path) => {
-    const isActive = location.pathname === path;
-    return `${isActive ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'} transition-colors`;
-  };
-
   const navItems = [
     { label: "Dashboard", path: "/app" },
     { label: "Tasks", path: "/tasks" },
     { label: "Calendar", path: "/calendar" },
     { label: "Bookings", path: "/bookings" },
-    // { label: "Analytics", path: "/analytics" },
   ];
 
   return (
@@ -105,31 +99,32 @@ const Navbar = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <img src="/logo-1.png" alt="GlamFlow Logo" className="h-24 w-24 object-contain" />
+            {/* <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               GlamFlow
-            </span>
+            </span> */}
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-2">
-            {navItems.map((item) => (
-              <Button
-                key={item.path}
-                variant="ghost"
-                className={getNavItemClass(item.path)}
-                onClick={() => navigate(item.path)}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </nav>
+          {/* Right Side Items */}
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-1 bg-muted p-1 rounded-md">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    variant={isActive ? "primary" : "ghost"}
+                    className="rounded-md h-auto px-4 py-1 text-sm transition-colors duration-300 hover:bg-pink-400 hover:text-primary-foreground"
+                    onClick={() => navigate(item.path)}
+                  >
+                    {item.label}
+                  </Button>
+                );
+              })}
+            </nav>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-2">
             <ThemeToggle />
             
-            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
@@ -183,7 +178,6 @@ const Navbar = () => {
                       <UserCircle className="h-4 w-4" />
                       Profile
                     </button>
-
                     <button
                       onClick={() => handleProfileAction("public-profile")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
@@ -191,7 +185,6 @@ const Navbar = () => {
                       <ExternalLink className="h-4 w-4" />
                       View Public Profile
                     </button>
-
                     <button
                       onClick={() => handleProfileAction("settings")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
@@ -220,19 +213,26 @@ const Navbar = () => {
         {showMobileMenu && (
           <div className="md:hidden border-t bg-card/95 backdrop-blur">
             <nav className="container mx-auto px-4 py-4 space-y-2">
-              {navItems.map((item) => (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  className={`w-full justify-start ${getNavItemClass(item.path)}`}
-                  onClick={() => {
-                    navigate(item.path);
-                    setShowMobileMenu(false);
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    className={`w-full justify-start transition-colors duration-300 ${
+                      isActive 
+                        ? 'bg-primary/10 text-primary hover:bg-pink-400 hover:text-primary-foreground' 
+                        : 'hover:bg-pink-400 hover:text-primary-foreground'
+                    }`}
+                    onClick={() => {
+                      navigate(item.path);
+                      setShowMobileMenu(false);
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                );
+              })}
             </nav>
           </div>
         )}

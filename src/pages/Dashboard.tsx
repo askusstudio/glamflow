@@ -358,6 +358,7 @@ const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
+          
 
           <Card className="hover:shadow-soft transition-all bg-gray-50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -383,6 +384,7 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground">of ₹{monthlyGoal.toLocaleString()} goal</p>
             </CardContent>
           </Card> */}
+          
         </div>
 
         {/* Today's Schedule */}
