@@ -11,8 +11,8 @@
     --foreground: 330 67% 30%;
 
     /* Card & Surface Colors */
-    --card: 330 60% 97%;
-    --card-foreground: 330 67% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
     /* --- ADDED FOR CUSTOM CARDS --- */
     --surface-pink: 345 100% 97%; /* Light pink background for appointments card */
     --surface-yellow: 54 100% 96%; /* Light yellow background for tasks card */

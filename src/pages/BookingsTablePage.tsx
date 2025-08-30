@@ -115,7 +115,7 @@ const BookingsTablePage = () => {
             className="max-w-xs"
           />
         </div>
-        <div className="rounded-lg shadow border bg-background">
+        <div className="rounded-lg shadow border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

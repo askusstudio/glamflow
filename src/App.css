@@ -1,7 +1,6 @@
 :root, :host {
     
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    
     --color-yellow-400: oklch(.852 .199 91.936);
     --color-green-500: oklch(.723 .219 149.579);
     --color-teal-500: oklch(.704 .14 182.503);
