@@ -195,7 +195,7 @@ export default function LandingPage() {
               <div className="w-full h-full bg-gradient-to-br from-pink-50 to-purple-50 rounded-[2.5rem] overflow-hidden relative">
                 <div className="p-6">
                   <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6 }}>
-                    <h2 className="text-xl font-bold text-gray-800 mb-1">Good morning, Sarah!</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-1">Good morning, Divya!</h2>
                     <p className="text-gray-600 text-sm flex items-center gap-2">You have 3 appointments today<div className="w-3 h-3 bg-pink-500 rounded-full"></div></p>
                   </motion.div>
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6 }}>
