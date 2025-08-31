@@ -212,9 +212,9 @@ export default function LandingPage() {
                     <p className="text-gray-600 text-sm flex items-center gap-2">You have 3 appointments today<div className="w-3 h-3 bg-pink-500 rounded-full"></div></p>
                   </motion.div>
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6 }}>
-                    <AppointmentCard name="Emma Wilson" service="Bridal Makeup" time="10:00 AM" color="bg-pink-500" />
-                    <AppointmentCard name="Lisa Chen" service="Photoshoot Look" time="2:00 PM" color="bg-purple-500" />
-                    <AppointmentCard name="Maria Garcia" service="Evening Glam" time="5:30 PM" color="bg-pink-400" />
+                    <AppointmentCard name="Priya" service="Bridal Makeup" time="10:00 AM" color="bg-pink-500" />
+                    <AppointmentCard name="jaya" service="Photoshoot Look" time="2:00 PM" color="bg-purple-500" />
+                    <AppointmentCard name="Ayushi" service="Evening Glam" time="5:30 PM" color="bg-pink-400" />
                   </motion.div>
                 </div>
               </div>
