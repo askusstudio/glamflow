@@ -109,50 +109,63 @@ export default function LandingPage() {
       </motion.div>
 
       {/* Navigation */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 my-2"
-        variants={navVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
-          <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-            <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
-          </motion.div>
-          <div className="hidden md:flex items-center gap-8 text-gray-600">
-            {[
-              { label: 'About', href: '#about' },
-              { label: 'Features', href: '#features' },
-              { label: 'Pricing', href: '#pricing' },
-              { label: 'FAQs', href: '#faq' },
-              { label: 'Contact', href: '#contact' },
-            ].map((item) => (
-              <motion.a
-                key={item.label}
-                href={item.href}
-                className="relative font-medium transition-colors duration-300 hover:text-pink-600"
-                whileHover={{ y: -2 }}
-                onClick={(e) => handleScrollTo(e, item.href)}
-              >
-                {item.label}
-                <motion.div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600" initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ duration: 0.3 }} />
-              </motion.a>
-            ))}
-          </div>
-          <div className="flex items-center gap-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className="hidden md:block bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-700 text-white rounded-full px-6 shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => window.location.href = "/auth"}
-              >
-                Join Us
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
-          </div>
-        </div>
-      </motion.nav>
-      
+{/* Navigation */}
+<motion.nav
+  className="fixed top-0 left-0 right-0 z-50 my-2"
+  variants={navVariants}
+  initial="hidden"
+  animate="visible"
+>
+  <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
+    <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+      <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
+    </motion.div>
+    <div className="hidden md:flex items-center gap-8 text-gray-600">
+      {[
+        { label: 'About', href: '#about' },
+        { label: 'Features', href: '#features' },
+        { label: 'Pricing', href: '#pricing' },
+        { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true },
+        { label: 'Contact', href: '#contact' },
+      ].map((item) => (
+        <motion.a
+          key={item.label}
+          href={item.href}
+          className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+          whileHover={{ y: -2 }}
+          onClick={(e) => {
+            if (!item.external) {
+              handleScrollTo(e, item.href);  // Only for internal links
+            }
+            // For external, do nothing—let the href handle it in the same tab
+          }}
+          rel={item.external ? 'noopener noreferrer' : ''}  // Still good for security
+        >
+          {item.label}
+          <motion.div
+            className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+            initial={{ scaleX: 0 }}
+            whileHover={{ scaleX: 1 }}
+            style={{ originX: 0 }}
+            transition={{ duration: 0.3 }}
+          />
+        </motion.a>
+      ))}
+    </div>
+    <div className="flex items-center gap-4">
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <Button
+          className="hidden md:block bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-700 text-white rounded-full px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+          onClick={() => window.location.href = "/auth"}
+        >
+          Join Us
+        </Button>
+      </motion.div>
+      <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
+    </div>
+  </div>
+</motion.nav>
+
    
       {/* Hero Section */}
       <div className="flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 lg:px-16 pt-24 md:pt-28 lg:pt-32 max-w-7xl mx-auto">
