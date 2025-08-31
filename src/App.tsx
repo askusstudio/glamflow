@@ -19,6 +19,14 @@ import BookingsTablePage from "./pages/BookingsTablePage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsPage from "./pages/TermsPage";
 import LandingPage from "./pages/LandingPage.tsx";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import Pricing from "./pages/Pricing.tsx";
+import BlogPage from "./pages/BlogPage";
+import CareersPage from "./pages/CareersPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
+import SecurityPage from "./pages/SecurityPage";
+import UpdatesPage from "./pages/UpdatesPage";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +72,11 @@ const App = () => {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/termspage" element={<TermsPage />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/contactpage" element={<ContactPage />} />
+                <Route path="/help" element={<HelpCenterPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/public-profile/:userId" element={<PublicProfile />} />

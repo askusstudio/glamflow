@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Calendar, Users, Play, Download, Menu, CreditCard, Mail, Phone, BarChart3, Shield, Clock, Image} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link, useNavigate } from 'react-router-dom';
 
 // GLOBAL ANIMATION VARIANTS
 const itemVariants = {
@@ -109,64 +110,97 @@ export default function LandingPage() {
       </motion.div>
 
       {/* Navigation */}
-{/* Navigation */}
-<motion.nav
-  className="fixed top-0 left-0 right-0 z-50 my-2"
-  variants={navVariants}
-  initial="hidden"
-  animate="visible"
->
-  <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
-    <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-      <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
-    </motion.div>
-    <div className="hidden md:flex items-center gap-8 text-gray-600">
-      {[
-        { label: 'About', href: '#about' },
-        { label: 'Features', href: '#features' },
-        { label: 'Pricing', href: '#pricing' },
-        { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true },
-        { label: 'Contact', href: '#contact' },
-      ].map((item) => (
-        <motion.a
-          key={item.label}
-          href={item.href}
-          className="relative font-medium transition-colors duration-300 hover:text-pink-600"
-          whileHover={{ y: -2 }}
-          onClick={(e) => {
-            if (!item.external) {
-              handleScrollTo(e, item.href);  // Only for internal links
-            }
-            // For external, do nothing—let the href handle it in the same tab
-          }}
-          rel={item.external ? 'noopener noreferrer' : ''}  // Still good for security
-        >
-          {item.label}
-          <motion.div
-            className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
-            initial={{ scaleX: 0 }}
-            whileHover={{ scaleX: 1 }}
-            style={{ originX: 0 }}
-            transition={{ duration: 0.3 }}
-          />
-        </motion.a>
-      ))}
-    </div>
-    <div className="flex items-center gap-4">
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          className="hidden md:block bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-700 text-white rounded-full px-6 shadow-lg hover:shadow-xl transition-all duration-300"
-          onClick={() => window.location.href = "/auth"}
-        >
-          Join Us
-        </Button>
-      </motion.div>
-      <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
-    </div>
-  </div>
-</motion.nav>
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 my-2"
+        variants={navVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
+          <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
+          </motion.div>
+          <div className="hidden md:flex items-center gap-8 text-gray-600">
+            {[
+              { label: 'About', href: '/about', type: 'route' },
+              // { label: 'Features', href: '#features', type: 'anchor' },
+              { label: 'Pricing', href: '/pricing', type: 'route' },
+              { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true, type: 'external' },
+              { label: 'Contact', href: '/contactpage', type: 'route' },
+            ].map((item) => (
+              item.external ? (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+                  whileHover={{ y: -2 }}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {item.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    style={{ originX: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ) : item.type === 'route' ? (
+                <motion.div
+                  key={item.label}
+                  whileHover={{ y: -2 }}
+                  className="relative"
+                >
+                  <Link
+                    to={item.href}
+                    className="font-medium transition-colors duration-300 hover:text-pink-600"
+                    onClick={e => handleNavClick(e, item)}
+                  >
+                    {item.label}
+                    <motion.div
+                      className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                      initial={{ scaleX: 0 }}
+                      whileHover={{ scaleX: 1 }}
+                      style={{ originX: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </Link>
+                </motion.div>
+              ) : (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+                  whileHover={{ y: -2 }}
+                  onClick={e => handleNavClick(e, item)}
+                >
+                  {item.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    style={{ originX: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              )
+            ))}
+          </div>
+          <div className="flex items-center gap-4">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                className="hidden md:block bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-700 text-white rounded-full px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = "/auth"}
+              >
+                Join Us
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
+          </div>
+        </div>
+      </motion.nav>
 
-   
       {/* Hero Section */}
       <div className="flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 lg:px-16 pt-24 md:pt-28 lg:pt-32 max-w-7xl mx-auto">
         <AnimatedSection className="flex-1 lg:pr-12 text-center lg:text-left">
@@ -741,21 +775,31 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Product</h3>
                 <div className="space-y-3">
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Features</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Pricing</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Security</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Updates</a>
+                  <a href="#features" className="block hover:text-pink-500 transition-colors">Features</a>
+                  <a href="#pricing" className="block hover:text-pink-500 transition-colors">Pricing</a>
+                  <a href="/security" className="block hover:text-pink-500 transition-colors">Security</a>
+                  <a href="/updates" className="block hover:text-pink-500 transition-colors">Updates</a>
                 </div>
               </div>
 
-              {/* Column 3: Support Links */}
+              {/* Column 3: Company Links */}
+              {/* <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
+                <div className="space-y-3">
+                  <a href="/about" className="block hover:text-pink-500 transition-colors">About</a>
+                  <a href="/blog" className="block hover:text-pink-500 transition-colors">Blog</a>
+                  <a href="/careers" className="block hover:text-pink-500 transition-colors">Careers</a>
+                </div>
+              </div> */}
+
+              {/* Column 4: Support Links */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
                 <div className="space-y-3">
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Help Center</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Contact Us</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Privacy Policy</a>
-                  <a href="#" className="block hover:text-pink-500 transition-colors">Terms of Service</a>
+                  <a href="/help" className="block hover:text-pink-500 transition-colors">Help Center</a>
+                  <a href="/contactpage" className="block hover:text-pink-500 transition-colors">Contact Us</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Privacy Policy</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Terms of Service</a>
                 </div>
               </div>
 

@@ -3,141 +3,108 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] py-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
-        <h1 className="text-3xl md:text-5xl font-bold text-center mb-12">Terms & Conditions</h1>
-        
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Introduction</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Welcome to GlamFlow. By using our app/website, you agree to these terms.</li>
-            <li>GlamFlow is a SaaS platform for freelancers and small businesses to manage bookings, payments, and clients.</li>
-          </ul>
+        <h1 className="text-3xl md:text-5xl font-bold text-center mb-12">Terms &amp; Conditions</h1>
+        <section className="mb-8">
+          <p className="text-lg text-gray-700 mb-4">
+            Welcome to GlamFlow! By accessing or using our website, mobile app, or services, you agree to the following Terms &amp; Conditions. Please read them carefully before using GlamFlow.
+          </p>
         </section>
-
         <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Eligibility</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>You must be 18+ or legally eligible to enter into binding contracts.</li>
-            <li>Users are responsible for providing accurate information during registration.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Services</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Appointment scheduling, client management, invoicing, analytics, marketing tools, and other features as per your subscription plan.</li>
-            <li>GlamFlow reserves the right to add, remove, or update features at any time.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">User Obligations</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>You agree not to misuse the platform for unlawful purposes.</li>
-            <li>You are responsible for all content uploaded (photos, prices, offers) and must ensure they do not violate copyright or third-party rights.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Payments & Subscription</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Plans are billed monthly/yearly, non-refundable except as required by law.</li>
-            <li>Auto-renewal enabled unless canceled before renewal date.</li>
-            <li>All fees are inclusive/exclusive of GST as applicable in India.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Data & Privacy</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Your data is stored securely and only used to deliver the service.</li>
-            <li>You consent to receiving transactional and promotional communications.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Liability</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>GlamFlow is not responsible for any loss of business, client disputes, or third-party service issues.</li>
-            <li>Platform provided “as is,” with no guarantee of uninterrupted service.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Termination</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>You can delete your account anytime; pending dues must be cleared.</li>
-            <li>GlamFlow may terminate accounts for violation of policies or misuse.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Governing Law</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>These terms are governed by the laws of India. Disputes will be settled in Lucknow jurisdiction.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Refund & Cancellation Policy</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Subscriptions are prepaid; no refunds on partial months.</li>
-            <li>Annual plan refunds only if canceled within 7 days of purchase.</li>
-            <li>Auto-renewal can be disabled anytime in settings.</li>
-            <li>Service disruptions beyond 7 consecutive days due to GlamFlow fault → pro-rata credit adjustment.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Cookie Policy (for website)</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>We use cookies to improve user experience and analyze traffic.</li>
-            <li>Cookies are small files stored on your device; you can disable them via browser.</li>
-            <li>Some features may not work properly if cookies are disabled.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Disclaimer</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>GlamFlow does not guarantee client leads or income; it is a management tool.</li>
-            <li>Any disputes with clients, service quality, or pricing are solely the responsibility of the freelancer.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Intellectual Property Policy</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>All GlamFlow branding, software, and design are owned by GlamFlow.</li>
-            <li>Users retain rights to their uploaded content (images, offers).</li>
-            <li>Unauthorized copying, reverse-engineering, or resale of GlamFlow features is prohibited.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">User-Generated Content Policy</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Content uploaded by users must not violate laws, harm reputation, or include obscene/hate content.</li>
-            <li>GlamFlow may remove any content deemed inappropriate.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Support & Contact Policy</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Support channels: Email, WhatsApp, and Priority (for Pro plans).</li>
-            <li>Average response time: 24–48 hours for basic support, &lt;12 hours for Pro plans.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold">Compliance</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Follows Indian IT Act (2000) and Data Protection norms (DPDP Act 2023).</li>
-            <li>GST-compliant invoices.</li>
-            <li>PCI-DSS-compliant payment processing.</li>
-          </ul>
+          <ol className="list-decimal list-inside space-y-4 text-muted-foreground">
+            <li>
+              <span className="font-semibold text-gray-900">Acceptance of Terms</span>
+              <p className="ml-4 mt-1">
+                By visiting, registering, or using GlamFlow’s services, you agree to comply with these Terms. If you do not agree, please do not use our platform.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Services Provided</span>
+              <p className="ml-4 mt-1">
+                GlamFlow offers business management and automation tools designed for freelancers, coaches, consultants, and creative professionals. Features may include appointment booking, invoicing, client management, analytics, and other business growth tools.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Eligibility</span>
+              <p className="ml-4 mt-1">
+                You must be at least 18 years old to use GlamFlow services. By using our platform, you confirm that all information provided is true, accurate, and complete.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Account Registration</span>
+              <ul className="list-disc list-inside ml-8 mt-1 space-y-1">
+                <li>You are responsible for maintaining the confidentiality of your login credentials.</li>
+                <li>You agree to notify GlamFlow immediately of any unauthorized access to your account.</li>
+                <li>GlamFlow is not liable for losses due to your failure to safeguard login details.</li>
+              </ul>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Subscription &amp; Payments</span>
+              <ul className="list-disc list-inside ml-8 mt-1 space-y-1">
+                <li>GlamFlow services may be offered under different subscription plans.</li>
+                <li>All payments are to be made securely via our integrated payment gateway.</li>
+                <li>Subscriptions are billed either monthly or annually, depending on the plan you choose.</li>
+                <li>Failure to make timely payments may result in suspension or termination of services.</li>
+              </ul>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Cancellation &amp; Refund Policy</span>
+              <ul className="list-disc list-inside ml-8 mt-1 space-y-1">
+                <li>You may cancel your subscription anytime through your account dashboard or by contacting support.</li>
+                <li>Refunds will be processed in accordance with our Refund Policy.</li>
+              </ul>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">User Responsibilities</span>
+              <ul className="list-disc list-inside ml-8 mt-1 space-y-1">
+                <li>You agree not to misuse GlamFlow services (e.g., spamming, hacking, distributing malicious content).</li>
+                <li>You are solely responsible for the content and data you upload to GlamFlow.</li>
+              </ul>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Data Privacy</span>
+              <p className="ml-4 mt-1">
+                Your privacy is important to us. All personal information is handled in accordance with our Privacy Policy.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Intellectual Property</span>
+              <ul className="list-disc list-inside ml-8 mt-1 space-y-1">
+                <li>All content, branding, design, and technology on GlamFlow are owned by us.</li>
+                <li>You may not reproduce, copy, or redistribute any part of the platform without written consent.</li>
+              </ul>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Termination of Services</span>
+              <p className="ml-4 mt-1">
+                GlamFlow reserves the right to suspend or terminate accounts found violating these Terms.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Limitation of Liability</span>
+              <p className="ml-4 mt-1">
+                GlamFlow is not liable for any indirect, incidental, or consequential damages arising from the use of our services.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Modifications</span>
+              <p className="ml-4 mt-1">
+                We may update these Terms &amp; Conditions from time to time. Updated terms will be effective immediately upon posting.
+              </p>
+            </li>
+            <li>
+              <span className="font-semibold text-gray-900">Contact Information</span>
+              <div className="ml-4 mt-1 space-y-1">
+                <div>
+                  <span className="font-medium">📧 Email:</span> <a href="mailto:askusstudio@gmail.com" className="hover:text-pink-600 transition-colors">askusstudio@gmail.com</a>
+                </div>
+                <div>
+                  <span className="font-medium">📞 Phone:</span> <a href="tel:+918009227002" className="hover:text-pink-600 transition-colors">+91-8009227002</a>
+                </div>
+              </div>
+            </li>
+          </ol>
         </section>
       </div>
     </div>
-  )
+  );
 }
