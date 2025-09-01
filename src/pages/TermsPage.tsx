@@ -1,6 +1,115 @@
 // TermsPage.tsx
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { Menu, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+const AnimatedSection = ({ children, className = "", id = "" }) => (
+  <motion.section
+    id={id}
+    className={className}
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ staggerChildren: 0.15 }}
+  >
+    {children}
+  </motion.section>
+);
 export default function TermsPage() {
   return (
+    <>
+    {/* Navigation */}
+    <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 my-2"
+        // variants={navVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
+          <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
+          </motion.div>
+          <div className="hidden md:flex items-center gap-8 text-gray-600">
+            {[
+              { label: 'About', href: '/about', type: 'route' },
+              // { label: 'Features', href: '#features', type: 'anchor' },
+              { label: 'Pricing', href: '/pricing', type: 'route' },
+              { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true, type: 'external' },
+              { label: 'Contact', href: '/contactpage', type: 'route' },
+            ].map((item) => (
+              item.external ? (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+                  whileHover={{ y: -2 }}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {item.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    style={{ originX: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ) : item.type === 'route' ? (
+                <motion.div
+                  key={item.label}
+                  whileHover={{ y: -2 }}
+                  className="relative"
+                >
+                  <Link
+                    to={item.href}
+                    className="font-medium transition-colors duration-300 hover:text-pink-600"
+                    // onClick={e => handleNavClick(e, item)}
+                  >
+                    {item.label}
+                    <motion.div
+                      className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                      initial={{ scaleX: 0 }}
+                      whileHover={{ scaleX: 1 }}
+                      style={{ originX: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </Link>
+                </motion.div>
+              ) : (
+                <motion.a
+                  key={item.label}
+                  href={item.href}
+                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+                  whileHover={{ y: -2 }}
+                  // onClick={e => handleNavClick(e, item)}
+                >
+                  {item.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    style={{ originX: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              )
+            ))}
+          </div>
+          <div className="flex items-center gap-4">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                className="hidden md:block bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-700 text-white rounded-full px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = "/auth"}
+              >
+                Join Us
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
+          </div>
+        </div>
+      </motion.nav>
     <div className="min-h-screen w-full bg-[#f8fafc] py-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
         <h1 className="text-3xl md:text-5xl font-bold text-center mb-12">Terms &amp; Conditions</h1>
@@ -106,5 +215,82 @@ export default function TermsPage() {
         </section>
       </div>
     </div>
+    {/* Footer Section */}
+    <footer className="bg-gray-900 text-gray-300">
+        <div className="h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+        <AnimatedSection className="py-12 px-4 md:px-8 lg:px-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+              {/* Column 1: Logo and Info */}
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xl font-bold text-white">GlamFlow</span>
+                </div>
+                <p className="mt-4 text-gray-400 max-w-md">
+                  Empowering beauty freelancers with the tools they need to build successful, sustainable businesses.
+                </p>
+                <div className="flex gap-4 mt-6">
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2: Product Links */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Product</h3>
+                <div className="space-y-3">
+                  <a href="#features" className="block hover:text-pink-500 transition-colors">Features</a>
+                  <a href="#pricing" className="block hover:text-pink-500 transition-colors">Pricing</a>
+                  <a href="/security" className="block hover:text-pink-500 transition-colors">Security</a>
+                  <a href="/updates" className="block hover:text-pink-500 transition-colors">Updates</a>
+                </div>
+              </div>
+
+              {/* Column 3: Company Links */}
+              {/* <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
+                <div className="space-y-3">
+                  <a href="/about" className="block hover:text-pink-500 transition-colors">About</a>
+                  <a href="/blog" className="block hover:text-pink-500 transition-colors">Blog</a>
+                  <a href="/careers" className="block hover:text-pink-500 transition-colors">Careers</a>
+                </div>
+              </div> */}
+
+              {/* Column 4: Support Links */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
+                <div className="space-y-3">
+                  <a href="/help" className="block hover:text-pink-500 transition-colors">Help Center</a>
+                  <a href="/contactpage" className="block hover:text-pink-500 transition-colors">Contact Us</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Privacy Policy</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Terms of Service</a>
+                </div>
+              </div>
+
+            </div>
+
+            <hr className="my-8 border-gray-800" />
+
+            <p className="text-center text-gray-500">
+              © 2025 GlamFlow. All rights reserved. Built for beauty professionals. Powered by Aksus Studios.
+            </p>
+          </div>
+        </AnimatedSection>
+      </footer>
+    </>
   );
 }

@@ -1,10 +1,21 @@
-  import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, Clock, MapPin, Instagram, Linkedin, Facebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Star } from 'lucide-react';
 
-
+const AnimatedSection = ({ children, className = "", id = "" }) => (
+  <motion.section
+    id={id}
+    className={className}
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ staggerChildren: 0.15 }}
+  >
+    {children}
+  </motion.section>
+);
 const ContactPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
@@ -215,6 +226,82 @@ const ContactPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Footer Section */}
+      <footer className="bg-gray-900 text-gray-300">
+        <div className="h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+        <AnimatedSection className="py-12 px-4 md:px-8 lg:px-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+              {/* Column 1: Logo and Info */}
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xl font-bold text-white">GlamFlow</span>
+                </div>
+                <p className="mt-4 text-gray-400 max-w-md">
+                  Empowering beauty freelancers with the tools they need to build successful, sustainable businesses.
+                </p>
+                <div className="flex gap-4 mt-6">
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-700 hover:border-pink-500 hover:text-pink-500 transition-colors">
+                    <Star className="w-5 h-5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2: Product Links */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Product</h3>
+                <div className="space-y-3">
+                  <a href="#features" className="block hover:text-pink-500 transition-colors">Features</a>
+                  <a href="#pricing" className="block hover:text-pink-500 transition-colors">Pricing</a>
+                  <a href="/security" className="block hover:text-pink-500 transition-colors">Security</a>
+                  <a href="/updates" className="block hover:text-pink-500 transition-colors">Updates</a>
+                </div>
+              </div>
+
+              {/* Column 3: Company Links */}
+              {/* <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
+                <div className="space-y-3">
+                  <a href="/about" className="block hover:text-pink-500 transition-colors">About</a>
+                  <a href="/blog" className="block hover:text-pink-500 transition-colors">Blog</a>
+                  <a href="/careers" className="block hover:text-pink-500 transition-colors">Careers</a>
+                </div>
+              </div> */}
+
+              {/* Column 4: Support Links */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
+                <div className="space-y-3">
+                  <a href="/help" className="block hover:text-pink-500 transition-colors">Help Center</a>
+                  <a href="/contactpage" className="block hover:text-pink-500 transition-colors">Contact Us</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Privacy Policy</a>
+                  <a href="/termspage" className="block hover:text-pink-500 transition-colors">Terms of Service</a>
+                </div>
+              </div>
+
+            </div>
+
+            <hr className="my-8 border-gray-800" />
+
+            <p className="text-center text-gray-500">
+              © 2025 GlamFlow. All rights reserved. Built for beauty professionals. Powered by Aksus Studios.
+            </p>
+          </div>
+        </AnimatedSection>
+      </footer>
     </div>
   );
 };
