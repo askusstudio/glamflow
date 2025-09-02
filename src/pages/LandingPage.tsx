@@ -176,10 +176,10 @@ export default function LandingPage() {
         >
           {[
             { label: 'About', href: '/about' },
-            { label: 'Features', href: '#features' },
-            { label: 'Pricing', href: '#pricing' },
+            // { label: 'Features', href: '#features' },
+            { label: 'Pricing', href: '/pricing' },
             { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true },
-            { label: 'Contact', href: '#contact' },
+            { label: 'Contact', href: '/contactpage' },
           ].map((item) => (
             <motion.a
               key={item.label}
