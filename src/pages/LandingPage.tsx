@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Calendar, Users, Play, Download, Menu, CreditCard, Mail, Phone, BarChart3, Shield, Clock, Image} from 'lucide-react';
+import { Star, Calendar, Users, X, Download, Menu, CreditCard, Mail, Phone, BarChart3, Shield, Clock, Image} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -67,6 +67,7 @@ const AppointmentCard = ({ name, service, time, color }) => (
 
 // MAIN LANDING PAGE COMPONENT
 export default function LandingPage() {
+
   const phoneVariants = {
     hidden: { x: 100, opacity: 0, scale: 0.95 },
     visible: {
@@ -94,6 +95,7 @@ export default function LandingPage() {
     }
   };
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     // FIX: Removed the `overflow-hidden` class from this div to enable scrolling
     <div className="min-h-screen relative" style={{ background: 'oklch(.969 .015 12.422)' }}>
@@ -109,82 +111,38 @@ export default function LandingPage() {
         <FloatingIcon className="bottom-32 left-20" delay={2}><div className="w-10 h-10 rounded-full opacity-25" style={{ background: 'oklch(.91 .117 11.638)' }}></div></FloatingIcon>
       </motion.div>
 
-      {/* Navigation */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 my-2"
-        variants={navVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
+      {/* <div className="min-h-screen bg-white"> */}
+      {/* Responsive Navigation */}
+      <motion.nav className="fixed top-0 left-0 right-0 z-50 my-2">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
           <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
             <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
           </motion.div>
+          {/* Desktop Nav Menu */}
           <div className="hidden md:flex items-center gap-8 text-gray-600">
             {[
-              { label: 'About', href: '/about', type: 'route' },
-              // { label: 'Features', href: '#features', type: 'anchor' },
-              { label: 'Pricing', href: '/pricing', type: 'route' },
-              { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true, type: 'external' },
-              { label: 'Contact', href: '/contactpage', type: 'route' },
+              { label: 'About', href: '/about' },
+              // { label: 'Features', href: '#features' },
+              { label: 'Pricing', href: '/pricing' },
+              { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true },
+              { label: 'Contact', href: '/contactpage' },
             ].map((item) => (
-              item.external ? (
-                <motion.a
-                  key={item.label}
-                  href={item.href}
-                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
-                  whileHover={{ y: -2 }}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {item.label}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    style={{ originX: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.a>
-              ) : item.type === 'route' ? (
+              <motion.a
+                key={item.label}
+                href={item.href}
+                className="relative font-medium transition-colors duration-300 hover:text-pink-600"
+                whileHover={{ y: -2 }}
+                rel={item.external ? 'noopener noreferrer' : ''}
+              >
+                {item.label}
                 <motion.div
-                  key={item.label}
-                  whileHover={{ y: -2 }}
-                  className="relative"
-                >
-                  <Link
-                    to={item.href}
-                    className="font-medium transition-colors duration-300 hover:text-pink-600"
-                    onClick={e => handleNavClick(e, item)}
-                  >
-                    {item.label}
-                    <motion.div
-                      className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
-                      initial={{ scaleX: 0 }}
-                      whileHover={{ scaleX: 1 }}
-                      style={{ originX: 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </Link>
-                </motion.div>
-              ) : (
-                <motion.a
-                  key={item.label}
-                  href={item.href}
-                  className="relative font-medium transition-colors duration-300 hover:text-pink-600"
-                  whileHover={{ y: -2 }}
-                  onClick={e => handleNavClick(e, item)}
-                >
-                  {item.label}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    style={{ originX: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.a>
-              )
+                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-600"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  style={{ originX: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
             ))}
           </div>
           <div className="flex items-center gap-4">
@@ -196,9 +154,46 @@ export default function LandingPage() {
                 Join Us
               </Button>
             </motion.div>
-            <motion.div whileHover={{ rotate: 90 }}><Menu className="md:hidden w-6 h-6 text-gray-600 cursor-pointer" /></motion.div>
+            <motion.div
+              className="md:hidden"
+              whileHover={{ rotate: 90 }}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6 cursor-pointer" /> : <Menu className="w-6 h-6 cursor-pointer" />}
+            </motion.div>
           </div>
         </div>
+
+        {/* Mobile Menu (Animated dropdown) */}
+        <motion.div
+          initial={{ opacity: 0, y: -20, display: 'none' }}
+          animate={{
+            opacity: mobileMenuOpen ? 1 : 0,
+            y: mobileMenuOpen ? 0 : -20,
+            display: mobileMenuOpen ? 'block' : 'none',
+          }}
+          className="absolute top-14 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-white/95 rounded-b-2xl shadow-lg shadow-pink-100/40"
+        >
+          {[
+            { label: 'About', href: '/about' },
+            { label: 'Features', href: '#features' },
+            { label: 'Pricing', href: '#pricing' },
+            { label: 'Talk to Manno', href: 'https://kaya-eight.vercel.app/', external: true },
+            { label: 'Contact', href: '#contact' },
+          ].map((item) => (
+            <motion.a
+              key={item.label}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 px-4 font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-lg transition-colors"
+              whileHover={{ x: 5 }}
+              whileTap={{ opacity: 0.7 }}
+              rel={item.external ? 'noopener noreferrer' : ''}
+            >
+              {item.label}
+            </motion.a>
+          ))}
+        </motion.div>
       </motion.nav>
 
       {/* Hero Section */}
