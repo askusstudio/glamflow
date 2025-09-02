@@ -231,27 +231,42 @@ export default function LandingPage() {
         </AnimatedSection>
 
         <motion.div className="flex-1 flex justify-center lg:justify-end mt-12 lg:mt-0 relative" style={{ willChange: 'transform, opacity' }} variants={phoneVariants} initial="hidden" animate="visible">
-          <div className="relative">
-            <FloatingIcon className="-top-8 -left-8" delay={0.5}><div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"><Calendar className="w-6 h-6 text-white" /></div></FloatingIcon>
-            <FloatingIcon className="top-20 -right-12" delay={1.5}><div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center shadow-lg"><Users className="w-5 h-5 text-white" /></div></FloatingIcon>
-            <FloatingIcon className="-bottom-4 -left-12" delay={2.5}><div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg"><Star className="w-7 h-7 text-white" /></div></FloatingIcon>
-            <motion.div className="relative w-80 h-[600px] bg-black rounded-[3rem] p-2 shadow-2xl">
-              <div className="w-full h-full bg-gradient-to-br from-pink-50 to-purple-50 rounded-[2.5rem] overflow-hidden relative">
-                <div className="p-6">
-                  <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6 }}>
-                    <h2 className="text-xl font-bold text-gray-800 mb-1">Good morning, Divya!</h2>
-                    <p className="text-gray-600 text-sm flex items-center gap-2">You have 3 appointments today<div className="w-3 h-3 bg-pink-500 rounded-full"></div></p>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6 }}>
-                    <AppointmentCard name="Priya" service="Bridal Makeup" time="10:00 AM" color="bg-pink-500" />
-                    <AppointmentCard name="jaya" service="Photoshoot Look" time="2:00 PM" color="bg-purple-500" />
-                    <AppointmentCard name="Ayushi" service="Evening Glam" time="5:30 PM" color="bg-pink-400" />
-                  </motion.div>
-                </div>
+        <div className="relative">
+          <FloatingIcon className="-top-8 -left-8" delay={0.5}><div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"><Calendar className="w-6 h-6 text-white" /></div></FloatingIcon>
+          <FloatingIcon className="top-20 -right-12" delay={1.5}><div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center shadow-lg"><Users className="w-5 h-5 text-white" /></div></FloatingIcon>
+          <FloatingIcon className="-bottom-4 -left-12" delay={2.5}><div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg"><Star className="w-7 h-7 text-white" /></div></FloatingIcon>
+          <motion.div className="relative w-80 h-[600px] bg-black rounded-[3rem] p-2 shadow-2xl">
+            <div className="w-full h-full bg-gradient-to-br from-pink-50 to-purple-50 rounded-[2.5rem] overflow-hidden relative">
+              <div className="p-6">
+                <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6 }}>
+                  <h2 className="text-xl font-bold text-gray-800 mb-1">Good morning, Divya!</h2>
+                  <p className="text-gray-600 text-sm flex items-center gap-2">You have 3 appointments today<div className="w-3 h-3 bg-pink-500 rounded-full"></div></p>
+                </motion.div>
+
+                {/* --- Added Section Starts Here --- */}
+                <motion.div className="flex gap-4 mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: 0.6 }}>
+                  <div className="flex-1 bg-white p-4 rounded-xl shadow-md">
+                    <p className="text-2xl font-bold text-gray-800">₹22,450</p>
+                    <p className="text-gray-500 text-sm">This Month</p>
+                  </div>
+                  <div className="flex-1 bg-white p-4 rounded-xl shadow-md">
+                    <p className="text-2xl font-bold text-gray-800">28</p>
+                    <p className="text-gray-500 text-sm">Appointments</p>
+                  </div>
+                </motion.div>
+                <motion.h3 className="text-md font-semibold text-gray-700 mb-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.35, duration: 0.6 }}>Today's Schedule</motion.h3>
+                {/* --- Added Section Ends Here --- */}
+                
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6 }}>
+                  <AppointmentCard name="Priya" service="Bridal Makeup" time="10:00 AM" color="bg-pink-500" />
+                  <AppointmentCard name="jaya" service="Photoshoot Look" time="2:00 PM" color="bg-purple-500" />
+                  <AppointmentCard name="Ayushi" service="Evening Glam" time="5:30 PM" color="bg-pink-400" />
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
-        </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
       </div>
       {/* About Section (Why GlamFlow?) */}
       <AnimatedSection className="py-20 px-4 bg-white" id="about">

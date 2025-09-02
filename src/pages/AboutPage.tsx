@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const AnimatedSection = ({ children, className = "", id = "" }) => (
@@ -25,7 +26,9 @@ export default function AboutPage() {
       <motion.nav className="fixed top-0 left-0 right-0 z-50 my-2">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
           <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-            <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
+          <Link to="/" className="flex items-center gap-2">
+        <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
+      </Link>
           </motion.div>
           {/* Desktop Nav Menu */}
           <div className="hidden md:flex items-center gap-8 text-gray-600">
