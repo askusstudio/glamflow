@@ -69,6 +69,7 @@ export function Footer() {
                 <a href="/contactpage" className="block hover:text-pink-500 transition-colors">Contact Us</a>
                 <a href="/privacypolicy" className="block hover:text-pink-500 transition-colors">Privacy Policy</a>
                 <a href="/termspage" className="block hover:text-pink-500 transition-colors">Terms of Service</a>
+                <a href="/refundpage" className="block hover:text-pink-500 transition-colors">Refund & cancellation</a>
               </div>
             </motion.div>
           </div>
