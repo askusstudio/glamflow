@@ -28,6 +28,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Pricing from "./pages/Pricing.tsx";
 import HelpCenterPage from "./pages/HelpCenterPage";
+import Refundpage from "./pages/Refundpage.tsx";
 // ... other page imports if any
 
 const queryClient = new QueryClient();
@@ -79,6 +80,7 @@ const App = () => {
                   <Route path="/privacypolicy" element={<PrivacyPolicy />} />
                   <Route path="/termspage" element={<TermsPage />} />
                   <Route path="/help" element={<HelpCenterPage />} />
+                  <Route path="/refundpage" element={<Refundpage />} />
                   {/* Add other public-facing website pages here */}
                 </Route>
 
