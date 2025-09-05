@@ -180,7 +180,6 @@ export function Auth() {
     }
   };
 
-<<<<<<< HEAD
   // Google OAuth → redirect to /app
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -197,29 +196,6 @@ export function Auth() {
     }
   };
   
-=======
-  const handleGoogleAuth = async () => {
-    setGoogleLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/app`
-        }
-      });
-
-      if (error) throw error;
-      
-    } catch (error: any) {
-      toast({
-        title: "Authentication Error",
-        description: error.message || "Failed to authenticate with Google",
-        variant: "destructive",
-      });
-      setGoogleLoading(false);
-    }
-  };
->>>>>>> ca6c18faf647662692a69d007e974878480c9acf
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
@@ -261,10 +237,6 @@ export function Auth() {
             <Button onClick={handleAuth} disabled={loading} className="w-full">
               {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
             </Button>
-<<<<<<< HEAD
-
-            {/* Toggle between Login/Signup */}
-=======
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -286,7 +258,6 @@ export function Auth() {
               {googleLoading ? "Loading..." : "Continue with Google"}
             </Button>
             
->>>>>>> ca6c18faf647662692a69d007e974878480c9acf
             <Button
               variant="outline"
               className="w-full"
