@@ -22,31 +22,31 @@ export function Auth() {
   // Check URL parameters for pre-filled email and mode
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const emailParam = urlParams.get('email');
-    const modeParam = urlParams.get('mode');
-    
+    const emailParam = urlParams.get("email");
+    const modeParam = urlParams.get("mode");
+
     if (emailParam) {
       setEmail(decodeURIComponent(emailParam));
     }
-    if (modeParam === 'login') {
+    if (modeParam === "login") {
       setIsLogin(true);
-    } else if (modeParam === 'signup') {
+    } else if (modeParam === "signup") {
       setIsLogin(false);
     }
   }, []);
 
   const checkUserExists = async (email: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      await supabase.auth.signInWithPassword({
         email,
-        password: 'dummy_password' // This will fail but tell us if user exists
+        password: "dummy_password",
       });
-      return false; // If no error, user doesn't exist (shouldn't happen with dummy password)
+      return false;
     } catch (error: any) {
-      if (error.message.includes('Invalid login credentials')) {
-        return true; // User exists but wrong password
+      if (error.message.includes("Invalid login credentials")) {
+        return true;
       }
-      return false; // User doesn't exist
+      return false;
     }
   };
 
@@ -58,76 +58,75 @@ export function Auth() {
           email,
           password,
         });
-        
+
         if (error) throw error;
-        
-        // Store credentials securely for persistence
+
         if (data.session) {
-          localStorage.setItem('supabase-session', JSON.stringify(data.session));
-          localStorage.setItem('supabase-user', JSON.stringify(data.user));
+          localStorage.setItem("supabase-session", JSON.stringify(data.session));
+          localStorage.setItem("supabase-user", JSON.stringify(data.user));
         }
-        
+
         toast({
           title: "Welcome back!",
           description: "You've been logged in successfully.",
         });
-        
-        // Use navigate instead of window.location for better UX
+
         setTimeout(() => {
           window.location.href = "/app";
         }, 1000);
       } else {
-        // Check if user already exists before signup
         const userExists = await checkUserExists(email);
-        
+
         if (userExists) {
           toast({
             title: "User already exists",
-            description: "An account with this email already exists. Please login instead.",
+            description:
+              "An account with this email already exists. Please login instead.",
             variant: "destructive",
           });
-          setIsLogin(true); // Switch to login mode
+          setIsLogin(true);
           return;
         }
-        
-        const redirectUrl = `${window.location.origin}/`;
-        
+
+        const redirectUrl = `${window.location.origin}/app`;
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: redirectUrl
-          }
+            emailRedirectTo: redirectUrl,
+          },
         });
-        
+
         if (error) {
-          if (error.message.includes('User already registered')) {
+          if (error.message.includes("User already registered")) {
             toast({
               title: "User already exists",
-              description: "An account with this email already exists. Please login instead.",
+              description:
+                "An account with this email already exists. Please login instead.",
               variant: "destructive",
             });
-            setIsLogin(true); // Switch to login mode
+            setIsLogin(true);
             return;
           }
           throw error;
         }
-        
+
         if (data.user && !data.session) {
           toast({
             title: "Check your email!",
-            description: "We've sent you a confirmation link to complete your registration.",
+            description:
+              "We've sent you a confirmation link to complete your registration.",
           });
         } else if (data.session) {
-          // Auto-login after signup
-          localStorage.setItem('supabase-session', JSON.stringify(data.session));
-          localStorage.setItem('supabase-user', JSON.stringify(data.user));
-          
+          localStorage.setItem("supabase-session", JSON.stringify(data.session));
+          localStorage.setItem("supabase-user", JSON.stringify(data.user));
+
           toast({
             title: "Account created!",
             description: "Welcome to GlamFlow!",
           });
-          
+
           setTimeout(() => {
             window.location.href = "/app";
           }, 1000);
@@ -135,17 +134,18 @@ export function Auth() {
       }
     } catch (error: any) {
       let errorMessage = error.message;
-      
-      // Handle specific auth errors
-      if (error.message.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password. Please check your credentials.';
-      } else if (error.message.includes('User already registered')) {
-        errorMessage = 'An account with this email already exists. Please sign in instead.';
-        setIsLogin(true); // Switch to login mode
-      } else if (error.message.includes('Password should be')) {
-        errorMessage = 'Password must be at least 6 characters long.';
+
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials.";
+      } else if (error.message.includes("User already registered")) {
+        errorMessage =
+          "An account with this email already exists. Please sign in instead.";
+        setIsLogin(true);
+      } else if (error.message.includes("Password should be")) {
+        errorMessage = "Password must be at least 6 characters long.";
       }
-      
+
       toast({
         title: "Authentication Error",
         description: errorMessage,
@@ -155,6 +155,23 @@ export function Auth() {
       setLoading(false);
     }
   };
+
+  // Google OAuth → redirect to /app
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  
+    if (error) {
+      toast({
+        title: "Google Login Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
@@ -182,9 +199,7 @@ export function Auth() {
               />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -193,9 +208,13 @@ export function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+
+            {/* Normal Auth Button */}
             <Button onClick={handleAuth} disabled={loading} className="w-full">
               {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
             </Button>
+
+            {/* Toggle between Login/Signup */}
             <Button
               variant="outline"
               className="w-full"
@@ -204,6 +223,15 @@ export function Auth() {
               {isLogin
                 ? "Don't have an account? Sign Up"
                 : "Already have an account? Login"}
+            </Button>
+
+            {/* Google Auth Button */}
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
+            >
+              Continue with Google
             </Button>
           </div>
         </CardContent>
