@@ -11,13 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Check URL parameters for pre-filled email and mode
   useEffect(() => {
@@ -34,6 +37,27 @@ export function Auth() {
       setIsLogin(false);
     }
   }, []);
+
+  // Listen for auth state changes to handle Google OAuth redirect
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          toast({
+            title: "Welcome!",
+            description: "You've been logged in successfully.",
+          });
+          
+          // Redirect to app after successful authentication
+          setTimeout(() => {
+            navigate("/app");
+          }, 1000);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [navigate, toast]);
 
   const checkUserExists = async (email: string) => {
     try {
@@ -156,6 +180,28 @@ export function Auth() {
     }
   };
 
+  const handleGoogleAuth = async () => {
+    setGoogleLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/app`
+        }
+      });
+
+      if (error) throw error;
+      
+    } catch (error: any) {
+      toast({
+        title: "Authentication Error",
+        description: error.message || "Failed to authenticate with Google",
+        variant: "destructive",
+      });
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="mx-auto max-w-sm">
@@ -196,6 +242,27 @@ export function Auth() {
             <Button onClick={handleAuth} disabled={loading} className="w-full">
               {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
             </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              onClick={handleGoogleAuth} 
+              disabled={googleLoading}
+              className="w-full"
+            >
+              {googleLoading ? "Loading..." : "Continue with Google"}
+            </Button>
+            
             <Button
               variant="outline"
               className="w-full"
