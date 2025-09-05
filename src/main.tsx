@@ -3,7 +3,7 @@ import App from './App.tsx';
 import './index.css';
 
 // Register service worker for PWA features (only in production)
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(registration => console.log('Service Worker registered with scope:', registration.scope))

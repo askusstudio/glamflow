@@ -10,7 +10,7 @@ const itemVariants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: "spring", stiffness: 100, damping: 15 }
+    transition: { type: "spring" as const, stiffness: 100, damping: 15 }
   }
 };
 
@@ -74,7 +74,7 @@ export default function LandingPage() {
       x: 0,
       opacity: 1,
       scale: 1,
-      transition: { type: "spring", damping: 25, stiffness: 80, delay: 0.4 }
+      transition: { type: "spring" as const, damping: 25, stiffness: 80, delay: 0.4 }
     }
   };
 
