@@ -113,7 +113,7 @@ const Navbar = () => {
                 return (
                   <Button
                     key={item.path}
-                    variant={isActive ? "primary" : "ghost"}
+                    variant={isActive ? "default" : "ghost"}
                     className="rounded-md h-auto px-4 py-1 text-sm transition-colors duration-300 hover:bg-pink-400 hover:text-primary-foreground"
                     onClick={() => navigate(item.path)}
                   >
