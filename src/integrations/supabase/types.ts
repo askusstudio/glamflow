@@ -158,6 +158,7 @@ export type Database = {
           price_range: string | null
           services: string | null
           social_accounts: string | null
+          updated_at: string | null
         }
         Insert: {
           available_days?: string[] | null
@@ -171,6 +172,7 @@ export type Database = {
           price_range?: string | null
           services?: string | null
           social_accounts?: string | null
+          updated_at?: string | null
         }
         Update: {
           available_days?: string[] | null
@@ -184,11 +186,19 @@ export type Database = {
           price_range?: string | null
           services?: string | null
           social_accounts?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
     }
     Functions: {
+      get_contact_for_booking: {
+        Args: { provider_id: string }
+        Returns: {
+          email: string
+          phone: string
+        }[]
+      }
       get_profile_for_appointment: {
         Args: { profile_id: string }
         Returns: {
@@ -209,6 +219,22 @@ export type Database = {
       }
       get_public_profile_data: {
         Args: Record<PropertyKey, never>
+        Returns: {
+          available_days: string[]
+          avatar_url: string
+          bio: string
+          category: string
+          city: string
+          full_name: string
+          id: string
+          portfolio_images: string[]
+          price_range: string
+          services: string
+          social_accounts: string
+        }[]
+      }
+      get_safe_profile: {
+        Args: { profile_id: string }
         Returns: {
           available_days: string[]
           avatar_url: string
