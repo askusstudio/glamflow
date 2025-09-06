@@ -208,15 +208,29 @@ export default function CalendarPage() {
                 <CalendarIcon className="h-8 w-8 text-primary" />
                 Calendar
               </h1>
-              <p className="text-muted-foreground">Manage your schedule and events</p>
+              <p className="text-muted-foreground">Click on dates to schedule events</p>
             </div>
-            <Button 
+            {/* <Button 
               onClick={() => handleDateClick(new Date())}
               className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Event
-            </Button>
+            </Button> */}
+            {/* Event Types Legend */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-3">Event Types</h3>
+              <div className="flex flex-wrap gap-3">
+                {eventTypes.map(type => (
+                  <div key={type.value} className="flex items-center gap-2">
+                    <div className={cn("w-4 h-4 rounded", type.color)}></div>
+                    <span className="text-sm">{type.label}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
           </div>
 
           {/* Calendar Navigation */}
@@ -312,20 +326,7 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
 
-          {/* Event Types Legend */}
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-semibold mb-3">Event Types</h3>
-              <div className="flex flex-wrap gap-3">
-                {eventTypes.map(type => (
-                  <div key={type.value} className="flex items-center gap-2">
-                    <div className={cn("w-4 h-4 rounded", type.color)}></div>
-                    <span className="text-sm">{type.label}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          
         </div>
 
         {/* Event Dialog */}

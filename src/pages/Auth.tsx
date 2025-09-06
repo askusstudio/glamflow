@@ -182,20 +182,24 @@ export function Auth() {
 
   // Google OAuth → redirect to /app
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  
-    if (error) {
+    setGoogleLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+    
+      if (error) throw error;
+    } catch (error: any) {
       toast({
         title: "Google Login Error",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setGoogleLoading(false);
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
@@ -249,9 +253,10 @@ export function Auth() {
               </div>
             </div>
             
+            {/* Google Auth Button */}
             <Button 
               variant="outline" 
-              onClick={handleGoogleAuth} 
+              onClick={handleGoogleLogin} 
               disabled={googleLoading}
               className="w-full"
             >
@@ -266,15 +271,6 @@ export function Auth() {
               {isLogin
                 ? "Don't have an account? Sign Up"
                 : "Already have an account? Login"}
-            </Button>
-
-            {/* Google Auth Button */}
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleLogin}
-            >
-              Continue with Google
             </Button>
           </div>
         </CardContent>
