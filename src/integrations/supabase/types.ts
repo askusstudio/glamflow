@@ -199,40 +199,6 @@ export type Database = {
           phone: string
         }[]
       }
-      get_profile_for_appointment: {
-        Args: { profile_id: string }
-        Returns: {
-          available_days: string[]
-          avatar_url: string
-          bio: string
-          category: string
-          city: string
-          email: string
-          full_name: string
-          id: string
-          phone: string
-          portfolio_images: string[]
-          price_range: string
-          services: string
-          social_accounts: string
-        }[]
-      }
-      get_public_profile_data: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          available_days: string[]
-          avatar_url: string
-          bio: string
-          category: string
-          city: string
-          full_name: string
-          id: string
-          portfolio_images: string[]
-          price_range: string
-          services: string
-          social_accounts: string
-        }[]
-      }
       get_safe_profile: {
         Args: { profile_id: string }
         Returns: {

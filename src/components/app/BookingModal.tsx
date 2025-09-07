@@ -76,10 +76,15 @@ const BookingModal = ({ isOpen, onClose, profile }: BookingModalProps) => {
         .insert({
           user_id: profile.id,
           client_name: clientName,
+          client_email: clientEmail,
+          client_phone: clientPhone,
+          location: location || null,
+          message: message || null,
+          appointment_date: selectedDate.toISOString().split('T')[0],
           appointment_time: selectedDate.toISOString(),
           service: profile.services || 'General',
           status: 'pending'
-        } as any);
+        });
 
       if (error) throw error;
       onClose();

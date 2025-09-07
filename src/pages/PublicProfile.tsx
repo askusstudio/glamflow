@@ -35,8 +35,9 @@ const PublicProfile = () => {
       if (!userId) return;
       
       try {
+        // Use the secure public_profiles view instead of direct profiles access
         const { data, error } = await supabase
-          .from('profiles')
+          .from('public_profiles')
           .select('*')
           .eq('id', userId)
           .single();
@@ -44,7 +45,8 @@ const PublicProfile = () => {
         if (error) throw error;
         setProfile({
           ...data,
-          social_accounts: (data as any).social_accounts || null
+          social_accounts: (data as any).social_accounts || null,
+          email: null // Email is not exposed in public_profiles view for security
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -121,13 +123,11 @@ const PublicProfile = () => {
                 </p>
               )}
 
-              {/* Contact Button - Now opens modal */}
-              {profile.email && (
-                <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Book Me
-                </Button>
-              )}
+              {/* Contact Button - Always available for booking */}
+              <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
+                <Mail className="w-4 h-4 mr-2" />
+                Book Me
+              </Button>
 
               {/* Social Links */}
               {/* {Object.keys(socialAccounts).length > 0 && (
