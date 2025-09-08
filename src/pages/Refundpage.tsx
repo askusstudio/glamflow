@@ -37,6 +37,7 @@ export default function RefundPage() {
             <ul className="list-disc pl-6 text-gray-700 space-y-2">
               <li>
                 You may cancel your GlamFlow subscription at any time via your account dashboard or by contacting our support team.
+if refund will approved it will be credited to the original payment method with in 5-7 days.
               </li>
               <li>
                 Once cancelled, you will continue to have access until the end of your current billing cycle.
