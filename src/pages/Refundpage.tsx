@@ -91,6 +91,7 @@ export default function RefundPage() {
             </h2>
             <p className="text-gray-700 mb-2">
               To request a cancellation or refund, please contact us at:
+               for other inquiry contact askus studio
             </p>
             <ul className="pl-2 text-gray-700 space-y-1">
               <li>
