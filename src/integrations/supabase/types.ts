@@ -192,11 +192,31 @@ export type Database = {
       }
     }
     Functions: {
+      can_book_appointment: {
+        Args: { provider_id: string }
+        Returns: boolean
+      }
       get_contact_for_booking: {
         Args: { provider_id: string }
         Returns: {
           email: string
           phone: string
+        }[]
+      }
+      get_public_profile_safe: {
+        Args: { profile_id: string }
+        Returns: {
+          available_days: string[]
+          avatar_url: string
+          bio: string
+          category: string
+          city: string
+          full_name: string
+          id: string
+          portfolio_images: string[]
+          price_range: string
+          services: string
+          social_accounts: string
         }[]
       }
       get_safe_profile: {

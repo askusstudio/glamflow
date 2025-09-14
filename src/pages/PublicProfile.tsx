@@ -37,7 +37,7 @@ const PublicProfile = () => {
       try {
         // Use the secure function to get safe profile data
         const { data, error } = await supabase
-          .rpc('get_safe_profile', { profile_id: userId });
+          .rpc('get_public_profile_safe', { profile_id: userId });
 
         if (error) throw error;
         if (!data || data.length === 0) {
