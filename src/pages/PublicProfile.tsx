@@ -35,21 +35,25 @@ const PublicProfile = () => {
       if (!userId) return;
       
       try {
-        // Use the secure public_profiles view instead of direct profiles access
+        // Use the secure function to get safe profile data
         const { data, error } = await supabase
-          .from('public_profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+          .rpc('get_safe_profile', { profile_id: userId });
 
         if (error) throw error;
+        if (!data || data.length === 0) {
+          setProfile(null);
+          return;
+        }
+        
+        const profileData = data[0];
         setProfile({
-          ...data,
-          social_accounts: (data as any).social_accounts || null,
-          email: null // Email is not exposed in public_profiles view for security
+          ...profileData,
+          social_accounts: profileData.social_accounts || null,
+          email: null // Email is not exposed for security
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
+        setProfile(null);
       } finally {
         setLoading(false);
       }
