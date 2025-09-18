@@ -91,6 +91,7 @@ const Navbar = () => {
     { label: "Tasks", path: "/tasks" },
     { label: "Calendar", path: "/calendar" },
     { label: "Bookings", path: "/bookings" },
+    { label: "Invoice", path: "/invoice" },
   ];
 
   return (
