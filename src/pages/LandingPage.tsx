@@ -199,7 +199,7 @@ export default function LandingPage() {
       </motion.nav>
 
       {/* Hero Section */}
-      <div className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 md:px-8 lg:px-16 pt-24 md:pt-28 lg:pt-32 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col lg:flex-row items-center justify-between px-2 sm:px-4 md:px-6 lg:px-16 pt-24 md:pt-28 lg:pt-32 w-full max-w-full lg:max-w-7xl mx-auto">
         <AnimatedSection className="flex-1 lg:pr-12 text-center lg:text-left">
           <AnimatedItem className="flex items-center justify-center lg:justify-start gap-2 mb-8">
             <Star className="w-5 h-5 text-pink-500" />
@@ -269,8 +269,8 @@ export default function LandingPage() {
       </motion.div>
       </div>
       {/* About Section (Why GlamFlow?) */}
-      <AnimatedSection className="py-20 px-4 bg-white" id="about">
-        <div className="max-w-7xl mx-auto">
+      <AnimatedSection className="py-20 px-2 sm:px-4 bg-white" id="about">
+        <div className="w-full max-w-full lg:max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
             {/* Left Column: Content */}
@@ -336,8 +336,8 @@ export default function LandingPage() {
         </div>
       </AnimatedSection>
       {/* How It Works Section */}
-      <AnimatedSection className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
+      <AnimatedSection className="py-20 px-2 sm:px-4 bg-white">
+        <div className="w-full max-w-full lg:max-w-7xl mx-auto">
           <AnimatedItem className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">How GlamFlow Transforms Your Beauty Business</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">From booking to payment, streamline every aspect of your freelance beauty business.</p>
@@ -444,8 +444,8 @@ export default function LandingPage() {
   </div>
 </AnimatedSection>
       {/* Pricing Section */}
-      <AnimatedSection className="py-20 px-4 bg-white" id="pricing">
-        <div className="max-w-7xl mx-auto">
+      <AnimatedSection className="py-20 px-2 sm:px-4 bg-white" id="pricing">
+        <div className="w-full max-w-full lg:max-w-7xl mx-auto">
           <AnimatedItem className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Simple Pricing for Every Beauty Professional.
@@ -553,8 +553,8 @@ export default function LandingPage() {
         </div>
       </AnimatedSection>
       {/* FAQ Section */}
-      <AnimatedSection className="py-20 px-4 bg-gray-50" id="faq">
-        <div className="max-w-4xl mx-auto">
+      <AnimatedSection className="py-20 px-2 sm:px-4 bg-gray-50" id="faq">
+        <div className="w-full max-w-full lg:max-w-4xl mx-auto">
           <AnimatedItem className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Frequently Asked Questions
@@ -628,8 +628,8 @@ export default function LandingPage() {
         </div>
       </AnimatedSection>
       {/* Contact Section */}
-<AnimatedSection className="py-20 px-4 bg-white" id="contact">
-  <div className="max-w-7xl mx-auto">
+<AnimatedSection className="py-20 px-2 sm:px-4 bg-white" id="contact">
+  <div className="w-full max-w-full lg:max-w-7xl mx-auto">
     <AnimatedItem className="text-center mb-16">
       <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
         Get In Touch
@@ -719,8 +719,8 @@ export default function LandingPage() {
   </div>
 </AnimatedSection>
       {/* Call to Action Section */}
-      <AnimatedSection className="py-20 px-4 md:px-8 lg:px-16 bg-pink-500 text-white text-center">
-        <div className="max-w-4xl mx-auto">
+      <AnimatedSection className="py-20 px-2 sm:px-4 md:px-8 lg:px-16 bg-pink-500 text-white text-center">
+        <div className="w-full max-w-full lg:max-w-4xl mx-auto">
           <AnimatedItem className="mb-6">
             <Star className="w-16 h-16 text-white mx-auto mb-4" /> {/* Adjust size as needed */}
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
