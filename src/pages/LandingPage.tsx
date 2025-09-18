@@ -98,7 +98,7 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     // FIX: Removed the `overflow-hidden` class from this div to enable scrolling
-    <div className="min-h-screen relative" style={{ background: 'oklch(.969 .015 12.422)' }}>
+    <div className="min-h-screen relative overflow-x-hidden" style={{ background: 'oklch(.969 .015 12.422)' }}>
       {/* Background Floating Elements */}
       <motion.div
         className="fixed inset-0 pointer-events-none"
@@ -113,8 +113,8 @@ export default function LandingPage() {
 
       {/* <div className="min-h-screen bg-white"> */}
       {/* Responsive Navigation */}
-      <motion.nav className="fixed top-0 left-0 right-0 z-50 my-2">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl">
+      <motion.nav className="fixed top-0 left-0 right-0 z-50 mx-2 mt-2">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-3 sm:px-4 py-1 bg-white/90 shadow-lg border-b border-white/20 rounded-2xl overflow-hidden">
           <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
           <Link to="/" className="flex items-center gap-2">
         <img src="/logo-1.png" alt="GlamFlow Logo" className="h-14 w-auto object-contain" />
@@ -174,7 +174,7 @@ export default function LandingPage() {
             y: mobileMenuOpen ? 0 : -20,
             display: mobileMenuOpen ? 'block' : 'none',
           }}
-          className="absolute top-14 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-white/95 rounded-b-2xl shadow-lg shadow-pink-100/40"
+          className="absolute top-14 left-2 right-2 z-40 px-3 pb-4 pt-2 bg-white/95 rounded-b-2xl shadow-lg shadow-pink-100/40 max-w-screen overflow-hidden"
         >
           {[
             { label: 'About', href: '/about' },
@@ -199,18 +199,18 @@ export default function LandingPage() {
       </motion.nav>
 
       {/* Hero Section */}
-      <div className="flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 lg:px-16 pt-24 md:pt-28 lg:pt-32 max-w-7xl mx-auto">
+      <div className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 md:px-8 lg:px-16 pt-24 md:pt-28 lg:pt-32 max-w-7xl mx-auto w-full">
         <AnimatedSection className="flex-1 lg:pr-12 text-center lg:text-left">
           <AnimatedItem className="flex items-center justify-center lg:justify-start gap-2 mb-8">
             <Star className="w-5 h-5 text-pink-500" />
             <span className="text-rose-600 font-medium text-sm bg-rose-100 rounded-lg gap-3 px-2 py-1">Trusted by 10,000+ Beauty Professionals</span>
           </AnimatedItem>
           <AnimatedItem className="mb-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">Your Beauty</h1>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent mb-4 leading-tight">Business,</h1>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">Simplified</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">Your Beauty</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent mb-4 leading-tight">Business,</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">Simplified</h1>
           </AnimatedItem>
-          <AnimatedItem><p className="text-lg md:text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">GlamFlow is the all-in-one workflow app designed for beauty freelancers. Manage bookings, showcase your portfolio, and get paid seamlessly.</p></AnimatedItem>
+          <AnimatedItem><p className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed px-2 sm:px-0">GlamFlow is the all-in-one workflow app designed for beauty freelancers. Manage bookings, showcase your portfolio, and get paid seamlessly.</p></AnimatedItem>
           <AnimatedItem className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
             <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.2 }}>
               <Button
@@ -235,7 +235,7 @@ export default function LandingPage() {
           <FloatingIcon className="-top-8 -left-8" delay={0.5}><div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"><Calendar className="w-6 h-6 text-white" /></div></FloatingIcon>
           <FloatingIcon className="top-20 -right-12" delay={1.5}><div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center shadow-lg"><Users className="w-5 h-5 text-white" /></div></FloatingIcon>
           <FloatingIcon className="-bottom-4 -left-12" delay={2.5}><div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg"><Star className="w-7 h-7 text-white" /></div></FloatingIcon>
-          <motion.div className="relative w-80 h-[600px] bg-black rounded-[3rem] p-2 shadow-2xl">
+          <motion.div className="relative w-72 sm:w-80 h-[550px] sm:h-[600px] bg-black rounded-[3rem] p-2 shadow-2xl">
             <div className="w-full h-full bg-gradient-to-br from-pink-50 to-purple-50 rounded-[2.5rem] overflow-hidden relative">
               <div className="p-6">
                 <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6 }}>
