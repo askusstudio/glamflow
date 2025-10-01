@@ -29,6 +29,7 @@ import ContactPage from "./pages/ContactPage";
 import Pricing from "./pages/Pricing.tsx";
 import HelpCenterPage from "./pages/HelpCenterPage";
 import Refundpage from "./pages/Refundpage.tsx";
+import InvoicePage from "./pages/InvoicePage";
 // ... other page imports if any
 
 const queryClient = new QueryClient();
@@ -93,6 +94,7 @@ const App = () => {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/public-profile/:userId" element={<PublicProfile />} />
                 <Route path="/bookings" element={<BookingsTablePage />} />
+                <Route path="/invoice" element={<InvoicePage />} />
                 
                 {/* Main app dashboard route */}
                 <Route path="/app" element={<ProtectedRoute />}>

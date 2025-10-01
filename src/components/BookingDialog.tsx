@@ -62,10 +62,15 @@ const BookingDialog = ({ freelancerId, freelancerName, availableDays, services, 
         .insert({
           user_id: freelancerId,
           client_name: formData.clientName,
-          appointment_time: format(selectedDate, 'HH:mm:ss'),
+          client_email: formData.clientEmail,
+          client_phone: formData.clientPhone,
+          location: formData.location || null,
+          message: formData.message || null,
+          appointment_date: format(selectedDate, 'yyyy-MM-dd'),
+          appointment_time: selectedDate.toISOString(),
           service: services || 'General Service',
           status: 'pending'
-        } as any);
+        });
 
       if (error) throw error;
 
