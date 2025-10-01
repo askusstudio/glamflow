@@ -53,8 +53,8 @@ export default function PricingPage() {
               <h3 className="text-2xl font-bold text-gray-900">Starter</h3>
               <p className="text-gray-500 mt-2">Ideal for freelancers starting out</p>
               <div className="mt-6">
-                <span className="text-5xl font-bold text-gray-900">₹999</span>
-                <span className="text-gray-500">/month</span>
+                <span className="text-5xl font-bold text-gray-900">₹0</span>
+                <span className="text-gray-500">/month</span> 
               </div>
               <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
                 <li className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export default function PricingPage() {
               <h3 className="text-2xl font-bold text-gray-900">Growth</h3>
               <p className="text-gray-500 mt-2">For established solo professionals</p>
               <div className="mt-6">
-                <span className="text-5xl font-bold text-gray-900">₹2,499</span>
+                <span className="text-5xl font-bold text-gray-900">₹999</span>
                 <span className="text-gray-500">/month</span>
               </div>
               <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
@@ -120,7 +120,7 @@ export default function PricingPage() {
               <h3 className="text-2xl font-bold text-gray-900">Pro</h3>
               <p className="text-gray-500 mt-2">For teams and scaling businesses</p>
               <div className="mt-6">
-                <span className="text-5xl font-bold text-gray-900">₹4,999</span>
+                <span className="text-5xl font-bold text-gray-900">₹1,999</span>
                 <span className="text-gray-500">/month</span>
               </div>
               <ul className="mt-8 space-y-4 text-gray-600 flex-grow">

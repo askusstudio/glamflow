@@ -462,7 +462,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold text-gray-900">Starter</h3>
                 <p className="text-gray-500 mt-2">Ideal for freelancers starting out</p>
                 <div className="mt-6">
-                  <span className="text-5xl font-bold text-gray-900">₹999</span>
+                  <span className="text-5xl font-bold text-gray-900">₹0</span>
                   <span className="text-gray-500">/month</span>
                 </div>
                 <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
@@ -492,7 +492,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold text-white">Growth</h3>
                 <p className="text-gray-400 mt-2">Perfect for small salons</p>
                 <div className="mt-6">
-                  <span className="text-5xl font-bold text-white">₹1999</span>
+                  <span className="text-5xl font-bold text-white">₹999</span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <ul className="mt-8 space-y-4 text-gray-300 flex-grow">
@@ -521,7 +521,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold text-gray-900">Pro</h3>
                 <p className="text-gray-500 mt-2">For large salons & chains</p>
                 <div className="mt-6">
-                  <span className="text-5xl font-bold text-gray-900">₹3999</span>
+                  <span className="text-5xl font-bold text-gray-900">₹1,999</span>
                   <span className="text-gray-500">/month</span>
                 </div>
                 <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
