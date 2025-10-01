@@ -35,19 +35,25 @@ const PublicProfile = () => {
       if (!userId) return;
       
       try {
+        // Use the secure function to get safe profile data
         const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+          .rpc('get_public_profile_safe', { profile_id: userId });
 
         if (error) throw error;
+        if (!data || data.length === 0) {
+          setProfile(null);
+          return;
+        }
+        
+        const profileData = data[0];
         setProfile({
-          ...data,
-          social_accounts: (data as any).social_accounts || null
+          ...profileData,
+          social_accounts: profileData.social_accounts || null,
+          email: null // Email is not exposed for security
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
+        setProfile(null);
       } finally {
         setLoading(false);
       }
@@ -121,13 +127,11 @@ const PublicProfile = () => {
                 </p>
               )}
 
-              {/* Contact Button - Now opens modal */}
-              {profile.email && (
-                <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Book Me
-                </Button>
-              )}
+              {/* Contact Button - Always available for booking */}
+              <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
+                <Mail className="w-4 h-4 mr-2" />
+                Book Me
+              </Button>
 
               {/* Social Links */}
               {/* {Object.keys(socialAccounts).length > 0 && (
