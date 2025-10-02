@@ -21,6 +21,7 @@ import CalendarPage from "./pages/Calendar";
 import AnalyticsPage from "./pages/Analytics.tsx";
 import PublicProfile from "./pages/PublicProfile";
 import BookingsTablePage from "./pages/BookingsTablePage";
+import PaymentStatus from "./pages/PaymentStatus";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsPage from "./pages/TermsPage";
 import LandingPage from "./pages/LandingPage.tsx";
@@ -95,6 +96,7 @@ const App = () => {
                 <Route path="/public-profile/:userId" element={<PublicProfile />} />
                 <Route path="/bookings" element={<BookingsTablePage />} />
                 <Route path="/invoice" element={<InvoicePage />} />
+                <Route path="/payment-status" element={<PaymentStatus />} />
                 
                 {/* Main app dashboard route */}
                 <Route path="/app" element={<ProtectedRoute />}>

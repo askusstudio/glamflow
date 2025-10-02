@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          amount: number | null
           appointment_date: string | null
           appointment_time: string | null
           client_email: string
@@ -25,12 +26,15 @@ export type Database = {
           id: string
           location: string | null
           message: string | null
+          payment_id: string | null
+          payment_status: string | null
           service: string
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          amount?: number | null
           appointment_date?: string | null
           appointment_time?: string | null
           client_email: string
@@ -40,12 +44,15 @@ export type Database = {
           id?: string
           location?: string | null
           message?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
           service: string
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          amount?: number | null
           appointment_date?: string | null
           appointment_time?: string | null
           client_email?: string
@@ -55,12 +62,78 @@ export type Database = {
           id?: string
           location?: string | null
           message?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
           service?: string
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "appointments_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          callback_data: Json | null
+          created_at: string
+          currency: string
+          id: string
+          payment_method: string | null
+          payment_response: Json | null
+          payment_status: string
+          phonepe_merchant_transaction_id: string
+          phonepe_transaction_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          callback_data?: Json | null
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method?: string | null
+          payment_response?: Json | null
+          payment_status?: string
+          phonepe_merchant_transaction_id: string
+          phonepe_transaction_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          callback_data?: Json | null
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method?: string | null
+          payment_response?: Json | null
+          payment_status?: string
+          phonepe_merchant_transaction_id?: string
+          phonepe_transaction_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -71,10 +144,12 @@ export type Database = {
           city: string | null
           email: string | null
           full_name: string | null
+          hourly_rate: number | null
           id: string
           phone: string | null
           portfolio_images: string[] | null
           price_range: string | null
+          service_pricing: Json | null
           services: string | null
           social_accounts: string | null
           updated_at: string | null
@@ -87,10 +162,12 @@ export type Database = {
           city?: string | null
           email?: string | null
           full_name?: string | null
+          hourly_rate?: number | null
           id: string
           phone?: string | null
           portfolio_images?: string[] | null
           price_range?: string | null
+          service_pricing?: Json | null
           services?: string | null
           social_accounts?: string | null
           updated_at?: string | null
@@ -103,10 +180,12 @@ export type Database = {
           city?: string | null
           email?: string | null
           full_name?: string | null
+          hourly_rate?: number | null
           id?: string
           phone?: string | null
           portfolio_images?: string[] | null
           price_range?: string | null
+          service_pricing?: Json | null
           services?: string | null
           social_accounts?: string | null
           updated_at?: string | null

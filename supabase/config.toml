@@ -1,1 +1,10 @@
 project_id = "migptxsjdvnwauvspfvd"
+
+[functions.phonepe-create-payment]
+verify_jwt = true
+
+[functions.phonepe-verify-payment]
+verify_jwt = false
+
+[functions.phonepe-webhook]
+verify_jwt = false
