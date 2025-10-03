@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Star, ExternalLink, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BookingModal from '@/components/app/BookingModal';
+import { PaymentDialog } from '@/components/payment/PaymentDialog';
 
 interface Profile {
   id: string;
@@ -28,7 +29,8 @@ const PublicProfile = () => {
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -127,11 +129,16 @@ const PublicProfile = () => {
                 </p>
               )}
 
-              {/* Contact Button - Always available for booking */}
-              <Button size="lg" className="mb-4" onClick={() => setIsModalOpen(true)}>
-                <Mail className="w-4 h-4 mr-2" />
-                Book Me
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-4">
+                <Button size="lg" onClick={() => setIsModalOpen(true)}>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Book Me
+                </Button>
+                <Button size="lg" variant="secondary" onClick={() => setIsPaymentOpen(true)}>
+                  Pay Now
+                </Button>
+              </div>
 
               {/* Social Links */}
               {/* {Object.keys(socialAccounts).length > 0 && (
@@ -259,6 +266,18 @@ const PublicProfile = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         profile={profile}
+      />
+
+      {/* Payment Dialog */}
+      <PaymentDialog
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        appointmentId=""
+        serviceDetails={{
+          serviceName: profile.services || 'Service',
+          providerName: profile.full_name || 'Provider',
+          amount: 0,
+        }}
       />
     </div>
   );
