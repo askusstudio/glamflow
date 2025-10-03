@@ -104,7 +104,7 @@ const BookingsTablePage = () => {
   return (
     <>
       <hr />
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 bg-[#DB6C79]/10">
         <div className="flex justify-between items-center mb-4">
           <Input
             placeholder="Filter bookings..."

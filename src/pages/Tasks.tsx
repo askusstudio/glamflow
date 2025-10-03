@@ -71,7 +71,7 @@ export default function TasksPage() {
   return (
     <>
     
-      <div className="bg-background min-h-screen p-4 md:p-8">
+      <div className="bg-background min-h-screen p-4 md:p-8 bg-[#DB6C79]/10">
         <div className="max-w-7xl mx-auto rounded-xl shadow-lg bg-card p-4 md:p-6">
           {/* Filter & Add bar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 justify-between gap-3">
