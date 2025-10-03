@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ interface BookingDialogProps {
   freelancerName: string;
   availableDays: string[];
   services: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const BookingDialog = ({ freelancerId, freelancerName, availableDays, services, children }: BookingDialogProps) => {

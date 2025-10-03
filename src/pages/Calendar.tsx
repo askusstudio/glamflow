@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, addMonths, subMonths, startOfWeek, endOfWeek, isSameMonth } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Edit, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';

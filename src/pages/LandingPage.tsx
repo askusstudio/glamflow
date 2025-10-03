@@ -28,8 +28,8 @@ const AnimatedSection = ({ children, className = "", id = "" }) => (
   </motion.section>
 );
 
-const AnimatedItem = ({ children, className = "" }) => (
-  <motion.div variants={itemVariants} className={className}>
+const AnimatedItem = ({ children, className = "", ...props }: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <motion.div variants={itemVariants} className={className} {...props}>
     {children}
   </motion.div>
 );

@@ -7,8 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 
-// Import your new Layout component
+// Import Layout components
 import { Layout } from "./components/Layout";
+import { AppLayout } from "./components/app/AppLayout";
 
 // Import Page Components
 import Dashboard from "./pages/Dashboard";
@@ -21,6 +22,7 @@ import CalendarPage from "./pages/Calendar";
 import AnalyticsPage from "./pages/Analytics.tsx";
 import PublicProfile from "./pages/PublicProfile";
 import BookingsTablePage from "./pages/BookingsTablePage";
+import PaymentStatus from "./pages/PaymentStatus";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsPage from "./pages/TermsPage";
 import LandingPage from "./pages/LandingPage.tsx";
@@ -71,8 +73,7 @@ const App = () => {
             <Sonner />
             <BrowserRouter>
               <Routes>
-                {/* --- Routes WITH Navbar --- */}
-                {/* All routes nested here will have the website navbar */}
+                {/* --- PUBLIC Routes WITH Website Navbar --- */}
                 <Route element={<Layout />}>
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/about" element={<AboutPage />} />
@@ -82,23 +83,24 @@ const App = () => {
                   <Route path="/termspage" element={<TermsPage />} />
                   <Route path="/help" element={<HelpCenterPage />} />
                   <Route path="/refundpage" element={<Refundpage />} />
-                  {/* Add other public-facing website pages here */}
                 </Route>
 
-                {/* --- Routes WITHOUT Navbar --- */}
-                {/* App, auth, and profile routes that should not have the main navbar */}
+                {/* --- AUTH Routes WITHOUT Navbar --- */}
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/tasks" element={<TasksPage />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/payment-status" element={<PaymentStatus />} />
                 <Route path="/public-profile/:userId" element={<PublicProfile />} />
-                <Route path="/bookings" element={<BookingsTablePage />} />
-                <Route path="/invoice" element={<InvoicePage />} />
-                
-                {/* Main app dashboard route */}
-                <Route path="/app" element={<ProtectedRoute />}>
-                  <Route index element={<Dashboard />} />
+
+                {/* --- APP Routes WITH App Navbar (Protected) --- */}
+                <Route element={<ProtectedRoute />}>
+                  <Route element={<AppLayout />}>
+                    <Route path="/app" element={<Dashboard />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/tasks" element={<TasksPage />} />
+                    <Route path="/calendar" element={<CalendarPage />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="/bookings" element={<BookingsTablePage />} />
+                    <Route path="/invoice" element={<InvoicePage />} />
+                  </Route>
                 </Route>
                 
                 {/* 404 Not Found Page */}
