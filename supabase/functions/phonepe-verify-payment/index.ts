@@ -86,7 +86,8 @@ serve(async (req) => {
     }
 
     // Redirect to frontend with status
-    const redirectUrl = `${Deno.env.get('SUPABASE_URL').replace('https://', 'https://')}/payment-status?status=${paymentStatus}&transactionId=${merchantTransactionId}`;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const redirectUrl = `${supabaseUrl.replace('https://', 'https://')}/payment-status?status=${paymentStatus}&transactionId=${merchantTransactionId}`;
     
     return new Response(null, {
       status: 302,
