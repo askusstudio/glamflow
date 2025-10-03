@@ -313,7 +313,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#DB6C79]/10">
       {/* Header */}
   
 
@@ -324,13 +324,13 @@ const Dashboard = () => {
             <h1 className="text-2xl md:text-3xl font-bold">Welcome back, Beautiful! ✨</h1>
             <p className="text-muted-foreground text-sm md:text-base">Here's what's happening with your beauty business today.</p>
           </div>
-          <Button
+          {/* <Button
             onClick={handleQuickAdd}
             className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             Quick Add
-          </Button>
+          </Button> */}
         </div>
 
         {/* Quick Stats */}
@@ -346,7 +346,7 @@ const Dashboard = () => {
             </CardContent>
           </Card> */}
 
-          <Card className="hover:shadow-soft transition-all">
+          <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Appointments Today</CardTitle>
               <Calendar className="h-4 w-4 text-primary" />
@@ -359,8 +359,31 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-
-          <Card className="hover:shadow-soft transition-all">
+          <Card className="hover:shadow-soft transition-all bg-pink-200 w-full sm:col-span-2 lg:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
+              <Target className="h-4 w-4 text-warning" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
+              <p className="text-xs text-muted-foreground">
+                {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-soft transition-all bg-blue-200 w-full sm:col-span-2 lg:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
+              <Target className="h-4 w-4 text-warning" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
+              <p className="text-xs text-muted-foreground">
+                {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
               <Target className="h-4 w-4 text-warning" />
@@ -388,11 +411,11 @@ const Dashboard = () => {
         </div>
 
         {/* Today's Schedule */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 ">
           {/* The main card container */}
-          <Card> {/* Removed bg-gray-50 for a cleaner white background */}
+          <Card > {/* Removed bg-gray-50 for a cleaner white background */}
             <CardHeader>
-              <CardTitle className="font-bold text-lg"> {/* Made title bolder */}
+              <CardTitle className="font-bold text-lg "> {/* Made title bolder */}
                 Today's Appointments
               </CardTitle>
               {/* CardDescription was removed to match the image */}
