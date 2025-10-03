@@ -19,7 +19,9 @@ import {
   Sparkles,
   CheckCircle2,
   AlertCircle,
-  Star
+  Star,
+  Pen,
+  IndianRupee
 } from "lucide-react"
 
 interface Task {
@@ -46,6 +48,7 @@ interface Appointment {
 const Dashboard = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [recentBookings, setRecentBookings] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [showAddTask, setShowAddTask] = useState(false)
@@ -83,6 +86,14 @@ const Dashboard = () => {
         .lt('appointment_time', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
         .order('appointment_time', { ascending: true })
 
+      // Fetch bookings from last 24 hours
+      const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      const { data: recentBookingsData, error: recentBookingsError } = await supabase
+        .from('appointments')
+        .select('*')
+        .gte('created_at', last24Hours)
+        .order('created_at', { ascending: false })
+
       if (tasksError) {
         console.error('Tasks error:', tasksError)
         toast({
@@ -105,6 +116,18 @@ const Dashboard = () => {
         setAppointments([])
       } else {
         setAppointments(appointmentsData as Appointment[] || [])
+      }
+
+      if (recentBookingsError) {
+        console.error('Recent bookings error:', recentBookingsError)
+        toast({
+          title: "Error",
+          description: "Failed to fetch recent bookings. Please try again.",
+          variant: "destructive"
+        })
+        setRecentBookings([])
+      } else {
+        setRecentBookings(recentBookingsData as Appointment[] || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -348,8 +371,9 @@ const Dashboard = () => {
 
           <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Appointments Today</CardTitle>
-              <Calendar className="h-4 w-4 text-primary" />
+              <CardTitle className="text-2xl font-medium">Appointments Today</CardTitle>
+              <Calendar className="h-12 w-12 " />
+              {/* <Calendar className="h-16 w-16 text-primary" /> */}
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{appointments.length}</div>
@@ -361,20 +385,20 @@ const Dashboard = () => {
 
           <Card className="hover:shadow-soft transition-all bg-pink-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
-              <Target className="h-4 w-4 text-warning" />
+              <CardTitle className="text-2xl font-medium">Recent Bookings</CardTitle>
+              <Users className="h-12 w-12" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
+              <div className="text-2xl font-bold">{recentBookings.length}</div>
               <p className="text-xs text-muted-foreground">
-                {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
+                Bookings in last 24 hours
               </p>
             </CardContent>
           </Card>
           <Card className="hover:shadow-soft transition-all bg-blue-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
-              <Target className="h-4 w-4 text-warning" />
+              <CardTitle className="text-2xl font-medium">Tasks Pending</CardTitle>
+              <Pen className="h-12 w-12" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
@@ -385,8 +409,8 @@ const Dashboard = () => {
           </Card>
           <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
-              <Target className="h-4 w-4 text-warning" />
+              <CardTitle className="text-2xl font-medium">Income</CardTitle>
+              <IndianRupee className="h-12 w-12" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
