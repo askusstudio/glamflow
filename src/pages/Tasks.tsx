@@ -6,7 +6,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, MoreVertical, Edit, Trash } from "lucide-react";
-import Navbar from "@/components/general/Navbar";
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
 
 const PRIORITIES = ["low", "medium", "high"];
@@ -71,7 +70,7 @@ export default function TasksPage() {
 
   return (
     <>
-      <Navbar />
+    
       <div className="bg-background min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto rounded-xl shadow-lg bg-card p-4 md:p-6">
           {/* Filter & Add bar */}

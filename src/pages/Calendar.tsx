@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import OfflineIndicator from '@/components/OfflineIndicator';
-import Navbar from '@/components/general/Navbar';
 
 interface CalendarEvent {
   id: string;
@@ -198,7 +197,7 @@ export default function CalendarPage() {
   return (
     <>
       <OfflineIndicator />
-      <Navbar />
+    
       <div className="min-h-screen bg-background">
         <div className="container mx-auto p-4 md:p-6">
           {/* Header */}
