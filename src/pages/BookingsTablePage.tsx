@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical } from 'lucide-react';
-import Navbar from '@/components/general/Navbar';
 
 interface Booking {
   id: string;
@@ -104,7 +103,6 @@ const BookingsTablePage = () => {
 
   return (
     <>
-      <Navbar />
       <hr />
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-4">
