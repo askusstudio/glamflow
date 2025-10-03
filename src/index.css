@@ -2,146 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Elegant Beauty Platform Design System */
+/* Modern Elegant Beauty Platform Design System with OKLCH Colors */
 
 @layer base {
   :root {
-    /* Base Colors - Light Theme */
-    --background: 330 67% 95%;
-    --foreground: 330 67% 30%;
+    /* Base Colors - Light Theme - OKLCH */
+    --background: 0.9830 0.0053 17.2482;
+    --foreground: 0.3896 0.0139 349.0720;
 
-    /* Card & Surface Colors */
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
-    /* --- ADDED FOR CUSTOM CARDS --- */
-    --surface-pink: 345 100% 97%; /* Light pink background for appointments card */
-    --surface-yellow: 54 100% 96%; /* Light yellow background for tasks card */
-    /* --- END ADDED --- */
+    /* Card & Surface Colors - OKLCH */
+    --card: 1.0000 0 0;
+    --card-foreground: 0.3896 0.0139 349.0720;
+    --popover: 1.0000 0 0;
+    --popover-foreground: 0.3896 0.0139 349.0720;
 
-    /* Interactive Elements */
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    /* Brand Colors - OKLCH */
+    --primary: 0.7844 0.0575 0.1635;
+    --primary-foreground: 0.3896 0.0139 349.0720;
 
-    /* Brand Colors - Elegant Beauty Theme */
-    --primary: 320 40.62% 34.6%; /* Updated to new HSL value (darker magenta) */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 320 40.62% 44.6%; /* Adjusted glow to be slightly brighter for visibility */
+    /* Secondary Colors - OKLCH */
+    --secondary: 0.9460 0.0120 10.9989;
+    --secondary-foreground: 0.5123 0.0164 355.4941;
 
-    /* Secondary Colors */
-    --secondary: 15 25% 95%;
-    --secondary-foreground: 220 13% 18%;
+    /* Muted Colors - OKLCH */
+    --muted: 0.9460 0.0120 10.9989;
+    --muted-foreground: 0.6161 0.0168 356.9485;
 
-    /* Accent Colors */
-    --accent: 45 93% 84%; /* Soft Gold */
-    --accent-foreground: 220 13% 18%;
-    --accent-glow: 45 93% 75%;
+    /* Accent Colors - OKLCH */
+    --accent: 0.9217 0.0158 2.6925;
+    --accent-foreground: 0.3896 0.0139 349.0720;
 
-    /* Muted Colors */
-    --muted: 220 13% 96%;
-    --muted-foreground: 220 9% 46%;
+    /* Status Colors - OKLCH */
+    --destructive: 0.6875 0.1420 21.4566;
+    --destructive-foreground: 1.0000 0 0;
+    --success: 0.6819 0.0479 0.9387;
+    --success-foreground: 1.0000 0 0;
+    --warning: 0.7923 0.0209 6.1272;
+    --warning-foreground: 0.3896 0.0139 349.0720;
 
-    /* Status Colors */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    /* Border & Input - OKLCH */
+    --border: 0.9217 0.0158 2.6925;
+    --input: 0.9460 0.0120 10.9989;
+    --ring: 0.7844 0.0575 0.1635;
 
-    /* Border & Input */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 320 40.62% 34.6%; /* Updated to match new primary */
+    /* Chart Colors - OKLCH */
+    --chart-1: 0.7844 0.0575 0.1635;
+    --chart-2: 0.8478 0.0429 359.4755;
+    --chart-3: 0.6819 0.0479 0.9387;
+    --chart-4: 0.7923 0.0209 6.1272;
+    --chart-5: 0.6794 0.0210 1.6795;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(320 40.62% 34.6%), hsl(340 75% 58%)); /* Updated primary in gradient */
-    --gradient-secondary: linear-gradient(135deg, hsl(45 93% 84%), hsl(35 93% 74%));
-    --gradient-hero: linear-gradient(135deg, hsl(320 40.62% 34.6% / 0.1), hsl(45 93% 84% / 0.1)); /* Updated primary in hero gradient */
-
-    /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(320 40.62% 34.6% / 0.3); /* Updated to match new primary */
-    --shadow-glow: 0 0 40px hsl(320 40.62% 44.6% / 0.4); /* Updated glow */
-    --shadow-soft: 0 4px 20px hsl(220 13% 18% / 0.1);
+    /* Shadows with OKLCH color */
+    --shadow-color: oklch(0.7588 0.0382 343.4043);
+    --shadow-elegant: 0px 8px 24px -8px oklch(var(--shadow-color) / 0.08);
+    --shadow-glow: 0px 8px 24px -8px oklch(var(--shadow-color) / 0.12);
+    --shadow-soft: 0px 4px 20px oklch(0.3896 0.0139 349.0720 / 0.08);
 
     /* Border Radius */
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar Colors - OKLCH */
+    --sidebar-background: 1.0000 0 0;
+    --sidebar-foreground: 0.3896 0.0139 349.0720;
+    --sidebar-primary: 0.7844 0.0575 0.1635;
+    --sidebar-primary-foreground: 0.3896 0.0139 349.0720;
+    --sidebar-accent: 0.9460 0.0120 10.9989;
+    --sidebar-accent-foreground: 0.3896 0.0139 349.0720;
+    --sidebar-border: 0.9217 0.0158 2.6925;
+    --sidebar-ring: 0.7844 0.0575 0.1635;
   }
 
   .dark {
-    /* Dark Theme Colors */
-    --background: 220 16% 8%;
-    --foreground: 220 13% 95%;
+    /* Dark Theme Colors - OKLCH */
+    --background: 0.2731 0.0111 358.6966;
+    --foreground: 0.9830 0.0053 17.2482;
 
-    /* Card & Surface Colors */
-    --card: 220 16% 10%;
-    --card-foreground: 220 13% 95%;
-    /* --- ADDED FOR CUSTOM CARDS (DARK MODE) --- */
-    --surface-pink: 345 30% 12%; /* Dark pink background */
-    --surface-yellow: 54 30% 12%;  /* Dark yellow background */
-    /* --- END ADDED --- */
+    /* Card & Surface Colors - OKLCH */
+    --card: 0.3133 0.0154 358.0311;
+    --card-foreground: 0.9830 0.0053 17.2482;
+    --popover: 0.3133 0.0154 358.0311;
+    --popover-foreground: 0.9830 0.0053 17.2482;
 
-    /* Interactive Elements */
-    --popover: 220 16% 10%;
-    --popover-foreground: 220 13% 95%;
+    /* Brand Colors - Dark Mode - OKLCH */
+    --primary: 0.7844 0.0575 0.1635;
+    --primary-foreground: 0.2731 0.0111 358.6966;
 
-    /* Brand Colors - Dark Mode */
-    --primary: 320 40.62% 44.6%; /* Updated to brighter version of new HSL for dark mode visibility */
-    --primary-foreground: 220 16% 8%;
-    --primary-glow: 320 40.62% 54.6%; /* Adjusted glow for dark mode */
+    /* Secondary Colors - OKLCH */
+    --secondary: 0.3896 0.0139 349.0720;
+    --secondary-foreground: 0.9217 0.0158 2.6925;
 
-    /* Secondary Colors */
-    --secondary: 220 16% 15%;
-    --secondary-foreground: 220 13% 95%;
+    /* Muted Colors - OKLCH */
+    --muted: 0.3896 0.0139 349.0720;
+    --muted-foreground: 0.6794 0.0210 1.6795;
 
-    /* Accent Colors */
-    --accent: 45 93% 70%; /* Adjusted Gold for dark */
-    --accent-foreground: 220 16% 8%;
-    --accent-glow: 45 93% 60%;
+    /* Accent Colors - OKLCH */
+    --accent: 0.5123 0.0164 355.4941;
+    --accent-foreground: 0.9830 0.0053 17.2482;
 
-    /* Muted Colors */
-    --muted: 220 16% 15%;
-    --muted-foreground: 220 9% 65%;
+    /* Status Colors - OKLCH */
+    --destructive: 0.5856 0.1167 21.2666;
+    --destructive-foreground: 1.0000 0 0;
+    --success: 0.6819 0.0479 0.9387;
+    --success-foreground: 0.2731 0.0111 358.6966;
+    --warning: 0.7923 0.0209 6.1272;
+    --warning-foreground: 0.2731 0.0111 358.6966;
 
-    /* Status Colors */
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 220 16% 8%;
-    --success: 142 71% 50%;
-    --success-foreground: 220 16% 8%;
-    --warning: 38 92% 55%;
-    --warning-foreground: 220 16% 8%;
+    /* Border & Input - OKLCH */
+    --border: 0.3896 0.0139 349.0720;
+    --input: 0.3896 0.0139 349.0720;
+    --ring: 0.7844 0.0575 0.1635;
 
-    /* Border & Input */
-    --border: 220 16% 20%;
-    --input: 220 16% 20%;
-    --ring: 320 40.62% 44.6%; /* Updated to match new dark primary */
+    /* Chart Colors - OKLCH */
+    --chart-1: 0.7844 0.0575 0.1635;
+    --chart-2: 0.8478 0.0429 359.4755;
+    --chart-3: 0.6819 0.0479 0.9387;
+    --chart-4: 0.7923 0.0209 6.1272;
+    --chart-5: 0.6794 0.0210 1.6795;
 
-    /* Dark Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(320 40.62% 44.6%), hsl(340 75% 65%)); /* Updated primary in gradient */
-    --gradient-secondary: linear-gradient(135deg, hsl(45 93% 70%), hsl(35 93% 60%));
-    --gradient-hero: linear-gradient(135deg, hsl(320 40.62% 44.6% / 0.1), hsl(45 93% 70% / 0.1)); /* Updated primary in hero gradient */
+    /* Dark Shadows with OKLCH */
+    --shadow-color: oklch(0 0 0);
+    --shadow-elegant: 0px 8px 24px -4px oklch(var(--shadow-color) / 0.20);
+    --shadow-glow: 0px 8px 24px -4px oklch(var(--shadow-color) / 0.30);
+    --shadow-soft: 0px 4px 20px oklch(var(--shadow-color) / 0.50);
 
-    /* Dark Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(320 40.62% 44.6% / 0.4); /* Updated to match new dark primary */
-    --shadow-glow: 0 0 40px hsl(320 40.62% 54.6% / 0.3); /* Updated glow */
-    --shadow-soft: 0 4px 20px hsl(220 16% 8% / 0.5);
-    
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar Colors - OKLCH */
+    --sidebar-background: 0.3133 0.0154 358.0311;
+    --sidebar-foreground: 0.9830 0.0053 17.2482;
+    --sidebar-primary: 0.7844 0.0575 0.1635;
+    --sidebar-primary-foreground: 0.2731 0.0111 358.6966;
+    --sidebar-accent: 0.3896 0.0139 349.0720;
+    --sidebar-accent-foreground: 0.9830 0.0053 17.2482;
+    --sidebar-border: 0.3896 0.0139 349.0720;
+    --sidebar-ring: 0.7844 0.0575 0.1635;
   }
 }
 
@@ -151,6 +143,17 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+  }
+
+  code, pre {
+    font-family: 'Fira Code', monospace;
   }
 }
