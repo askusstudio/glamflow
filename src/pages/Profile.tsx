@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/general/Navbar";
 import { Camera, Upload, X, User, Instagram, Twitter, Facebook, Linkedin, Youtube, Plus, Trash2 } from "lucide-react";
 
 type Profile = {
@@ -260,8 +259,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
+      <>  
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -274,18 +272,18 @@ export default function ProfilePage() {
 
   return (
     <>
-      <Navbar />
+ 
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-8">
+          {/* <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Your Profile
             </h1>
             <p className="text-muted-foreground mt-2">
               Showcase your skills and connect with potential clients
             </p>
-          </div>
+          </div> */}
 
           <div className="grid gap-6 lg:gap-8">
             {/* Avatar and Basic Info */}
@@ -427,7 +425,7 @@ export default function ProfilePage() {
                       <Input
                         id="custom_price"
                         value={customPrice}
-                        placeholder="e.g., $50/hour, $200/day, $500 per session"
+                        // placeholder="e.g., $50/hour, $200/day, $500 per session"
                         onChange={(e) => setCustomPrice(e.target.value)}
                         className="mt-1"
                       />
