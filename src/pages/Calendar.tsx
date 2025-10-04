@@ -11,8 +11,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useOfflineSync } from '@/hooks/useOfflineSync';
-import OfflineIndicator from '@/components/OfflineIndicator';
 
 interface CalendarEvent {
   id: string;
@@ -45,7 +43,6 @@ export default function CalendarPage() {
     type: 'appointment' as CalendarEvent['type']
   });
   const { toast } = useToast();
-  const { isOnline, addOfflineAction } = useOfflineSync();
 
   // Get calendar days for the current month
   const monthStart = startOfMonth(currentDate);
@@ -143,26 +140,14 @@ export default function CalendarPage() {
       updatedEvents = [...events, newEvent];
     }
 
-    // Save locally first (works offline)
+    // Save locally
     saveEvents(updatedEvents);
     
-    // Add to offline sync queue if offline
-    if (!isOnline) {
-      addOfflineAction({
-        type: isEditMode ? 'update' : 'create',
-        table: 'calendar_events',
-        data: newEvent
-      });
-    }
     setIsEventDialogOpen(false);
-    
-    const statusMessage = isOnline 
-      ? `Event ${isEditMode ? 'updated' : 'created'} successfully.`
-      : `Event ${isEditMode ? 'updated' : 'created'} offline. Will sync when online.`;
     
     toast({
       title: "Success!",
-      description: statusMessage,
+      description: `Event ${isEditMode ? 'updated' : 'created'} successfully.`,
     });
   };
 
@@ -171,21 +156,10 @@ export default function CalendarPage() {
       const updatedEvents = events.filter(event => event.id !== editingEvent.id);
       saveEvents(updatedEvents);
       
-      // Add to offline sync queue if offline
-      if (!isOnline) {
-        addOfflineAction({
-          type: 'delete',
-          table: 'calendar_events',
-          data: { id: editingEvent.id }
-        });
-      }
-      
       setIsEventDialogOpen(false);
       toast({
         title: "Event Deleted",
-        description: isOnline 
-          ? "Event has been removed from your calendar."
-          : "Event deleted offline. Will sync when online.",
+        description: "Event has been removed from your calendar.",
       });
     }
   };
@@ -195,10 +169,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <>
-      <OfflineIndicator />
-    
-      <div className="min-h-screen bg-background bg-[#DB6C79]/10">
+    <div className="min-h-screen bg-background bg-[#DB6C79]/10">
         <div className="container mx-auto p-4 md:p-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
@@ -429,6 +400,5 @@ export default function CalendarPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </>
   );
 }
