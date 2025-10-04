@@ -46,12 +46,9 @@ const BookingModal = ({ isOpen, onClose, profile }: BookingModalProps) => {
 
         if (error) throw error;
         setBookedDates(data.map((item: any) => new Date(item.appointment_date)));
-      // In handleSubmit's catch block
-} catch (err) {
-    console.error('Detailed booking error:', err); // Add this
-    setError('Booking failed: ' + (err.message || 'Please try again.'));
-  }
-  
+      } catch (err) {
+        console.error('Error fetching booked dates:', err);
+      }
     };
 
     if (isOpen) fetchBookedDates();
