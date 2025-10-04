@@ -1,14 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Table, TableHead, TableBody, TableRow, TableCell,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Plus, MoreVertical, Edit, Trash } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
-const PRIORITIES = ["low", "medium", "high"];
+const PRIORITIES = ["low", "medium", "high", "urgent"];
+const STATUSES = ["to-do", "in progress", "completed"];
+const TASK_TYPES = ["client prep", "inventory check", "product ordering", "social media post", "follow-up call", "other"];
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -16,7 +21,18 @@ export default function TasksPage() {
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [form, setForm] = useState({ title: "", priority: "medium" });
+  const [form, setForm] = useState({ 
+    title: "", 
+    description: "",
+    priority: "medium",
+    status: "to-do",
+    assigned_to: "",
+    due_date: "",
+    start_date: "",
+    estimated_duration: "",
+    task_type: "",
+    category_tags: ""
+  });
   const [showActions, setShowActions] = useState({});
 
   useEffect(() => { fetchTasks(); }, [priority, search]);
@@ -30,37 +46,90 @@ export default function TasksPage() {
   };
 
   const handleAddOrEdit = async () => {
-    if (!form.title) return;
+    if (!form.title) {
+      toast({ title: "Error", description: "Task title is required", variant: "destructive" });
+      return;
+    }
     
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     
-    if (editingTask) {
-      await supabase.from("tasks").update(form).eq("id", editingTask.id);
-    } else {
-      await supabase.from("tasks").insert([{ ...form, user_id: user.id }]);
+    try {
+      const taskData = {
+        ...form,
+        category_tags: form.category_tags ? form.category_tags.split(',').map(t => t.trim()) : [],
+        due_date: form.due_date || null,
+        start_date: form.start_date || null,
+      };
+
+      if (editingTask) {
+        const { error } = await supabase.from("tasks").update(taskData).eq("id", editingTask.id);
+        if (error) throw error;
+        toast({ title: "Success", description: "Task updated successfully" });
+      } else {
+        const { error } = await supabase.from("tasks").insert([{ ...taskData, user_id: user.id }]);
+        if (error) throw error;
+        toast({ title: "Success", description: "Task added successfully" });
+      }
+      
+      clearForm();
+      fetchTasks();
+    } catch (error) {
+      console.error('Error saving task:', error);
+      toast({ title: "Error", description: "Failed to save task", variant: "destructive" });
     }
-    setForm({ title: "", priority: "medium" });
-    setShowAdd(false);
-    setEditingTask(null);
-    fetchTasks();
   };
 
   const handleDelete = async (task) => {
-    await supabase.from("tasks").delete().eq("id", task.id);
-    fetchTasks();
+    try {
+      const { error } = await supabase.from("tasks").delete().eq("id", task.id);
+      if (error) throw error;
+      toast({ title: "Success", description: "Task deleted successfully" });
+      fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast({ title: "Error", description: "Failed to delete task", variant: "destructive" });
+    }
   };
 
   const openEdit = (task) => {
     setEditingTask(task);
-    setForm({ title: task.title, priority: task.priority });
+    setForm({ 
+      title: task.title,
+      description: task.description || "",
+      priority: task.priority,
+      status: task.status || "to-do",
+      assigned_to: task.assigned_to || "",
+      due_date: task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : "",
+      start_date: task.start_date ? new Date(task.start_date).toISOString().split('T')[0] : "",
+      estimated_duration: task.estimated_duration || "",
+      task_type: task.task_type || "",
+      category_tags: task.category_tags ? task.category_tags.join(', ') : ""
+    });
     setShowAdd(true);
   };
 
   const clearForm = () => {
-    setForm({ title: "", priority: "medium" });
+    setForm({ 
+      title: "", 
+      description: "",
+      priority: "medium",
+      status: "to-do",
+      assigned_to: "",
+      due_date: "",
+      start_date: "",
+      estimated_duration: "",
+      task_type: "",
+      category_tags: ""
+    });
     setEditingTask(null);
     setShowAdd(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleAddOrEdit();
+    }
   };
 
   // For row actions menu toggle
@@ -124,14 +193,24 @@ export default function TasksPage() {
                     <TableCell className="px-2 md:px-4 py-3 hidden sm:table-cell">
                       <span className={`
                         px-2 md:px-3 py-1 rounded font-semibold text-xs
-                        ${task.priority === "high" ? "bg-red-300/70 text-red-900" :
+                        ${task.priority === "urgent" ? "bg-red-500/80 text-white" :
+                          task.priority === "high" ? "bg-red-300/70 text-red-900" :
                           task.priority === "medium" ? "bg-yellow-200 text-yellow-900" :
                           "bg-green-200 text-green-900"}
                       `}>
                         {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                       </span>
                     </TableCell>
-                    <TableCell className="px-2 md:px-4 py-3 hidden md:table-cell">{task.completed ? "Done" : "Pending"}</TableCell>
+                    <TableCell className="px-2 md:px-4 py-3 hidden md:table-cell">
+                      <span className={`
+                        px-2 py-1 rounded text-xs
+                        ${task.status === "completed" ? "bg-green-200 text-green-900" :
+                          task.status === "in progress" ? "bg-blue-200 text-blue-900" :
+                          "bg-gray-200 text-gray-900"}
+                      `}>
+                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                      </span>
+                    </TableCell>
                     <TableCell className="px-2 md:px-4 py-3 hidden md:table-cell">{new Date(task.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="px-2 md:px-4 py-3 flex justify-center items-center gap-2 relative">
                       <Button variant="ghost" size="icon" onClick={() => toggleActions(task.id)}>
@@ -167,29 +246,125 @@ export default function TasksPage() {
 
       {/* Modal for Add/Edit Task */}
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            {editingTask ? "Edit Task" : "Add Task"}
+            <DialogTitle>{editingTask ? "Edit Task" : "Add Task"}</DialogTitle>
           </DialogHeader>
-          <Input
-            placeholder="Task Title"
-            className="mb-3"
-            value={form.title}
-            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-          />
-          <select
-            className="border mb-3 px-2 py-1 rounded w-full"
-            value={form.priority}
-            onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-          >
-            {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+          <div className="grid gap-4 py-4" onKeyPress={handleKeyPress}>
+            <div className="grid gap-2">
+              <Label htmlFor="title">Task Title *</Label>
+              <Input
+                id="title"
+                placeholder="Task Title"
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Task description or notes"
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="priority">Priority</Label>
+              <select
+                id="priority"
+                className="w-full p-2 border rounded bg-background"
+                value={form.priority}
+                onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
+              >
+                {PRIORITIES.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="status">Status</Label>
+              <select
+                id="status"
+                className="w-full p-2 border rounded bg-background"
+                value={form.status}
+                onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+              >
+                {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="task_type">Task Type</Label>
+              <select
+                id="task_type"
+                className="w-full p-2 border rounded bg-background"
+                value={form.task_type}
+                onChange={e => setForm(f => ({ ...f, task_type: e.target.value }))}
+              >
+                <option value="">Select task type</option>
+                {TASK_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="assigned_to">Assigned To</Label>
+              <Input
+                id="assigned_to"
+                placeholder="Team member or self"
+                value={form.assigned_to}
+                onChange={e => setForm(f => ({ ...f, assigned_to: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="start_date">Start Date</Label>
+              <Input
+                id="start_date"
+                type="date"
+                value={form.start_date}
+                onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="due_date">Due Date</Label>
+              <Input
+                id="due_date"
+                type="date"
+                value={form.due_date}
+                onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="estimated_duration">Estimated Duration</Label>
+              <Input
+                id="estimated_duration"
+                placeholder="e.g., 2 hours, 1 day"
+                value={form.estimated_duration}
+                onChange={e => setForm(f => ({ ...f, estimated_duration: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="category_tags">Category Tags (comma-separated)</Label>
+              <Input
+                id="category_tags"
+                placeholder="urgent, follow-up, client"
+                value={form.category_tags}
+                onChange={e => setForm(f => ({ ...f, category_tags: e.target.value }))}
+              />
+            </div>
+          </div>
           <DialogFooter>
+            <Button variant="secondary" onClick={clearForm}>Cancel</Button>
             <Button onClick={handleAddOrEdit}>
               {editingTask ? "Update" : "Add"}
             </Button>
-            <Button variant="secondary" onClick={clearForm}>Cancel</Button>
           </DialogFooter>
+          <p className="text-xs text-muted-foreground mt-2">Press Ctrl+Enter to save</p>
         </DialogContent>
       </Dialog>
     </>

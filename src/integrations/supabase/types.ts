@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          allergies_concerns: string | null
           amount: number | null
           appointment_date: string | null
           appointment_time: string | null
@@ -23,17 +24,24 @@ export type Database = {
           client_name: string
           client_phone: string
           created_at: string
+          duration_estimate: string | null
+          event_type: string | null
           id: string
           location: string | null
+          makeup_look_preference: string | null
           message: string | null
+          number_of_people: number | null
           payment_id: string | null
           payment_status: string | null
+          reference_images: string[] | null
           service: string
+          skin_type: string | null
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          allergies_concerns?: string | null
           amount?: number | null
           appointment_date?: string | null
           appointment_time?: string | null
@@ -41,17 +49,24 @@ export type Database = {
           client_name: string
           client_phone: string
           created_at?: string
+          duration_estimate?: string | null
+          event_type?: string | null
           id?: string
           location?: string | null
+          makeup_look_preference?: string | null
           message?: string | null
+          number_of_people?: number | null
           payment_id?: string | null
           payment_status?: string | null
+          reference_images?: string[] | null
           service: string
+          skin_type?: string | null
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          allergies_concerns?: string | null
           amount?: number | null
           appointment_date?: string | null
           appointment_time?: string | null
@@ -59,12 +74,18 @@ export type Database = {
           client_name?: string
           client_phone?: string
           created_at?: string
+          duration_estimate?: string | null
+          event_type?: string | null
           id?: string
           location?: string | null
+          makeup_look_preference?: string | null
           message?: string | null
+          number_of_people?: number | null
           payment_id?: string | null
           payment_status?: string | null
+          reference_images?: string[] | null
           service?: string
+          skin_type?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -194,28 +215,52 @@ export type Database = {
       }
       tasks: {
         Row: {
+          assigned_to: string | null
+          category_tags: string[] | null
           completed: boolean
           created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_duration: string | null
           id: string
           priority: string
+          start_date: string | null
+          status: string | null
+          task_type: string | null
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          assigned_to?: string | null
+          category_tags?: string[] | null
           completed?: boolean
           created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_duration?: string | null
           id?: string
           priority?: string
+          start_date?: string | null
+          status?: string | null
+          task_type?: string | null
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          assigned_to?: string | null
+          category_tags?: string[] | null
           completed?: boolean
           created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_duration?: string | null
           id?: string
           priority?: string
+          start_date?: string | null
+          status?: string | null
+          task_type?: string | null
           title?: string
           updated_at?: string
           user_id?: string
