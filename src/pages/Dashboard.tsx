@@ -21,7 +21,8 @@ import {
   AlertCircle,
   Star,
   Pen,
-  IndianRupee
+  IndianRupee,
+  Laugh
 } from "lucide-react"
 
 interface Task {
@@ -344,8 +345,8 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl md:text-3xl font-bold">Welcome back, Beautiful! ✨</h1>
-            <p className="text-muted-foreground text-sm md:text-base">Here's what's happening with your beauty business today.</p>
+            <h1 className="text-2xl md:text-4xl font-bold">Welcome back, Beautiful! </h1>
+            {/* <p className="text-muted-foreground text-sm md:text-base">Here's what's happening with your beauty business today.</p> */}
           </div>
           {/* <Button
             onClick={handleQuickAdd}
@@ -409,15 +410,16 @@ const Dashboard = () => {
           </Card>
           <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-2xl font-medium">Income</CardTitle>
-              <IndianRupee className="h-12 w-12" />
+              <CardTitle className="text-2xl font-medium">Happy Earing!</CardTitle>
+              {/* <IndianRupee className="h-12 w-12" /> */}
+              < Laugh className="h-12 w-12" />
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
               <p className="text-xs text-muted-foreground">
                 {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
               </p>
-            </CardContent>
+            </CardContent> */}
           </Card>
 
 
