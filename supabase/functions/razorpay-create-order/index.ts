@@ -65,7 +65,23 @@ serve(async (req: Request) => {
 
     console.log('Razorpay auth setup with keyId:', keyId.substring(0, 10) + '...');
 
-    // Razorpay order creation (line ~22 - this is where Unauthorized fails)
+    // Sanitize and shorten providerId for receipt (alphanumeric + -_. only, max 10 chars)
+    const safeProviderId = (providerId || 'guest').toString().replace(/[^a-zA-Z0-9\-_.]/g, '').substring(0, 10);
+    // Short timestamp: Last 6 chars of Date.now() in base-36 (compact, unique)
+    const shortTs = Date.now().toString(36).slice(-6);
+    const receipt = `pay_${safeProviderId}_${shortTs}`;
+    
+    if (receipt.length > 40) {
+      console.error('Receipt too long:', receipt);
+      return new Response(JSON.stringify({ success: false, error: 'Internal receipt generation error - contact support' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Generated receipt:', receipt, '(length:', receipt.length, ')');
+
+    // Razorpay order creation
     console.log('Fetching Razorpay API...');
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
@@ -76,7 +92,7 @@ serve(async (req: Request) => {
       body: JSON.stringify({
         amount, // Integer paise from frontend
         currency: 'INR',
-        receipt: `receipt_${Date.now()}_${providerId || 'guest'}`,
+        receipt, // Now compliant (<=40 chars)
         notes: {
           providerId,
           payerName,
@@ -87,7 +103,7 @@ serve(async (req: Request) => {
       }),
     });
 
-    // Handle Razorpay response (401 Unauthorized common here)
+    // Handle Razorpay response
     if (!razorpayResponse.ok) {
       let errorData = {};
       try {
@@ -101,9 +117,9 @@ serve(async (req: Request) => {
       console.error(`Razorpay API failed (${razorpayResponse.status} ${errorCode}):`, errorDesc, errorData);
       return new Response(JSON.stringify({ 
         success: false, 
-        error: `Payment gateway error: ${errorDesc} (check keys or amount)`,
+        error: `Payment gateway error: ${errorDesc}`,
         code: errorCode,
-        details: errorData // Logs full details
+        details: errorData // For debugging
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -111,7 +127,7 @@ serve(async (req: Request) => {
     }
 
     const order = await razorpayResponse.json();
-    console.log('Razorpay success:', { orderId: order.id, amount: order.amount });
+    console.log('Razorpay success:', { orderId: order.id, amount: order.amount, receipt });
 
     // DB logging only for authenticated (skip for guests to avoid issues)
     let dbLogged = false;
