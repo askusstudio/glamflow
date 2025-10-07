@@ -79,24 +79,35 @@ export const RazorpayPaymentDialog = ({
 
       // Get session if available (optional for guest payments)
       const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id || null; // Omit if not logged in
+      const userId = session?.user?.id || null; // Null for guests
+
+      if (!session) {
+        console.log('Guest payment initiated'); // Debug
+        toast({
+          title: "Guest Payment",
+          description: "Proceeding without login - payment will be tracked via email/phone.",
+        });
+      }
 
       // Create Razorpay order - send amount in paise to backend
       const { data, error } = await supabase.functions.invoke('razorpay-create-order', {
         body: {
-          amount: amount, // Correctly convert to paise for Razorpay
+          amount: amount * 100, // Fixed: Convert rupees to paise
           providerId,
           payerName,
           payerEmail,
           payerPhone: formattedPhone, // Use formatted phone
-          ...(userId && { userId }), // Conditionally include userId for authenticated users
+          userId: userId, // Explicitly null for guests (easier backend handling)
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Create order error details:', error); // Full error for debugging
+        throw error;
+      }
 
       if (!data.success) {
-        throw new Error('Failed to create order');
+        throw new Error(data.error || 'Failed to create order');
       }
 
       console.log('Order data:', data); // Debug log
@@ -111,7 +122,7 @@ export const RazorpayPaymentDialog = ({
         order_id: data.orderId,
         handler: async function (response: any) {
           try {
-            // Verify payment (userId optional in backend)
+            // Verify payment
             const { data: verifyData, error: verifyError } = await supabase.functions.invoke(
               'razorpay-verify-payment',
               {
@@ -119,18 +130,20 @@ export const RazorpayPaymentDialog = ({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
-                  amount: amount * 100, // Pass amount in paise for verification
-                  ...(userId && { userId }), // Conditionally include if available
+                  amount: amount * 100, // Consistent paise for verification
+                  userId: userId, // Explicit null for guests
                 },
               }
             );
 
-            if (verifyError || !verifyData?.success) {
-              throw new Error(verifyError?.message || 'Verification failed');
+            if (verifyError) {
+              console.error('Verify error details:', verifyError);
+              throw verifyError;
             }
 
-            // Optional: Update booking status in DB (add bookingId prop if needed)
-            // If authenticated: await supabase.from('bookings').update({ payment_status: 'paid' }).eq('id', bookingId);
+            if (!verifyData?.success) {
+              throw new Error(verifyData?.error || 'Verification failed');
+            }
 
             toast({
               title: "Payment Successful",
@@ -171,7 +184,7 @@ export const RazorpayPaymentDialog = ({
       razorpay.open();
 
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Payment error details:', error); // Enhanced logging
       toast({
         title: "Payment Failed",
         description: error instanceof Error ? error.message : "Failed to initiate payment",
@@ -184,16 +197,16 @@ export const RazorpayPaymentDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-sm sm:max-w-md p-4 sm:p-6"> {/* Responsive: full-width on mobile, padded on larger screens */}
+      <DialogContent className="w-full max-w-sm sm:max-w-md p-4 sm:p-6">
         <DialogHeader className="mb-4">
-          <DialogTitle className="text-lg sm:text-xl text-center sm:text-left"> {/* Responsive text sizing and alignment */}
+          <DialogTitle className="text-lg sm:text-xl text-center sm:text-left">
             Pay {providerName}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-3 sm:space-y-4"> {/* Tighter spacing on mobile */}
+        <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="amount" className="text-sm"> {/* Consistent small text */}
+            <Label htmlFor="amount" className="text-sm">
               Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)})
             </Label>
             <Input 
@@ -204,7 +217,7 @@ export const RazorpayPaymentDialog = ({
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder={`Enter amount (e.g., ${expectedAmount.toFixed(2)})`}
-              className="w-full" // Ensure full width
+              className="w-full"
             />
           </div>
 
@@ -242,10 +255,10 @@ export const RazorpayPaymentDialog = ({
             <Input 
               id="phone"
               type="tel"
-              value={payerPhone} // Show raw 10 digits
-              onChange={(e) => setPayerPhone(e.target.value.replace(/\D/g, ''))} // Only allow digits, auto-format
+              value={payerPhone}
+              onChange={(e) => setPayerPhone(e.target.value.replace(/\D/g, ''))}
               placeholder="Enter 10-digit number (e.g., 1234567890)"
-              maxLength={10} // Limit to 10 digits
+              maxLength={10}
               className="w-full"
             />
             {payerPhone.length === 10 && (
@@ -260,15 +273,15 @@ export const RazorpayPaymentDialog = ({
             <Input 
               value={`₹${amount.toFixed(2)}`} 
               disabled 
-              className="text-base sm:text-lg font-semibold w-full" // Responsive font size
+              className="text-base sm:text-lg font-semibold w-full"
             />
           </div>
 
           <div className="pt-3 sm:pt-4 space-y-2">
             <Button 
               onClick={handlePayment} 
-              disabled={loading || !payerName || !payerEmail || !payerPhone || payerPhone.length !== 10 || amount <= 0} // Validate 10 digits
-              className="w-full h-12 sm:h-10 text-sm" // Taller on mobile for touch
+              disabled={loading || !payerName || !payerEmail || !payerPhone || payerPhone.length !== 10 || amount <= 0}
+              className="w-full h-12 sm:h-10 text-sm"
             >
               {loading ? (
                 <>
