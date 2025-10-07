@@ -25,7 +25,12 @@ serve(async (req: Request) => {
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, userId } = body;
 
-    console.log('Verification invoke:', { orderId: razorpay_order_id?.substring(0, 10) + '...', userId: userId || 'null (guest)' });
+    console.log('Verification invoke:', { 
+      orderId: razorpay_order_id?.substring(0, 10) + '...', 
+      paymentId: razorpay_payment_id?.substring(0, 10) + '...',
+      amount, 
+      userId: userId || 'null (guest)' 
+    });
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !amount || typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0) {
       console.error('Invalid verification params:', { razorpay_order_id, razorpay_payment_id, amount });
@@ -54,10 +59,13 @@ serve(async (req: Request) => {
 
     // Verify Razorpay signature: HMAC-SHA256(order_id|payment_id) == signature
     const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
+    console.log('Payload for HMAC:', payload);  // Exact payload for debug
+
     const encoder = new TextEncoder();
+    // Fixed: Use raw keySecret as UTF-8 bytes (no URL encoding - that's for Basic Auth only)
     const key = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(keySecret),
+      encoder.encode(keySecret),  // Raw encoding
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
@@ -65,12 +73,19 @@ serve(async (req: Request) => {
     const signatureBytes = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
     const computedSignature = encodeBase64(new Uint8Array(signatureBytes));
 
+    // Debug: Log partial signatures (masked for security)
+    const computedPartial = computedSignature.substring(0, 10) + '...';
+    const receivedPartial = razorpay_signature.substring(0, 10) + '...';
+    console.log('Computed signature (partial):', computedPartial);
+    console.log('Received signature (partial):', receivedPartial);
+    console.log('Amount matches order?', 'N/A for signature');  // Signature doesn't use amount
+
     const isValid = computedSignature === razorpay_signature;
-    console.log('Signature verification:', isValid ? 'valid' : 'invalid');
+    console.log('Signature verification result:', isValid ? 'valid' : 'invalid');
 
     if (!isValid) {
-      console.error('Signature mismatch - possible tampering');
-      return new Response(JSON.stringify({ success: false, error: 'Payment signature invalid - transaction cannot be verified' }), {
+      console.error('Signature mismatch - possible tampering or key error. Computed:', computedPartial, 'vs Received:', receivedPartial);
+      return new Response(JSON.stringify({ success: false, error: 'Payment signature invalid - transaction cannot be verified (check server keys)' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -101,9 +116,6 @@ serve(async (req: Request) => {
       console.log('Guest verification: Signature valid, no DB update (track via payment_id if needed)');
       // Optional: Insert to guest_payments table here
     }
-
-    // Optional: Fetch full payment details from Razorpay for logging
-    // But minimal: Just confirm success
 
     return new Response(JSON.stringify({
       success: true,
