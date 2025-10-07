@@ -1,7 +1,4 @@
-"use client"
-
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 export interface ThemeProviderProps {
   children: React.ReactNode
@@ -10,6 +7,8 @@ export interface ThemeProviderProps {
   enableSystem?: boolean
 }
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+// Minimal theme provider that simply renders children.
+// This replaces the dependency on next-themes to avoid runtime context issues.
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  return <>{children}</>
 }

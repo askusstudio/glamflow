@@ -24,6 +24,7 @@ type Profile = {
   portfolio_images: string[] | null;
   available_days: string[] | null;
   avatar_url: string | null;
+  banner_url: string | null;
   email: string | null;
   social_accounts: { [key: string]: string } | null;
 };
@@ -98,8 +99,14 @@ export default function ProfilePage() {
           ...data,
           social_accounts: (data as any).social_accounts || {}
         };
-        setProfile(profileData as Profile);
-        setFormData(profileData);
+        setProfile({
+          ...profileData,
+          banner_url: (profileData as any).banner_url || null
+        } as Profile);
+        setFormData({
+          ...profileData,
+          banner_url: (profileData as any).banner_url || null
+        });
         
         // If price_range is not one of the predefined options, it's a custom price
         if (data.price_range && !priceRanges.slice(0, -1).includes(data.price_range)) {
@@ -185,7 +192,7 @@ export default function ProfilePage() {
     }
   };
 
-  const uploadImage = async (file: File, isAvatar: boolean) => {
+  const uploadImage = async (file: File, isAvatar: boolean, isBanner: boolean = false) => {
     if (!file) return;
     
     setUploading(true);
@@ -203,17 +210,42 @@ export default function ProfilePage() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
-      const bucket = isAvatar ? "avatars" : "portfolio";
+      
+      let bucket: string;
+      if (isAvatar) {
+        bucket = "avatars";
+      } else if (isBanner) {
+        bucket = "banners";
+      } else {
+        bucket = "portfolio";
+      }
 
       const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
       
-      if (error) throw error;
+      if (error) {
+        // If banners bucket doesn't exist, fall back to portfolio bucket
+        if (error.message.includes('Bucket not found') && isBanner) {
+          console.warn('Banners bucket not found, using portfolio bucket instead');
+          const { data: fallbackData, error: fallbackError } = await supabase.storage.from('portfolio').upload(filePath, file);
+          if (fallbackError) throw fallbackError;
+          const url = supabase.storage.from('portfolio').getPublicUrl(filePath).data.publicUrl;
+          handleInputChange("banner_url", url);
+          toast({
+            title: "Success!",
+            description: "Banner uploaded successfully."
+          });
+          return;
+        }
+        throw error;
+      }
 
       if (data) {
         const url = supabase.storage.from(bucket).getPublicUrl(filePath).data.publicUrl;
         
         if (isAvatar) {
           handleInputChange("avatar_url", url);
+        } else if (isBanner) {
+          handleInputChange("banner_url", url);
         } else {
           const currentImages = formData.portfolio_images || [];
           if (currentImages.length >= 10) {
@@ -227,9 +259,10 @@ export default function ProfilePage() {
           handleInputChange("portfolio_images", [...currentImages, url]);
         }
         
+        const imageType = isAvatar ? 'Avatar' : isBanner ? 'Banner' : 'Portfolio image';
         toast({
           title: "Success!",
-          description: `${isAvatar ? 'Avatar' : 'Portfolio image'} uploaded successfully.`
+          description: `${imageType} uploaded successfully.`
         });
       }
     } catch (error) {
@@ -376,6 +409,84 @@ export default function ProfilePage() {
                         </Select>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Banner Image */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Badge variant="secondary" className="px-3 py-1">
+                    Banner Image
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Profile Banner</Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Upload a banner image that will be displayed at the top of your public profile
+                    </p>
+                  </div>
+                  
+                  {formData.banner_url ? (
+                    <div className="relative group">
+                      <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden bg-muted">
+                        <img
+                          src={formData.banner_url}
+                          alt="Profile banner"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="text-white text-center">
+                          <Camera className="w-8 h-8 mx-auto mb-2" />
+                          <p className="text-sm">Click to change banner</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                      <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <p className="text-muted-foreground mb-2">No banner image uploaded</p>
+                      <p className="text-sm text-muted-foreground">Upload a banner to showcase your profile</p>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadImage(file, false, true); // isBanner = true
+                        }}
+                        disabled={uploading}
+                        className="hidden"
+                        id="banner-upload"
+                      />
+                      <Label
+                        htmlFor="banner-upload"
+                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm w-full justify-center"
+                      >
+                        <Upload className="w-4 h-4" />
+                        {uploading ? "Uploading..." : formData.banner_url ? "Change Banner" : "Upload Banner"}
+                      </Label>
+                    </div>
+                    {formData.banner_url && (
+                      <Button
+                        variant="outline"
+                        onClick={() => handleInputChange("banner_url", null)}
+                        disabled={uploading}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Remove
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
