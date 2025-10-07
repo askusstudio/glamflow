@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Menu, X, Sparkles, User, Settings, LogOut, UserCircle, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -96,7 +97,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <header className="border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
+      <header className="border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50 ">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
@@ -125,6 +126,9 @@ const Navbar = () => {
             </nav>
 
             {/* <ThemeToggle /> */}
+            
+            {/* Notification Bell */}
+            <NotificationBell />
             
             <Button
               variant="ghost"

@@ -8,12 +8,13 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Star, ExternalLink, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BookingModal from '@/components/app/BookingModal';
-import { PaymentDialog } from '@/components/payment/PaymentDialog';
+import { RazorpayPaymentDialog } from '@/components/payment/RazorpayPaymentDialog';
 
 interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
+  banner_url: string | null;
   bio: string | null;
   city: string | null;
   category: string | null;
@@ -23,6 +24,7 @@ interface Profile {
   available_days: string[] | null;
   email: string | null;
   social_accounts: any | null;
+  expected_payment_amount: number | null;
 }
 
 const PublicProfile = () => {
@@ -31,6 +33,7 @@ const PublicProfile = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -90,131 +93,148 @@ const PublicProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-b">
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-            <Avatar className="w-32 h-32 border-4 border-background shadow-lg">
-              <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || 'User'} />
-              <AvatarFallback className="text-3xl">
-                {profile.full_name?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
+      <div className="relative border-b">
 
-            <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold mb-2">{profile.full_name || 'Anonymous User'}</h1>
+        {/* Banner Image */}
+        {profile.banner_url ? (
+    <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">
+      <img
+        src={profile.banner_url}
+        alt="Profile banner"
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+    </div>
+  ) : (
+    <div className="h-48 md:h-56 lg:h-64 bg-gradient-to-r from-primary/10 to-secondary/10"></div>
+  )}
+        
+        {/* Profile Content */}
+        <div className="container mx-auto px-4 relative">
+    {/* Avatar - Overlapping Banner */}
+    <div className="relative -mt-16 md:-mt-20 mb-4">
+      <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-background shadow-xl">
+        <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || 'User'} />
+        <AvatarFallback className="text-3xl md:text-4xl">
+          {profile.full_name?.charAt(0) || 'U'}
+        </AvatarFallback>
+      </Avatar>
+    </div>
+    <div className="pb-6">
+            {/* <div className="flex-1 text-center lg:text-left"> */}
+              <h1 className="text-3xl lg:text-4xl mb-2">{profile.full_name || 'Anonymous User'}</h1>
               
-              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
-                {profile.category && (
-                  <Badge variant="secondary" className="text-sm">
-                    {profile.category}
-                  </Badge>
-                )}
-                {profile.city && (
-                  <Badge variant="outline" className="text-sm">
-                    <MapPin className="w-3 h-3 mr-1" />
-                    {profile.city}
-                  </Badge>
-                )}
-                {profile.price_range && (
-                  <Badge variant="outline" className="text-sm">
-                    <Star className="w-3 h-3 mr-1" />
-                    {profile.price_range}
-                  </Badge>
-                )}
-              </div>
 
               {profile.bio && (
-                <p className="text-lg text-muted-foreground mb-6 max-w-2xl">
-                  {profile.bio}
-                </p>
-              )}
+        <p className="text-md text-muted-foreground mb-6 max-w-2xl">
+          {profile.bio}
+        </p>
+      )}
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-4">
-                <Button size="lg" onClick={() => setIsModalOpen(true)}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Book Me
-                </Button>
-                <Button size="lg" variant="secondary" onClick={() => setIsPaymentOpen(true)}>
-                  Pay Now
-                </Button>
-              </div>
-
-              {/* Social Links */}
-              {/* {Object.keys(socialAccounts).length > 0 && (
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                  {Object.entries(socialAccounts).map(([platform, url]) => (
-                    url && (
-                      <Button
-                        key={platform}
-                        variant="outline"
-                        size="sm"
-                        asChild
-                      >
-                        <a href={url as string} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-3 h-3 mr-1" />
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </a>
-                      </Button>
-                    )
-                  ))}
-                </div>
-              )} */}
-            </div>
-          </div>
-        </div>
+             {/* Action Buttons */}
+      <div className="flex flex-wrap gap-3 mb-4">
+        <Button size="lg" onClick={() => setIsModalOpen(true)}>
+          <Mail className="w-4 h-4 mr-2" />
+          Book Me
+        </Button>
+        <Button size="lg" variant="secondary" onClick={() => setIsPaymentOpen(true)}>
+          Pay Now
+        </Button>
       </div>
+    </div>
+  </div>
+</div>
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Services */}
-            {profile.services && (
+            {/* {profile.services && (
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-semibold mb-4">Services</h2>
                   <p className="text-muted-foreground">{profile.services}</p>
                 </CardContent>
               </Card>
-            )}
+            )} */}
 
             {/* Portfolio Gallery */}
-            {portfolioImages.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold mb-6">Portfolio</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {portfolioImages.map((image, index) => (
-                      <div
-                        key={index}
-                        className="aspect-square bg-muted rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
-                      >
-                        <img
-                          src={image}
-                          alt={`Portfolio ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
+            {/* Portfolio Gallery - Messy Grid */}
+        {portfolioImages.length > 0 && (
+          <Card className="border-2 shadow-xl bg-white/80 backdrop-blur-sm overflow-hidden">
+            <CardContent className="p-8">
+              <div className="text-center mb-8">
+                {/* <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  Portfolio Gallery
+                </h2>
+                <p className="text-gray-500">Showcasing my best work</p> */}
+              </div>
+              
+              {/* Messy Masonry-style Grid */}
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                {portfolioImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className="break-inside-avoid relative group cursor-pointer overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300"
+                    style={{
+                      marginBottom: index % 3 === 0 ? '1.5rem' : '1rem',
+                    }}
+                    onClick={() => setSelectedImage(image)}
+                  >
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`Portfolio ${index + 1}`}
+                        className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-4 left-4 text-white">
+                          <p className="text-sm font-semibold">View Full Image</p>
+                        </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+         {/* Image Modal */}
+         {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-6xl w-full">
+            <button 
+              className="absolute -top-12 right-0 text-white text-4xl hover:text-pink-400 transition-colors"
+              onClick={() => setSelectedImage(null)}
+            >
+              ×
+            </button>
+            <img
+              src={selectedImage}
+              alt="Portfolio"
+              className="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
           </div>
+        </div>
+      )}
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6  ">
             {/* Availability */}
             {availableDays.length > 0 && (
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="p-6 shadow-md bg-white/80 backdrop-blur-sm overflow-hidden">
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
                     <Calendar className="w-5 h-5 mr-2" />
                     Available Days
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-2 ">
                     {availableDays.map((day, index) => (
                       <Badge key={index} variant="outline" className="mr-2 mb-2">
                         {day}
@@ -227,7 +247,7 @@ const PublicProfile = () => {
 
             {/* Quick Info */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-6 shadow-md bg-white/80 backdrop-blur-sm overflow-hidden">
                 <h3 className="text-lg font-semibold mb-4">Quick Info</h3>
                 <div className="space-y-3">
                   {profile.category && (
@@ -269,15 +289,12 @@ const PublicProfile = () => {
       />
 
       {/* Payment Dialog */}
-      <PaymentDialog
+      <RazorpayPaymentDialog
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
-        appointmentId=""
-        serviceDetails={{
-          serviceName: profile.services || 'Service',
-          providerName: profile.full_name || 'Provider',
-          amount: 0,
-        }}
+        providerId={userId || ''}
+        providerName={profile.full_name || 'Provider'}
+        expectedAmount={profile.expected_payment_amount || 0}
       />
     </div>
   );

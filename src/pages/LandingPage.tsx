@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Star, Calendar, Users, X, Download, Menu, CreditCard, Mail, Phone, BarChart3, Shield, Clock, Image} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
+import PromoModal from '@/components/PromoModal';
 
 // GLOBAL ANIMATION VARIANTS
 const itemVariants = {
@@ -96,6 +97,10 @@ export default function LandingPage() {
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handlePlanClick = () => {
+    setIsModalOpen(true);
+  };
   return (
     // FIX: Removed the `overflow-hidden` class from this div to enable scrolling
     <div className="min-h-screen relative overflow-x-hidden" style={{ background: 'oklch(.969 .015 12.422)' }}>
@@ -237,31 +242,46 @@ export default function LandingPage() {
           <FloatingIcon className="-bottom-4 -left-12" delay={2.5}><div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg"><Star className="w-7 h-7 text-white" /></div></FloatingIcon>
           <motion.div className="relative w-72 sm:w-80 h-[550px] sm:h-[600px] bg-black rounded-[3rem] p-2 shadow-2xl">
             <div className="w-full h-full bg-gradient-to-br from-pink-50 to-purple-50 rounded-[2.5rem] overflow-hidden relative">
-              <div className="p-6">
+              {/* iPhone Status Bar */}
+              <motion.div className="px-6 pt-2 pb-1 flex justify-between items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}>
+                <span className="text-xs font-semibold text-gray-800">9:41</span>
+                <div className="w-20 h-6 bg-black rounded-full"></div>
+                <div className="flex items-center gap-1">
+                  <svg className="w-4 h-4 text-gray-800" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                  {/* <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M17 4v12c0 .6-.4 1-1 1h-1c-.6 0-1-.4-1-1V4c0-.6.4-1 1-1h1c.6 0 1 .4 1 1zm-4 12V4c0-.6-.4-1-1-1h-2a1 1 0 00-1 1v3.5L7.9 6.4a1 1 0 00-1.4 0l-.7.7a1 1 0 000 1.4L7.5 10H4a1 1 0 00-1 1v1a1 1 0 001 1h3.5l-1.7 1.7a1 1 0 000 1.4l.7.7a1 1 0 001.4 0L9 15.5V19a1 1 0 001 1h2a1 1 0 001-1z" clipRule="evenodd"/></svg> */}
+                  <div className="w-6 h-3 border-2 border-gray-800 rounded-sm relative"><div className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-1.5 bg-gray-800 -mr-1"></div><div className="h-full w-5 bg-gray-800 rounded-sm"></div></div>
+                </div>
+              </motion.div>
+              
+              <div className="p-6 pt-3">
                 <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6 }}>
-                  <h2 className="text-xl font-bold text-gray-800 mb-1">Good morning, Divya!</h2>
+                  <h2 className="text-xl font-bold text-gray-800 mb-1 my-6">Good morning, Divya!</h2>
                   <p className="text-gray-600 text-sm flex items-center gap-2">You have 3 appointments today<div className="w-3 h-3 bg-pink-500 rounded-full"></div></p>
                 </motion.div>
 
-                {/* --- Added Section Starts Here --- */}
                 <motion.div className="flex gap-4 mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: 0.6 }}>
                   <div className="flex-1 bg-white p-4 rounded-xl shadow-md">
-                    <p className="text-2xl font-bold text-gray-800">₹22,450</p>
+                    <p className="text-2xl font-bold text-gray-800">₹2,450</p>
                     <p className="text-gray-500 text-sm">This Month</p>
                   </div>
                   <div className="flex-1 bg-white p-4 rounded-xl shadow-md">
-                    <p className="text-2xl font-bold text-gray-800">28</p>
+                    <p className="text-2xl font-bold text-gray-800">281</p>
                     <p className="text-gray-500 text-sm">Appointments</p>
                   </div>
                 </motion.div>
                 <motion.h3 className="text-md font-semibold text-gray-700 mb-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.35, duration: 0.6 }}>Today's Schedule</motion.h3>
-                {/* --- Added Section Ends Here --- */}
                 
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.6 }}>
-                  <AppointmentCard name="Priya" service="Bridal Makeup" time="10:00 AM" color="bg-pink-500" />
-                  <AppointmentCard name="jaya" service="Photoshoot Look" time="2:00 PM" color="bg-purple-500" />
-                  <AppointmentCard name="Ayushi" service="Evening Glam" time="5:30 PM" color="bg-pink-400" />
-                </motion.div>
+                <div className="space-y-3">
+                  <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5, duration: 0.6 }}>
+                    <AppointmentCard name="Priya" service="Bridal Makeup artist" time="10:00 AM" color="bg-pink-500" />
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.7, duration: 0.6 }}>
+                    <AppointmentCard name="Jaya" service="Photoshoot artist" time="2:00 PM" color="bg-purple-500" />
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.9, duration: 0.6 }}>
+                    <AppointmentCard name="Ruhi" service="Makup artist" time="5:30 PM" color="bg-pink-400" />
+                  </motion.div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -444,6 +464,7 @@ export default function LandingPage() {
   </div>
 </AnimatedSection>
       {/* Pricing Section */}
+      {/* Pricing Section */}
       <AnimatedSection className="py-20 px-2 sm:px-4 bg-white" id="pricing">
         <div className="w-full max-w-full lg:max-w-7xl mx-auto">
           <AnimatedItem className="text-center mb-16">
@@ -468,18 +489,30 @@ export default function LandingPage() {
                 <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>50 bookings per month</span>
+                    <span>Unlimited calendar</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>Professional Invoicing</span>
+                    <span>Unlimited appointments</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>Client Database</span>
+                    <span>Client bookings</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-500" />
+                    <span>Portfolio website 1 template</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-500" />
+                    <span>Community Support and email only</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full mt-8 rounded-full py-6 text-lg font-medium border-2 border-pink-200 hover:border-pink-300 text-pink-600 hover:bg-pink-50 transition-all duration-300">
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-8 rounded-full py-6 text-lg font-medium border-2 border-pink-200 hover:border-pink-300 text-pink-600 hover:bg-pink-50 transition-all duration-300"
+                  onClick={handlePlanClick}
+                >
                   Choose Plan
                 </Button>
               </div>
@@ -498,18 +531,29 @@ export default function LandingPage() {
                 <ul className="mt-8 space-y-4 text-gray-300 flex-grow">
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-400" />
-                    <span>Unlimited bookings</span>
+                    <span>All Free features </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-400" />
-                    <span>Business Analytics</span>
+                    <span>Basic analytics</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-400" />
-                    <span>Client Loyalty Tools</span>
+                    <span>Unlimited client bookings</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-400" />
+                    <span>Portfolio website 5 template.</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-400" />
+                    <span>Priority Support email within 24 hours.</span>
                   </li>
                 </ul>
-                <Button className="w-full mt-8 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-pink-600 hover:to-purple-700 text-white rounded-full py-6 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button 
+                  className="w-full mt-8 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-pink-600 hover:to-purple-700 text-white rounded-full py-6 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={handlePlanClick}
+                >
                   Choose Plan
                 </Button>
               </div>
@@ -527,18 +571,30 @@ export default function LandingPage() {
                 <ul className="mt-8 space-y-4 text-gray-600 flex-grow">
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>Multi-branch support</span>
+                    <span>All Pro features </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>Full Staff Management</span>
+                    <span>Profile recommendation</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-pink-500" />
-                    <span>Priority Support</span>
+                    <span>Advamce Business Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-500" />
+                    <span>Personal website with 10 templates</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-pink-500" />
+                    <span>24/7 chat, phone support</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full mt-8 rounded-full py-6 text-lg font-medium border-2 border-pink-200 hover:border-pink-300 text-pink-600 hover:bg-pink-50 transition-all duration-300">
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-8 rounded-full py-6 text-lg font-medium border-2 border-pink-200 hover:border-pink-300 text-pink-600 hover:bg-pink-50 transition-all duration-300"
+                  onClick={handlePlanClick}
+                >
                   Choose Plan
                 </Button>
               </div>
@@ -552,6 +608,11 @@ export default function LandingPage() {
           </AnimatedItem>
         </div>
       </AnimatedSection>
+
+      {/* Promo Modal */}
+      <PromoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      
+    
       {/* FAQ Section */}
       <AnimatedSection className="py-20 px-2 sm:px-4 bg-gray-50" id="faq">
         <div className="w-full max-w-full lg:max-w-4xl mx-auto">
