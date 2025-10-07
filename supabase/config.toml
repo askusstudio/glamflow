@@ -1,10 +1,7 @@
 project_id = "migptxsjdvnwauvspfvd"
 
-[functions.phonepe-create-payment]
+[functions.razorpay-create-order]
 verify_jwt = true
 
-[functions.phonepe-verify-payment]
-verify_jwt = false
-
-[functions.phonepe-webhook]
+[functions.razorpay-verify-payment]
 verify_jwt = false

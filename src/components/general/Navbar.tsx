@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Menu, X, Sparkles, User, Settings, LogOut, UserCircle, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -125,6 +126,9 @@ const Navbar = () => {
             </nav>
 
             {/* <ThemeToggle /> */}
+            
+            {/* Notification Bell */}
+            <NotificationBell />
             
             <Button
               variant="ghost"

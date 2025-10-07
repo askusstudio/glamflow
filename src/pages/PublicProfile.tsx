@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Star, ExternalLink, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BookingModal from '@/components/app/BookingModal';
-import { PaymentDialog } from '@/components/payment/PaymentDialog';
+import { RazorpayPaymentDialog } from '@/components/payment/RazorpayPaymentDialog';
 
 interface Profile {
   id: string;
@@ -24,6 +24,7 @@ interface Profile {
   available_days: string[] | null;
   email: string | null;
   social_accounts: any | null;
+  expected_payment_amount: number | null;
 }
 
 const PublicProfile = () => {
@@ -288,15 +289,12 @@ const PublicProfile = () => {
       />
 
       {/* Payment Dialog */}
-      <PaymentDialog
+      <RazorpayPaymentDialog
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
-        appointmentId=""
-        serviceDetails={{
-          serviceName: profile.services || 'Service',
-          providerName: profile.full_name || 'Provider',
-          amount: 0,
-        }}
+        providerId={userId || ''}
+        providerName={profile.full_name || 'Provider'}
+        expectedAmount={profile.expected_payment_amount || 0}
       />
     </div>
   );

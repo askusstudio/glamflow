@@ -100,6 +100,113 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          payer_name: string
+          payment_id: string
+          provider_id: string
+          rating: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          payer_name: string
+          payment_id: string
+          provider_id: string
+          rating: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          payer_name?: string
+          payment_id?: string
+          provider_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          payment_id: string | null
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          payment_id?: string | null
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          payment_id?: string | null
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -108,11 +215,17 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          payer_email: string | null
+          payer_name: string | null
+          payer_phone: string | null
           payment_method: string | null
           payment_response: Json | null
           payment_status: string
-          phonepe_merchant_transaction_id: string
-          phonepe_transaction_id: string | null
+          payment_type: string | null
+          provider_id: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
           updated_at: string
           user_id: string
         }
@@ -123,11 +236,17 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          payer_email?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
           payment_method?: string | null
           payment_response?: Json | null
           payment_status?: string
-          phonepe_merchant_transaction_id: string
-          phonepe_transaction_id?: string | null
+          payment_type?: string | null
+          provider_id?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
           updated_at?: string
           user_id: string
         }
@@ -138,11 +257,17 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          payer_email?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
           payment_method?: string | null
           payment_response?: Json | null
           payment_status?: string
-          phonepe_merchant_transaction_id?: string
-          phonepe_transaction_id?: string | null
+          payment_type?: string | null
+          provider_id?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -154,16 +279,32 @@ export type Database = {
             referencedRelation: "appointments"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
         Row: {
           available_days: string[] | null
           avatar_url: string | null
+          banner_url: string | null
           bio: string | null
           category: string | null
           city: string | null
           email: string | null
+          expected_payment_amount: number | null
           full_name: string | null
           hourly_rate: number | null
           id: string
@@ -178,10 +319,12 @@ export type Database = {
         Insert: {
           available_days?: string[] | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           category?: string | null
           city?: string | null
           email?: string | null
+          expected_payment_amount?: number | null
           full_name?: string | null
           hourly_rate?: number | null
           id: string
@@ -196,10 +339,12 @@ export type Database = {
         Update: {
           available_days?: string[] | null
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           category?: string | null
           city?: string | null
           email?: string | null
+          expected_payment_amount?: number | null
           full_name?: string | null
           hourly_rate?: number | null
           id?: string
@@ -332,6 +477,7 @@ export type Database = {
         Returns: {
           available_days: string[]
           avatar_url: string
+          banner_url: string
           bio: string
           category: string
           city: string

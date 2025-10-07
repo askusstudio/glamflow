@@ -27,6 +27,7 @@ type Profile = {
   banner_url: string | null;
   email: string | null;
   social_accounts: { [key: string]: string } | null;
+  expected_payment_amount: number | null;
 };
 
 const socialPlatforms = [
@@ -543,6 +544,20 @@ export default function ProfilePage() {
                       />
                     </div>
                   )}
+                </div>
+                <div>
+                  <Label htmlFor="expected_payment_amount">Expected Payment Amount (₹)</Label>
+                  <Input
+                    id="expected_payment_amount"
+                    type="number"
+                    value={formData.expected_payment_amount || ""}
+                    placeholder="e.g., 10000"
+                    onChange={(e) => handleInputChange("expected_payment_amount", parseFloat(e.target.value) || 0)}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This is the total amount clients will pay (25% advance + 75% final)
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="bio">Bio</Label>
