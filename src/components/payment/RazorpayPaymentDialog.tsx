@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -30,32 +29,44 @@ export const RazorpayPaymentDialog = ({
   expectedAmount 
 }: RazorpayPaymentDialogProps) => {
   const [loading, setLoading] = useState(false);
-  const [paymentType, setPaymentType] = useState<'advance' | 'final'>('advance');
   const [payerName, setPayerName] = useState('');
   const [payerEmail, setPayerEmail] = useState('');
   const [payerPhone, setPayerPhone] = useState('');
+  const [customAmount, setCustomAmount] = useState(''); // User enters amount here
 
-  const amount = paymentType === 'advance' 
-    ? expectedAmount * 0.25 
-    : expectedAmount * 0.75;
+  const amount = parseFloat(customAmount) || 0; // Parse user input for display/validation
 
   useEffect(() => {
-    // Load Razorpay script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
+    // Load Razorpay script only if not already present
+    if (typeof window !== 'undefined' && !window.Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => console.log('Razorpay script loaded');
+      document.body.appendChild(script);
+      return () => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+    }
   }, []);
 
   const handlePayment = async () => {
-    if (!payerName || !payerEmail || !payerPhone) {
+    if (!payerName || !payerEmail || !payerPhone || !customAmount || amount <= 0) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all your details",
+        description: "Please fill in all your details including a valid amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate Indian phone number (+91 followed by 10 digits)
+    if (!/^\+91\d{10}$/.test(payerPhone)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid Indian phone number starting with +91",
         variant: "destructive",
       });
       return;
@@ -74,15 +85,15 @@ export const RazorpayPaymentDialog = ({
         return;
       }
 
-      // Create Razorpay order
+      // Create Razorpay order - send amount in paise to backend
       const { data, error } = await supabase.functions.invoke('razorpay-create-order', {
         body: {
-          amount,
+          amount: amount * 1, // Convert to paise for Razorpay
           providerId,
-          paymentType,
           payerName,
           payerEmail,
           payerPhone,
+          userId: session.user.id, // Pass user ID for security
         },
       });
 
@@ -92,13 +103,15 @@ export const RazorpayPaymentDialog = ({
         throw new Error('Failed to create order');
       }
 
+      console.log('Order data:', data); // Debug log
+
       // Initialize Razorpay payment
       const options = {
         key: data.keyId,
-        amount: data.amount,
+        amount: data.amount, // Use backend-provided amount (in paise)
         currency: data.currency,
         name: 'Freelancer Payment',
-        description: `${paymentType === 'advance' ? 'Advance' : 'Final'} payment to ${providerName}`,
+        description: `Payment of ₹${amount.toFixed(2)} to ${providerName}`,
         order_id: data.orderId,
         handler: async function (response: any) {
           try {
@@ -110,15 +123,21 @@ export const RazorpayPaymentDialog = ({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
+                  amount: amount * 100, // Pass amount in paise for verification
                 },
               }
             );
 
-            if (verifyError) throw verifyError;
+            if (verifyError || !verifyData?.success) {
+              throw new Error(verifyError?.message || 'Verification failed');
+            }
+
+            // Optional: Update booking status in DB (add bookingId prop if needed)
+            // await supabase.from('bookings').update({ payment_status: 'paid' }).eq('id', bookingId);
 
             toast({
               title: "Payment Successful",
-              description: `Your ${paymentType} payment of ₹${amount} has been completed`,
+              description: `Your payment of ₹${amount.toFixed(2)} has been completed`,
             });
 
             onClose();
@@ -143,11 +162,14 @@ export const RazorpayPaymentDialog = ({
 
       const razorpay = new window.Razorpay(options);
       razorpay.on('payment.failed', function (response: any) {
+        console.error('Payment failed:', response.error);
         toast({
           title: "Payment Failed",
-          description: response.error.description,
+          description: response.error.description || 'Payment was declined',
           variant: "destructive",
         });
+        setLoading(false);
+        onClose(); // Close dialog on failure
       });
       razorpay.open();
 
@@ -172,21 +194,16 @@ export const RazorpayPaymentDialog = ({
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Payment Type</Label>
-            <RadioGroup value={paymentType} onValueChange={(value) => setPaymentType(value as 'advance' | 'final')}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="advance" id="advance" />
-                <Label htmlFor="advance" className="font-normal">
-                  Advance Payment (25%) - ₹{(expectedAmount * 0.25).toFixed(2)}
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="final" id="final" />
-                <Label htmlFor="final" className="font-normal">
-                  Final Payment (75%) - ₹{(expectedAmount * 0.75).toFixed(2)}
-                </Label>
-              </div>
-            </RadioGroup>
+            <Label htmlFor="amount">Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)})</Label>
+            <Input 
+              id="amount"
+              type="number"
+              step="0.01"
+              min="1"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              placeholder={`Enter amount (e.g., ${expectedAmount.toFixed(2)})`}
+            />
           </div>
 
           <div className="space-y-2">
@@ -222,7 +239,7 @@ export const RazorpayPaymentDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label>Amount to Pay</Label>
+            <Label>Selected Amount</Label>
             <Input 
               value={`₹${amount.toFixed(2)}`} 
               disabled 
@@ -233,7 +250,7 @@ export const RazorpayPaymentDialog = ({
           <div className="pt-4 space-y-2">
             <Button 
               onClick={handlePayment} 
-              disabled={loading || !payerName || !payerEmail || !payerPhone}
+              disabled={loading || !payerName || !payerEmail || !payerPhone || !customAmount || amount <= 0}
               className="w-full"
             >
               {loading ? (
