@@ -38,16 +38,17 @@ const socialPlatforms = [
 ];
 
 const categories = [
-  'Beauty & Makeup',
+  'Makeup',
   'Hair Styling',
-  'Photography',
-  'Event Planning',
-  'Catering',
-  'Music & Entertainment',
-  'Fashion Design',
-  'Interior Design',
-  'Fitness Training',
-  'Tutoring',
+  "bridal makup",
+  'Nail Art',
+  'Skincare',
+  'Massage Therapy',
+  'Waxing & Hair Removal',
+  'Eyelash Extensions',
+  'Brow Shaping',
+  'Spa Treatments',
+  'Beauty Consulting',
   'Other'
 ];
 
