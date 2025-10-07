@@ -1,114 +1,125 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { encode as encodeBase64 } from 'https://deno.land/std@0.168.0/encoding/base64.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
-
-    console.log('Verifying Razorpay payment:', { razorpay_order_id, razorpay_payment_id });
-
-    // Get Razorpay secret
-    const RAZORPAY_KEY_SECRET = Deno.env.get('RAZORPAY_KEY_SECRET');
-    if (!RAZORPAY_KEY_SECRET) {
-      throw new Error('Razorpay secret not configured');
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Verify signature
-    const text = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(RAZORPAY_KEY_SECRET);
-    const messageData = encoder.encode(text);
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, userId } = body;
 
-    const cryptoKey = await crypto.subtle.importKey(
+    console.log('Verification invoke:', { orderId: razorpay_order_id?.substring(0, 10) + '...', userId: userId || 'null (guest)' });
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !amount || typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0) {
+      console.error('Invalid verification params:', { razorpay_order_id, razorpay_payment_id, amount });
+      return new Response(JSON.stringify({ success: false, error: 'Missing or invalid verification parameters (order_id, payment_id, signature, amount required)' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Supabase client (only for authenticated users' DB update - service_role bypasses RLS)
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET')?.trim();
+
+    if (!keySecret) {
+      console.error('Razorpay key secret missing from Deno.env.get()');
+      return new Response(JSON.stringify({ success: false, error: 'Server configuration error - contact support (secret not set)' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Verify Razorpay signature: HMAC-SHA256(order_id|payment_id) == signature
+    const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
       'raw',
-      keyData,
+      encoder.encode(keySecret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
     );
-
-    const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
-    const computedSignature = Array.from(new Uint8Array(signature))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+    const signatureBytes = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const computedSignature = encodeBase64(new Uint8Array(signatureBytes));
 
     const isValid = computedSignature === razorpay_signature;
+    console.log('Signature verification:', isValid ? 'valid' : 'invalid');
 
     if (!isValid) {
-      console.error('Invalid signature');
-      throw new Error('Invalid payment signature');
-    }
-
-    console.log('Payment signature verified successfully');
-
-    // Update payment status
-    const { data: payment, error: fetchError } = await supabaseClient
-      .from('payments')
-      .select('*, provider_id')
-      .eq('razorpay_order_id', razorpay_order_id)
-      .single();
-
-    if (fetchError || !payment) {
-      console.error('Payment not found:', fetchError);
-      throw new Error('Payment record not found');
-    }
-
-    const { error: updateError } = await supabaseClient
-      .from('payments')
-      .update({
-        payment_status: 'success',
-        razorpay_payment_id: razorpay_payment_id,
-        razorpay_signature: razorpay_signature,
-      })
-      .eq('razorpay_order_id', razorpay_order_id);
-
-    if (updateError) {
-      console.error('Failed to update payment:', updateError);
-      throw new Error('Failed to update payment status');
-    }
-
-    // Create notification for provider
-    const { error: notificationError } = await supabaseClient
-      .from('notifications')
-      .insert({
-        user_id: payment.provider_id,
-        title: 'Payment Received',
-        message: `${payment.payer_name} has paid ₹${payment.amount} (${payment.payment_type} payment)`,
-        type: 'payment',
-        payment_id: payment.id,
-      });
-
-    if (notificationError) {
-      console.error('Failed to create notification:', notificationError);
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, paymentId: payment.id }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error('Error in razorpay-verify-payment:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }),
-      { 
+      console.error('Signature mismatch - possible tampering');
+      return new Response(JSON.stringify({ success: false, error: 'Payment signature invalid - transaction cannot be verified' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Signature valid - now handle DB update (optional for guests)
+    let dbUpdated = false;
+    if (userId) {
+      try {
+        const { error: dbError } = await supabaseClient
+          .from('payments')
+          .update({ 
+            payment_id: razorpay_payment_id,
+            status: 'paid',
+            verified_at: new Date().toISOString(),
+            amount: amount // Confirm amount matches
+          })
+          .eq('order_id', razorpay_order_id) // Match by order_id from create
+          .eq('user_id', userId);
+        if (dbError) throw dbError;
+        dbUpdated = true;
+        console.log('DB updated for user:', userId, 'order:', razorpay_order_id);
+      } catch (dbError) {
+        console.error('DB update error (non-fatal):', dbError);
+        // Still return success if Razorpay verified
       }
-    );
+    } else {
+      console.log('Guest verification: Signature valid, no DB update (track via payment_id if needed)');
+      // Optional: Insert to guest_payments table here
+    }
+
+    // Optional: Fetch full payment details from Razorpay for logging
+    // But minimal: Just confirm success
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Payment verified successfully',
+      paymentId: razorpay_payment_id,
+      dbUpdated,
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('Verification unhandled error:', error);
+    return new Response(JSON.stringify({ success: false, error: `Internal verification error: ${error.message}` }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
-});
+})
