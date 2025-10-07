@@ -31,10 +31,11 @@ export const RazorpayPaymentDialog = ({
   const [loading, setLoading] = useState(false);
   const [payerName, setPayerName] = useState('');
   const [payerEmail, setPayerEmail] = useState('');
-  const [payerPhone, setPayerPhone] = useState('');
+  const [payerPhone, setPayerPhone] = useState(''); // Raw input (10 digits)
   const [customAmount, setCustomAmount] = useState(''); // User enters amount here
 
   const amount = parseFloat(customAmount) || 0; // Parse user input for display/validation
+  const formattedPhone = payerPhone.length === 10 ? `+91${payerPhone}` : payerPhone; // Auto-prepend +91 for 10 digits
 
   useEffect(() => {
     // Load Razorpay script only if not already present
@@ -53,7 +54,7 @@ export const RazorpayPaymentDialog = ({
   }, []);
 
   const handlePayment = async () => {
-    if (!payerName || !payerEmail || !payerPhone || !customAmount || amount <= 0) {
+    if (!payerName || !payerEmail || !formattedPhone || !customAmount || amount <= 0) {
       toast({
         title: "Missing Information",
         description: "Please fill in all your details including a valid amount",
@@ -62,11 +63,12 @@ export const RazorpayPaymentDialog = ({
       return;
     }
 
-    // Validate Indian phone number (+91 followed by 10 digits)
-    if (!/^\+91\d{10}$/.test(payerPhone)) {
+    // Validate Indian phone (auto-format if needed)
+    const phoneToValidate = formattedPhone.startsWith('+91') ? formattedPhone : `+91${formattedPhone}`;
+    if (!/^\+91\d{10}$/.test(phoneToValidate)) {
       toast({
         title: "Invalid Phone Number",
-        description: "Please enter a valid Indian phone number starting with +91",
+        description: "Please enter a valid 10-digit Indian phone number (e.g., 1234567890)",
         variant: "destructive",
       });
       return;
@@ -75,25 +77,19 @@ export const RazorpayPaymentDialog = ({
     try {
       setLoading(true);
 
+      // Get session if available (optional for guest payments)
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to continue",
-          variant: "destructive",
-        });
-        return;
-      }
+      const userId = session?.user?.id || null; // Omit if not logged in
 
       // Create Razorpay order - send amount in paise to backend
       const { data, error } = await supabase.functions.invoke('razorpay-create-order', {
         body: {
-          amount: amount * 1, // Convert to paise for Razorpay
+          amount: amount, // Correctly convert to paise for Razorpay
           providerId,
           payerName,
           payerEmail,
-          payerPhone,
-          userId: session.user.id, // Pass user ID for security
+          payerPhone: formattedPhone, // Use formatted phone
+          ...(userId && { userId }), // Conditionally include userId for authenticated users
         },
       });
 
@@ -115,7 +111,7 @@ export const RazorpayPaymentDialog = ({
         order_id: data.orderId,
         handler: async function (response: any) {
           try {
-            // Verify payment
+            // Verify payment (userId optional in backend)
             const { data: verifyData, error: verifyError } = await supabase.functions.invoke(
               'razorpay-verify-payment',
               {
@@ -124,6 +120,7 @@ export const RazorpayPaymentDialog = ({
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                   amount: amount * 100, // Pass amount in paise for verification
+                  ...(userId && { userId }), // Conditionally include if available
                 },
               }
             );
@@ -133,7 +130,7 @@ export const RazorpayPaymentDialog = ({
             }
 
             // Optional: Update booking status in DB (add bookingId prop if needed)
-            // await supabase.from('bookings').update({ payment_status: 'paid' }).eq('id', bookingId);
+            // If authenticated: await supabase.from('bookings').update({ payment_status: 'paid' }).eq('id', bookingId);
 
             toast({
               title: "Payment Successful",
@@ -153,7 +150,7 @@ export const RazorpayPaymentDialog = ({
         prefill: {
           name: payerName,
           email: payerEmail,
-          contact: payerPhone,
+          contact: formattedPhone, // Prefill with auto-formatted phone
         },
         theme: {
           color: '#3399cc',
@@ -187,14 +184,18 @@ export const RazorpayPaymentDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Pay {providerName}</DialogTitle>
+      <DialogContent className="w-full max-w-sm sm:max-w-md p-4 sm:p-6"> {/* Responsive: full-width on mobile, padded on larger screens */}
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg sm:text-xl text-center sm:text-left"> {/* Responsive text sizing and alignment */}
+            Pay {providerName}
+          </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
+        <div className="space-y-3 sm:space-y-4"> {/* Tighter spacing on mobile */}
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)})</Label>
+            <Label htmlFor="amount" className="text-sm"> {/* Consistent small text */}
+              Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)})
+            </Label>
             <Input 
               id="amount"
               type="number"
@@ -203,55 +204,71 @@ export const RazorpayPaymentDialog = ({
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder={`Enter amount (e.g., ${expectedAmount.toFixed(2)})`}
+              className="w-full" // Ensure full width
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
+            <Label htmlFor="name" className="text-sm">
+              Your Name
+            </Label>
             <Input 
               id="name"
               value={payerName}
               onChange={(e) => setPayerName(e.target.value)}
               placeholder="Enter your name"
+              className="w-full"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-sm">
+              Email
+            </Label>
             <Input 
               id="email"
               type="email"
               value={payerEmail}
               onChange={(e) => setPayerEmail(e.target.value)}
               placeholder="your.email@example.com"
+              className="w-full"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone" className="text-sm">
+              Phone Number
+            </Label>
             <Input 
               id="phone"
               type="tel"
-              value={payerPhone}
-              onChange={(e) => setPayerPhone(e.target.value)}
-              placeholder="+91 1234567890"
+              value={payerPhone} // Show raw 10 digits
+              onChange={(e) => setPayerPhone(e.target.value.replace(/\D/g, ''))} // Only allow digits, auto-format
+              placeholder="Enter 10-digit number (e.g., 1234567890)"
+              maxLength={10} // Limit to 10 digits
+              className="w-full"
             />
+            {payerPhone.length === 10 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Formatted: {formattedPhone}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label>Selected Amount</Label>
+            <Label className="text-sm">Selected Amount</Label>
             <Input 
               value={`₹${amount.toFixed(2)}`} 
               disabled 
-              className="text-lg font-semibold"
+              className="text-base sm:text-lg font-semibold w-full" // Responsive font size
             />
           </div>
 
-          <div className="pt-4 space-y-2">
+          <div className="pt-3 sm:pt-4 space-y-2">
             <Button 
               onClick={handlePayment} 
-              disabled={loading || !payerName || !payerEmail || !payerPhone || !customAmount || amount <= 0}
-              className="w-full"
+              disabled={loading || !payerName || !payerEmail || !payerPhone || payerPhone.length !== 10 || amount <= 0} // Validate 10 digits
+              className="w-full h-12 sm:h-10 text-sm" // Taller on mobile for touch
             >
               {loading ? (
                 <>
@@ -265,7 +282,7 @@ export const RazorpayPaymentDialog = ({
             <Button 
               onClick={onClose} 
               variant="outline"
-              className="w-full"
+              className="w-full h-12 sm:h-10 text-sm"
             >
               Cancel
             </Button>
