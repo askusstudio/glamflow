@@ -29,6 +29,8 @@ export const RazorpayPaymentDialog = ({
   expectedAmount 
 }: RazorpayPaymentDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const [payerName, setPayerName] = useState('');
   const [payerEmail, setPayerEmail] = useState('');
   const [payerPhone, setPayerPhone] = useState(''); // Raw input (10 digits)
@@ -38,19 +40,35 @@ export const RazorpayPaymentDialog = ({
   const formattedPhone = payerPhone.length === 10 ? `+91${payerPhone}` : payerPhone; // Auto-prepend +91 for 10 digits
 
   useEffect(() => {
-    // Load Razorpay script only if not already present
-    if (typeof window !== 'undefined' && !window.Razorpay) {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      script.onload = () => console.log('Razorpay script loaded');
-      document.body.appendChild(script);
-      return () => {
-        if (script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-      };
+    // Check if script is already loaded
+    if (window.Razorpay) {
+      setScriptLoaded(true);
+      console.log('Razorpay already available');
+      return;
     }
+
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => {
+      setScriptLoaded(true);
+      console.log('Razorpay script loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script');
+      toast({
+        title: "Error",
+        description: "Failed to load payment gateway. Please refresh the page.",
+        variant: "destructive",
+      });
+    };
+    document.body.appendChild(script);
+    
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, []);
 
   const handlePayment = async () => {
@@ -58,6 +76,15 @@ export const RazorpayPaymentDialog = ({
       toast({
         title: "Missing Information",
         description: "Please fill in all your details including a valid amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!scriptLoaded || !window.Razorpay) {
+      toast({
+        title: "Payment Gateway Loading",
+        description: "Please wait for the payment gateway to load and try again.",
         variant: "destructive",
       });
       return;
@@ -178,9 +205,14 @@ export const RazorpayPaymentDialog = ({
           description: response.error.description || 'Payment was declined',
           variant: "destructive",
         });
+        setOpening(false);
         setLoading(false);
         onClose(); // Close dialog on failure
       });
+      
+      // Reset loading state immediately after opening modal
+      setLoading(false);
+      setOpening(true);
       razorpay.open();
 
     } catch (error) {
@@ -190,8 +222,8 @@ export const RazorpayPaymentDialog = ({
         description: error instanceof Error ? error.message : "Failed to initiate payment",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
+      setOpening(false);
     }
   };
 
@@ -280,13 +312,23 @@ export const RazorpayPaymentDialog = ({
           <div className="pt-3 sm:pt-4 space-y-2">
             <Button 
               onClick={handlePayment} 
-              disabled={loading || !payerName || !payerEmail || !payerPhone || payerPhone.length !== 10 || amount <= 0}
+              disabled={loading || opening || !scriptLoaded || !payerName || !payerEmail || !payerPhone || payerPhone.length !== 10 || amount <= 0}
               className="w-full h-12 sm:h-10 text-sm"
             >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
+                </>
+              ) : opening ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Opening payment...
+                </>
+              ) : !scriptLoaded ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading gateway...
                 </>
               ) : (
                 'Pay with Razorpay'
