@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { encode as encodeBase64 } from 'https://deno.land/std@0.168.0/encoding/base64.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -59,19 +58,22 @@ serve(async (req: Request) => {
 
     // Verify Razorpay signature: HMAC-SHA256(order_id|payment_id) == signature
     const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
-    console.log('Payload for HMAC:', payload);  // Exact payload for debug
+    console.log('Payload for HMAC:', payload);
 
     const encoder = new TextEncoder();
-    // Fixed: Use raw keySecret as UTF-8 bytes (no URL encoding - that's for Basic Auth only)
     const key = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(keySecret),  // Raw encoding
+      encoder.encode(keySecret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
     );
     const signatureBytes = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-    const computedSignature = encodeBase64(new Uint8Array(signatureBytes));
+    
+    // Convert to hex (Razorpay uses hex, not base64!)
+    const computedSignature = Array.from(new Uint8Array(signatureBytes))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
 
     // Debug: Log partial signatures (masked for security)
     const computedPartial = computedSignature.substring(0, 10) + '...';
@@ -129,7 +131,10 @@ serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Verification unhandled error:', error);
-    return new Response(JSON.stringify({ success: false, error: `Internal verification error: ${error.message}` }), {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: `Internal verification error: ${error instanceof Error ? error.message : 'Unknown error'}` 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

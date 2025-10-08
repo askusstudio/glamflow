@@ -105,15 +105,15 @@ serve(async (req: Request) => {
 
     // Handle Razorpay response
     if (!razorpayResponse.ok) {
-      let errorData = {};
+      let errorData: any = {};
       try {
         errorData = await razorpayResponse.json();
       } catch {
         // Non-JSON (e.g., raw 401 text)
         errorData = { error: { description: `HTTP ${razorpayResponse.status}: ${await razorpayResponse.text()}` } };
       }
-      const errorDesc = errorData.error?.description || errorData.description || 'Unknown Razorpay error';
-      const errorCode = errorData.error?.code || razorpayResponse.status;
+      const errorDesc = errorData?.error?.description || errorData?.description || 'Unknown Razorpay error';
+      const errorCode = errorData?.error?.code || razorpayResponse.status;
       console.error(`Razorpay API failed (${razorpayResponse.status} ${errorCode}):`, errorDesc, errorData);
       return new Response(JSON.stringify({ 
         success: false, 
@@ -169,7 +169,10 @@ serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Function unhandled error:', error);
-    return new Response(JSON.stringify({ success: false, error: `Internal error: ${error.message}` }), {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: `Internal error: ${error instanceof Error ? error.message : 'Unknown error'}` 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

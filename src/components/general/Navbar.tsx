@@ -72,7 +72,7 @@ const Navbar = () => {
         }
         break;
       case "settings":
-        console.log("Navigate to settings");
+        navigate("/settings");
         break;
       case "logout":
         const { error } = await supabase.auth.signOut();
@@ -176,13 +176,13 @@ const Navbar = () => {
                   </div>
 
                   <div className="py-2">
-                    <button
+                    {/* <button
                       onClick={() => handleProfileAction("profile")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
                       <UserCircle className="h-4 w-4" />
                       Profile
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleProfileAction("public-profile")}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted transition-colors"
