@@ -32,6 +32,7 @@ import Pricing from "./pages/Pricing.tsx";
 import HelpCenterPage from "./pages/HelpCenterPage";
 import Refundpage from "./pages/Refundpage.tsx";
 import InvoicePage from "./pages/InvoicePage";
+import Settings from "./pages/settings";
 // ... other page imports if any
 
 const queryClient = new QueryClient();
@@ -100,6 +101,7 @@ const App = () => {
                     <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/bookings" element={<BookingsTablePage />} />
                     <Route path="/invoice" element={<InvoicePage />} />
+                    <Route path="/settings" element={<Settings />} />
                   </Route>
                 </Route>
                 
