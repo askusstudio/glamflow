@@ -100,6 +100,54 @@ export type Database = {
           },
         ]
       }
+      bank_details: {
+        Row: {
+          account_holder_name: string
+          account_number: string
+          account_type: string
+          bank_name: string
+          branch_name: string | null
+          created_at: string
+          gst_number: string | null
+          id: string
+          ifsc_code: string
+          pan_number: string
+          updated_at: string
+          upi_id: string | null
+          user_id: string
+        }
+        Insert: {
+          account_holder_name: string
+          account_number: string
+          account_type?: string
+          bank_name: string
+          branch_name?: string | null
+          created_at?: string
+          gst_number?: string | null
+          id?: string
+          ifsc_code: string
+          pan_number: string
+          updated_at?: string
+          upi_id?: string | null
+          user_id: string
+        }
+        Update: {
+          account_holder_name?: string
+          account_number?: string
+          account_type?: string
+          bank_name?: string
+          branch_name?: string | null
+          created_at?: string
+          gst_number?: string | null
+          id?: string
+          ifsc_code?: string
+          pan_number?: string
+          updated_at?: string
+          upi_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           created_at: string
@@ -218,6 +266,7 @@ export type Database = {
           payer_email: string | null
           payer_name: string | null
           payer_phone: string | null
+          payment_id: string | null
           payment_method: string | null
           payment_response: Json | null
           payment_status: string
@@ -227,7 +276,8 @@ export type Database = {
           razorpay_payment_id: string | null
           razorpay_signature: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
+          verified_at: string | null
         }
         Insert: {
           amount: number
@@ -239,6 +289,7 @@ export type Database = {
           payer_email?: string | null
           payer_name?: string | null
           payer_phone?: string | null
+          payment_id?: string | null
           payment_method?: string | null
           payment_response?: Json | null
           payment_status?: string
@@ -248,7 +299,8 @@ export type Database = {
           razorpay_payment_id?: string | null
           razorpay_signature?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
+          verified_at?: string | null
         }
         Update: {
           amount?: number
@@ -260,6 +312,7 @@ export type Database = {
           payer_email?: string | null
           payer_name?: string | null
           payer_phone?: string | null
+          payment_id?: string | null
           payment_method?: string | null
           payment_response?: Json | null
           payment_status?: string
@@ -269,7 +322,8 @@ export type Database = {
           razorpay_payment_id?: string | null
           razorpay_signature?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
+          verified_at?: string | null
         }
         Relationships: [
           {
@@ -297,6 +351,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_balance: number | null
           available_days: string[] | null
           avatar_url: string | null
           banner_url: string | null
@@ -317,6 +372,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          account_balance?: number | null
           available_days?: string[] | null
           avatar_url?: string | null
           banner_url?: string | null
@@ -337,6 +393,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          account_balance?: number | null
           available_days?: string[] | null
           avatar_url?: string | null
           banner_url?: string | null
@@ -411,6 +468,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          bank_details_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          processed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bank_details_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bank_details_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_bank_details_id_fkey"
+            columns: ["bank_details_id"]
+            isOneToOne: false
+            referencedRelation: "bank_details"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

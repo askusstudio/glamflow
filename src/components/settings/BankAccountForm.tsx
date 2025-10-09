@@ -1,8 +1,40 @@
-import React, { useState } from 'react';
-import { CreditCard, Building2, User, FileText, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CreditCard, Building2, User, FileText, AlertCircle, Wallet } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface FormData {
+    accountHolderName: string;
+    accountNumber: string;
+    confirmAccountNumber: string;
+    ifscCode: string;
+    bankName: string;
+    branchName: string;
+    accountType: string;
+    panNumber: string;
+    gstNumber: string;
+    upiId: string;
+}
+
+interface FormErrors {
+    accountHolderName?: string;
+    accountNumber?: string;
+    confirmAccountNumber?: string;
+    ifscCode?: string;
+    bankName?: string;
+    panNumber?: string;
+    gstNumber?: string;
+    upiId?: string;
+}
 
 export default function BankAccountForm() {
-    const [formData, setFormData] = useState({
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(false);
+    const [hasExistingDetails, setHasExistingDetails] = useState(false);
+    const [accountBalance, setAccountBalance] = useState(0);
+    const [withdrawing, setWithdrawing] = useState(false);
+    
+    const [formData, setFormData] = useState<FormData>({
         accountHolderName: '',
         accountNumber: '',
         confirmAccountNumber: '',
@@ -15,21 +47,77 @@ export default function BankAccountForm() {
         upiId: '',
     });
 
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<FormErrors>({});
 
-    const handleChange = (e) => {
+    useEffect(() => {
+        loadBankDetails();
+        loadAccountBalance();
+    }, []);
+
+    const loadBankDetails = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data, error } = await supabase
+                .from('bank_details')
+                .select('*')
+                .eq('user_id', user.id)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (data) {
+                setHasExistingDetails(true);
+                setFormData({
+                    accountHolderName: data.account_holder_name,
+                    accountNumber: data.account_number,
+                    confirmAccountNumber: data.account_number,
+                    ifscCode: data.ifsc_code,
+                    bankName: data.bank_name,
+                    branchName: data.branch_name || '',
+                    accountType: data.account_type,
+                    panNumber: data.pan_number,
+                    gstNumber: data.gst_number || '',
+                    upiId: data.upi_id || '',
+                });
+            }
+        } catch (error) {
+            console.error('Error loading bank details:', error);
+        }
+    };
+
+    const loadAccountBalance = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('account_balance')
+                .eq('id', user.id)
+                .single();
+
+            if (error) throw error;
+            setAccountBalance(data?.account_balance || 0);
+        } catch (error) {
+            console.error('Error loading balance:', error);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
-        if (errors[name]) {
+        if (errors[name as keyof FormErrors]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors: FormErrors = {};
 
         if (!formData.accountHolderName.trim()) {
             newErrors.accountHolderName = 'Account holder name is required';
@@ -73,22 +161,154 @@ export default function BankAccountForm() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateForm()) {
-            console.log('Form submitted:', formData);
-            alert('Bank account details saved successfully!');
+        if (!validateForm()) return;
+
+        setLoading(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
+
+            const bankData = {
+                user_id: user.id,
+                account_holder_name: formData.accountHolderName,
+                account_number: formData.accountNumber,
+                ifsc_code: formData.ifscCode.toUpperCase(),
+                bank_name: formData.bankName,
+                branch_name: formData.branchName || null,
+                account_type: formData.accountType,
+                pan_number: formData.panNumber.toUpperCase(),
+                gst_number: formData.gstNumber ? formData.gstNumber.toUpperCase() : null,
+                upi_id: formData.upiId || null,
+            };
+
+            if (hasExistingDetails) {
+                const { error } = await supabase
+                    .from('bank_details')
+                    .update(bankData)
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('bank_details')
+                    .insert(bankData);
+
+                if (error) throw error;
+                setHasExistingDetails(true);
+            }
+
+            toast({
+                title: "Success",
+                description: "Bank details saved successfully!",
+            });
+        } catch (error: any) {
+            console.error('Error saving bank details:', error);
+            toast({
+                title: "Error",
+                description: error.message || "Failed to save bank details",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleWithdraw = async () => {
+        if (accountBalance <= 0) {
+            toast({
+                title: "Insufficient Balance",
+                description: "You don't have any balance to withdraw",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (!hasExistingDetails) {
+            toast({
+                title: "Bank Details Required",
+                description: "Please add your bank details before requesting a withdrawal",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setWithdrawing(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
+
+            const { data: bankDetails } = await supabase
+                .from('bank_details')
+                .select('id')
+                .eq('user_id', user.id)
+                .single();
+
+            const { error } = await supabase
+                .from('withdrawals')
+                .insert({
+                    user_id: user.id,
+                    amount: accountBalance,
+                    bank_details_id: bankDetails?.id,
+                    status: 'pending'
+                });
+
+            if (error) throw error;
+
+            toast({
+                title: "Withdrawal Requested",
+                description: `Your withdrawal request for ₹${accountBalance.toFixed(2)} has been submitted and will be processed soon.`,
+            });
+        } catch (error: any) {
+            console.error('Error requesting withdrawal:', error);
+            toast({
+                title: "Error",
+                description: error.message || "Failed to request withdrawal",
+                variant: "destructive",
+            });
+        } finally {
+            setWithdrawing(false);
         }
     };
 
     return (
         <div className="max-w-3xl mx-auto">
             <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Bank Account Details</h2>
-                <p className="text-gray-600">Add your bank account information to receive payments for your freelance services</p>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Bank Account & Payments</h2>
+                <p className="text-gray-600">Manage your bank account and view your earnings</p>
             </div>
 
             <div className="space-y-6">
+                {/* Account Balance Card */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                                <Wallet className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900">Account Balance</h3>
+                                <p className="text-sm text-gray-600">Available for withdrawal</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-3xl font-bold text-gray-900">₹{accountBalance.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleWithdraw}
+                        disabled={withdrawing || accountBalance <= 0 || !hasExistingDetails}
+                        className="w-full px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {withdrawing ? 'Processing...' : 'Withdraw to Bank Account'}
+                    </button>
+                    {!hasExistingDetails && accountBalance > 0 && (
+                        <p className="text-xs text-orange-600 mt-2 text-center">
+                            Please add your bank details below to enable withdrawals
+                        </p>
+                    )}
+                </div>
                 <div className="flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-800">
@@ -309,15 +529,10 @@ export default function BankAccountForm() {
                     <div className="flex gap-3">
                         <button
                             onClick={handleSubmit}
-                            className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                            disabled={loading}
+                            className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Save Bank Details
-                        </button>
-                        <button
-                            onClick={() => console.log('Cancel clicked')}
-                            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                        >
-                            Cancel
+                            {loading ? 'Saving...' : hasExistingDetails ? 'Update Bank Details' : 'Save Bank Details'}
                         </button>
                     </div>
                 </div>
