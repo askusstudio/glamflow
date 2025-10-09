@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, Bell, Lock, X, KeyRound , IndianRupee} from 'lucide-react';
 import UpdatePasswordForm from '@/components/settings/UpdatePasswordForm';
 import BankAccountForm from '@/components/settings/BankAccountForm';
+import AccountBalance from '@/components/settings/AccountBalance';
 import ProfilePage from '@/pages/Profile'
 
 // Import your actual UpdatePasswordForm component
@@ -115,6 +116,8 @@ export default function Settings() {
         return <BankAccountForm />;
       case 'password':
         return <UpdatePasswordForm />;
+      case 'account-balance':
+        return <AccountBalance />;
     //   case 'notifications':
     //     return <NotificationSettings />;
       default:
