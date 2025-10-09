@@ -93,30 +93,81 @@ serve(async (req: Request) => {
       });
     }
 
-    // Signature valid - now handle DB update (optional for guests)
+    // Signature valid - update payment record for both users and guests
     let dbUpdated = false;
-    if (userId) {
-      try {
-        const { error: dbError } = await supabaseClient
-          .from('payments')
-          .update({ 
-            payment_id: razorpay_payment_id,
-            status: 'paid',
-            verified_at: new Date().toISOString(),
-            amount: amount // Confirm amount matches
-          })
-          .eq('order_id', razorpay_order_id) // Match by order_id from create
-          .eq('user_id', userId);
-        if (dbError) throw dbError;
-        dbUpdated = true;
-        console.log('DB updated for user:', userId, 'order:', razorpay_order_id);
-      } catch (dbError) {
-        console.error('DB update error (non-fatal):', dbError);
-        // Still return success if Razorpay verified
+    try {
+      const updateData = {
+        razorpay_payment_id: razorpay_payment_id,
+        razorpay_signature: razorpay_signature,
+        payment_status: 'success',
+        verified_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        amount: amount / 100, // Convert paise back to rupees
+        callback_data: {
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature,
+          verified_at: new Date().toISOString()
+        }
+      };
+
+      // Update by razorpay_order_id (works for both users and guests)
+      const { data: updateResult, error: dbError } = await supabaseClient
+        .from('payments')
+        .update(updateData)
+        .eq('razorpay_order_id', razorpay_order_id)
+        .select('id, user_id')
+        .single();
+
+      if (dbError) {
+        console.error('DB update error:', dbError);
+        throw dbError;
       }
-    } else {
-      console.log('Guest verification: Signature valid, no DB update (track via payment_id if needed)');
-      // Optional: Insert to guest_payments table here
+
+      dbUpdated = true;
+      console.log('Payment verified and updated:', updateResult?.id, 'for user:', updateResult?.user_id || 'guest');
+
+      // If this is for an authenticated user, also update their account balance
+      if (updateResult?.user_id) {
+        try {
+          // Get the payment amount to add to user's balance
+          const paymentAmount = amount / 100;
+          
+          // First get current balance
+          const { data: currentProfile, error: fetchError } = await supabaseClient
+            .from('profiles')
+            .select('account_balance')
+            .eq('id', updateResult.user_id)
+            .single();
+
+          if (fetchError) {
+            console.error('Error fetching current balance:', fetchError);
+          } else {
+            // Update the provider's account balance (add the payment amount)
+            const newBalance = (currentProfile?.account_balance || 0) + paymentAmount;
+            
+            const { error: balanceError } = await supabaseClient
+              .from('profiles')
+              .update({
+                account_balance: newBalance
+              })
+              .eq('id', updateResult.user_id);
+
+            if (balanceError) {
+              console.error('Balance update error:', balanceError);
+            } else {
+              console.log('Account balance updated for user:', updateResult.user_id, 'new balance:', newBalance);
+            }
+          }
+        } catch (balanceError) {
+          console.error('Balance update failed:', balanceError);
+          // Don't fail the payment verification if balance update fails
+        }
+      }
+
+    } catch (dbError) {
+      console.error('DB update error (non-fatal):', dbError);
+      // Still return success if Razorpay signature is valid
     }
 
     return new Response(JSON.stringify({

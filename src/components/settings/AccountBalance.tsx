@@ -29,9 +29,19 @@ interface Withdrawal {
   processed_at: string | null;
 }
 
+interface Payment {
+  id: string;
+  amount: number;
+  payment_status: string;
+  payer_name: string;
+  created_at: string;
+  verified_at: string | null;
+}
+
 export default function AccountBalance() {
   const [balance, setBalance] = useState<AccountBalance | null>(null);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -92,6 +102,29 @@ export default function AccountBalance() {
       } else {
         console.log('Withdrawals data:', withdrawalsData);
         setWithdrawals(withdrawalsData || []);
+      }
+
+      // Fetch recent payments received
+      const { data: paymentsData, error: paymentsError } = await supabase
+        .from('payments')
+        .select('id, amount, payment_status, payer_name, created_at, verified_at')
+        .eq('provider_id', user.id)
+        .eq('payment_status', 'success')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      // Fetch recent payments received
+      // const { data: paymentsData, error: paymentsError } = await supabase
+      //   .from('payments')
+      //   .select('id, amount, payment_status, user_name, created_at, verified_at')
+      //   .eq('provider_id', user.id)
+      //   .order('created_at', { ascending: false })
+      //   .limit(5);
+
+      if (paymentsError) {
+        console.error('Error fetching payments:', paymentsError);
+      } else {
+        console.log('Payments data:', paymentsData);
+        setPayments(paymentsData || []);
       }
 
     } catch (error) {
@@ -232,6 +265,57 @@ export default function AccountBalance() {
             {formatCurrency(balance?.expected_payment_amount || 0)}
           </div>
         </div>
+      </div>
+
+      {/* Recent Payments Received */}
+      <div className="bg-white rounded-lg border shadow-sm">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900">Recent Payments Received</h3>
+          <p className="text-sm text-gray-600">Payments you've received from clients</p>
+        </div>
+        
+        {payments.length > 0 ? (
+          <div className="divide-y divide-gray-200">
+            {payments.map((payment) => (
+              <div key={payment.id} className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-green-100">
+                      <IndianRupee className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {formatCurrency(payment.amount)}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        From: {payment.payer_name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatDate(payment.created_at)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Success
+                    </span>
+                    {payment.verified_at && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Verified: {formatDate(payment.verified_at)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-6 text-center text-gray-500">
+            <TrendingUp className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p>No payments received yet</p>
+            <p className="text-sm">Your payment history will appear here</p>
+          </div>
+        )}
       </div>
 
       {/* Recent Withdrawals */}
