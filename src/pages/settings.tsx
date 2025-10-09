@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Bell, Lock, X, KeyRound } from 'lucide-react';
+import { User, Bell, Lock, X, KeyRound , IndianRupee} from 'lucide-react';
 import UpdatePasswordForm from '@/components/settings/UpdatePasswordForm';
 import BankAccountForm from '@/components/settings/BankAccountForm';
 import ProfilePage from '@/pages/Profile'
@@ -103,6 +103,7 @@ export default function Settings() {
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'account', label: 'Bank Account', icon: Lock },
     { id: 'password', label: 'Update Password', icon: KeyRound },
+    { id: 'account-balance', label: 'Account Balance', icon: IndianRupee },
     // { id: 'notifications', label: 'Notifications', icon: Bell },
   ];
 
