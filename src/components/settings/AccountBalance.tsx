@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { IndianRupee, Wallet, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-
+import { WithdrawDialog } from './WithdrawDialog'; // Add import at top
 /**
  * AccountBalance Component
  * 
@@ -45,7 +45,7 @@ export default function AccountBalance() {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
-
+  const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   useEffect(() => {
     if (user) {
       fetchAccountData();
@@ -227,11 +227,18 @@ export default function AccountBalance() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
+  
+  <div className="flex items-center gap-3 mb-6">
         <Wallet className="w-8 h-8 text-blue-600" />
         <h2 className="text-2xl font-semibold">Account Balance</h2>
       </div>
-
+{/* Add dialog at the bottom, before closing </div> */}
+<WithdrawDialog
+  isOpen={withdrawDialogOpen}
+  onClose={() => setWithdrawDialogOpen(false)}
+  availableBalance={balance?.account_balance || 0}
+  onSuccess={fetchAccountData}
+/>
       {/* Balance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Current Balance */}
@@ -251,7 +258,7 @@ export default function AccountBalance() {
         </div>
 
         {/* Expected Payments */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-lg border border-green-200">
+        {/* <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-lg border border-green-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-green-600 rounded-lg">
               <TrendingUp className="w-6 h-6 text-white" />
@@ -264,7 +271,7 @@ export default function AccountBalance() {
           <div className="text-3xl font-bold text-green-600">
             {formatCurrency(balance?.expected_payment_amount || 0)}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Recent Payments Received */}
@@ -367,7 +374,7 @@ export default function AccountBalance() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white p-6 rounded-lg border shadow-sm">
+      {/* <div className="bg-white p-6 rounded-lg border shadow-sm">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
         <div className="flex gap-4">
           <button
@@ -388,7 +395,31 @@ export default function AccountBalance() {
             Minimum balance required to request withdrawal
           </p>
         )}
-      </div>
+      </div> */}
+      
+      <div className="bg-white p-6 rounded-lg border shadow-sm">
+  <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+  <div className="flex gap-4">
+    <button
+      onClick={fetchAccountData}
+      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+    >
+      Refresh Balance
+    </button>
+    <button
+      onClick={() => setWithdrawDialogOpen(true)}
+      disabled={!balance?.account_balance || balance.account_balance < 100}
+      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+    >
+      Request Withdrawal
+    </button>
+  </div>
+  {(!balance?.account_balance || balance.account_balance < 100) && (
+    <p className="text-sm text-gray-500 mt-2">
+      Minimum balance ₹100 required to withdraw
+    </p>
+  )}
+</div>
     </div>
   );
 }

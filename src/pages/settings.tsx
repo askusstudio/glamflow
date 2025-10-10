@@ -103,8 +103,8 @@ export default function Settings() {
   const menuItems = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'account', label: 'Bank Account', icon: Lock },
-    { id: 'password', label: 'Update Password', icon: KeyRound },
     { id: 'account-balance', label: 'Account Balance', icon: IndianRupee },
+    { id: 'password', label: 'Update Password', icon: KeyRound },
     // { id: 'notifications', label: 'Notifications', icon: Bell },
   ];
 
