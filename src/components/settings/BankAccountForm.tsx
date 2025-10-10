@@ -281,7 +281,7 @@ export default function BankAccountForm() {
 
             <div className="space-y-6">
                 {/* Account Balance Card */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                {/* <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
@@ -308,7 +308,7 @@ export default function BankAccountForm() {
                             Please add your bank details below to enable withdrawals
                         </p>
                     )}
-                </div>
+                </div> */}
                 <div className="flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-800">
