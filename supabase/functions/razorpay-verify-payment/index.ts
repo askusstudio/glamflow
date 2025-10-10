@@ -60,7 +60,7 @@ serve(async (req: Request) => {
         verified_at: new Date().toISOString(),
       })
       .eq('razorpay_order_id', razorpay_order_id)
-      .select('id, provider_id, amount')
+      .select('id, provider_id, amount, payer_name')
       .single();
 
     if (updateError) {
@@ -92,6 +92,24 @@ serve(async (req: Request) => {
         console.error('❌ BALANCE ERROR:', balanceError);
       } else {
         console.log('✅ Balance updated:', newBalance);
+      }
+
+      // Create notification for provider
+      const { error: notifError } = await supabaseClient
+        .from('notifications')
+        .insert({
+          user_id: payment.provider_id,
+          title: 'Payment Received! 💰',
+          message: `You received ₹${payment.amount.toFixed(2)}${payment.payer_name ? ` from ${payment.payer_name}` : ''}`,
+          type: 'payment',
+          read: false,
+          payment_id: payment.id,
+        });
+
+      if (notifError) {
+        console.error('❌ NOTIFICATION ERROR:', notifError);
+      } else {
+        console.log('✅ Notification sent to provider:', payment.provider_id);
       }
     }
 
