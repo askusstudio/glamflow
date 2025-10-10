@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { User, Bell, Lock, X, KeyRound } from 'lucide-react';
+import { User, Bell, Lock, X, KeyRound , IndianRupee} from 'lucide-react';
 import UpdatePasswordForm from '@/components/settings/UpdatePasswordForm';
 import BankAccountForm from '@/components/settings/BankAccountForm';
+import AccountBalance from '@/components/settings/AccountBalance';
 import ProfilePage from '@/pages/Profile'
 
 // Import your actual UpdatePasswordForm component
@@ -103,6 +104,7 @@ export default function Settings() {
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'account', label: 'Bank Account', icon: Lock },
     { id: 'password', label: 'Update Password', icon: KeyRound },
+    { id: 'account-balance', label: 'Account Balance', icon: IndianRupee },
     // { id: 'notifications', label: 'Notifications', icon: Bell },
   ];
 
@@ -114,6 +116,8 @@ export default function Settings() {
         return <BankAccountForm />;
       case 'password':
         return <UpdatePasswordForm />;
+      case 'account-balance':
+        return <AccountBalance />;
     //   case 'notifications':
     //     return <NotificationSettings />;
       default:

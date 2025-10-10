@@ -198,8 +198,24 @@ export const RazorpayPaymentDialog = ({
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function (response: any) {
+      razorpay.on('payment.failed', async function (response: any) {
         console.error('Payment failed:', response.error);
+        
+        // Log payment failure to database using the order ID from the current payment
+        try {
+          if (data.orderId) {
+            await supabase.functions.invoke('razorpay-payment-failed', {
+              body: {
+                razorpay_order_id: data.orderId,
+                error_code: response.error.code,
+                error_description: response.error.description,
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Error logging payment failure:', error);
+        }
+        
         toast({
           title: "Payment Failed",
           description: response.error.description || 'Payment was declined',

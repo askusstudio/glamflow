@@ -129,30 +129,43 @@ serve(async (req: Request) => {
     const order = await razorpayResponse.json();
     console.log('Razorpay success:', { orderId: order.id, amount: order.amount, receipt });
 
-    // DB logging only for authenticated (skip for guests to avoid issues)
+    // Insert payment record for both authenticated users and guests
     let dbLogged = false;
-    if (userId) {
-      try {
-        const { error: dbError } = await supabaseClient
-          .from('payments')
-          .insert({ 
-            order_id: order.id, 
-            amount: order.amount, 
-            provider_id: providerId,
-            user_id: userId,
-            payer_name: payerName,
-            payer_email: payerEmail,
-            payer_phone: payerPhone,
-            status: 'created'
-          });
-        if (dbError) throw dbError;
-        dbLogged = true;
-        console.log('DB logged for user:', userId);
-      } catch (dbError) {
-        console.error('DB error (non-fatal):', dbError);
-      }
-    } else {
-      console.log('Guest: No DB logging (payment successful without user tracking)');
+    try {
+      const paymentData = {
+        appointment_id: null, // Will be set if appointment booking
+        user_id: userId || null, // Null for guests
+        amount: order.amount / 100, // Convert paise back to rupees for storage
+        currency: 'INR',
+        payment_status: 'pending',
+        payment_method: 'razorpay',
+        razorpay_order_id: order.id,
+        razorpay_payment_id: null, // Will be set after payment success
+        razorpay_signature: null, // Will be set after payment verification
+        payment_type: null, // Can be set based on context (advance, final, etc.)
+        payer_name: payerName,
+        payer_email: payerEmail,
+        payer_phone: payerPhone,
+        provider_id: providerId,
+        payment_receipt: receipt,
+        callback_data: null, // Can store callback data if needed
+        verified_at: null, // Will be set after verification
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: insertData, error: dbError } = await supabaseClient
+        .from('payments')
+        .insert(paymentData)
+        .select('id')
+        .single();
+
+      if (dbError) throw dbError;
+      dbLogged = true;
+      console.log('Payment record created:', insertData?.id, 'for user:', userId || 'guest');
+    } catch (dbError) {
+      console.error('DB insert error:', dbError);
+      // Continue with payment even if DB insert fails
     }
 
     return new Response(JSON.stringify({
