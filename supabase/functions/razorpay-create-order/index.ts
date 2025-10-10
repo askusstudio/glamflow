@@ -12,36 +12,16 @@ serve(async (req: Request) => {
   }
 
   try {
-    let body;
-    try {
-      body = await req.json();
-    } catch {
-      return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
+    const body = await req.json();
     const { amount, providerId, payerName, payerEmail, payerPhone, userId } = body;
 
-    console.log('Invoke details:', { amount, userId: userId || 'null (guest)', payerEmail: payerEmail?.substring(0, 10) + '...' });
-
-    if (!amount || typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0) {
-      console.error('Invalid amount format:', amount);
-      return new Response(JSON.stringify({ success: false, error: 'Amount must be a positive integer in paise (e.g., 10000 for ₹100)' }), {
+    if (!amount || amount <= 0 || !payerName || !payerEmail || !payerPhone) {
+      return new Response(JSON.stringify({ success: false, error: 'Missing required fields' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    if (!payerName?.trim() || !payerEmail?.trim() || !payerPhone?.trim()) {
-      return new Response(JSON.stringify({ success: false, error: 'Missing required payer details (name, email, phone)' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Supabase client (only for authenticated users' DB insert - service_role bypasses RLS)
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -52,37 +32,16 @@ serve(async (req: Request) => {
     const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET')?.trim();
 
     if (!keyId || !keySecret) {
-      console.error('Razorpay env vars missing or empty from Deno.env.get()');
-      return new Response(JSON.stringify({ success: false, error: 'Server configuration error - contact support (keys not set)' }), {
+      return new Response(JSON.stringify({ success: false, error: 'Server config error' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Safe Basic Auth for Razorpay (URL-safe base64 for special chars in secret)
-    const authString = `${keyId}:${keySecret}`;
-    const authBase64 = btoa(unescape(encodeURIComponent(authString)));
+    const authBase64 = btoa(`${keyId}:${keySecret}`);
+    const receipt = `pay_${Date.now()}`;
 
-    console.log('Razorpay auth setup with keyId:', keyId.substring(0, 10) + '...');
-
-    // Sanitize and shorten providerId for receipt (alphanumeric + -_. only, max 10 chars)
-    const safeProviderId = (providerId || 'guest').toString().replace(/[^a-zA-Z0-9\-_.]/g, '').substring(0, 10);
-    // Short timestamp: Last 6 chars of Date.now() in base-36 (compact, unique)
-    const shortTs = Date.now().toString(36).slice(-6);
-    const receipt = `pay_${safeProviderId}_${shortTs}`;
-    
-    if (receipt.length > 40) {
-      console.error('Receipt too long:', receipt);
-      return new Response(JSON.stringify({ success: false, error: 'Internal receipt generation error - contact support' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Generated receipt:', receipt, '(length:', receipt.length, ')');
-
-    // Razorpay order creation
-    console.log('Fetching Razorpay API...');
+    // Create Razorpay order
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: {
@@ -90,91 +49,51 @@ serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount, // Integer paise from frontend
+        amount,
         currency: 'INR',
-        receipt, // Now compliant (<=40 chars)
-        notes: {
-          providerId,
-          payerName,
-          payerEmail,
-          payerPhone,
-          ...(userId && { userId }),
-        },
+        receipt,
+        notes: { providerId, payerName, payerEmail, payerPhone, userId: userId || 'guest' },
       }),
     });
 
-    // Handle Razorpay response
     if (!razorpayResponse.ok) {
-      let errorData: any = {};
-      try {
-        errorData = await razorpayResponse.json();
-      } catch {
-        // Non-JSON (e.g., raw 401 text)
-        errorData = { error: { description: `HTTP ${razorpayResponse.status}: ${await razorpayResponse.text()}` } };
-      }
-      const errorDesc = errorData?.error?.description || errorData?.description || 'Unknown Razorpay error';
-      const errorCode = errorData?.error?.code || razorpayResponse.status;
-      console.error(`Razorpay API failed (${razorpayResponse.status} ${errorCode}):`, errorDesc, errorData);
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: `Payment gateway error: ${errorDesc}`,
-        code: errorCode,
-        details: errorData // For debugging
-      }), {
+      const errorData = await razorpayResponse.json();
+      console.error('Razorpay error:', errorData);
+      return new Response(JSON.stringify({ success: false, error: 'Razorpay failed' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const order = await razorpayResponse.json();
-    console.log('Razorpay success:', { orderId: order.id, amount: order.amount, receipt });
 
-    // Insert payment record for both authenticated users and guests
-    let dbLogged = false;
-    try {
-      // ✅ Log full error details
-      const paymentData = {
-        appointment_id: null,
+    // Insert payment - ONLY columns that exist
+    const { data: insertData, error: dbError } = await supabaseClient
+      .from('payments')
+      .insert({
         user_id: userId || null,
         amount: amount / 100,
         currency: 'INR',
         payment_status: 'pending',
         payment_method: 'razorpay',
         razorpay_order_id: order.id,
-        razorpay_payment_id: null,
-        razorpay_signature: null,
-        payment_type: null,
         payer_name: payerName,
         payer_email: payerEmail,
         payer_phone: payerPhone,
         provider_id: providerId,
-        // payment_receipt: receipt, ❌ REMOVE THIS LINE
-        callback_data: null,
-        verified_at: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
+      })
+      .select('id')
+      .single();
 
-console.log('Inserting payment data:', JSON.stringify(paymentData)); // ✅ Debug log
+    if (dbError) {
+      console.error('❌ INSERT ERROR:', dbError);
+      return new Response(JSON.stringify({ success: false, error: dbError.message }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-const { data: insertData, error: dbError } = await supabaseClient
-  .from('payments')
-  .insert(paymentData)
-  .select('id')
-  .single();
-
-if (dbError) {
-  console.error('❌ DB insert FULL error:', JSON.stringify(dbError)); // ✅ Full error details
-  console.error('Error code:', dbError.code);
-  console.error('Error message:', dbError.message);
-  console.error('Error details:', dbError.details);
-  console.error('Error hint:', dbError.hint);
-} else {
-  dbLogged = true;
-  console.log('✅ Payment record created:', insertData?.id, 'for provider:', providerId);
-}
-
+    console.log('✅ Payment created:', insertData.id);
 
     return new Response(JSON.stringify({
       success: true,
@@ -182,18 +101,14 @@ if (dbError) {
       keyId,
       amount: order.amount,
       currency: 'INR',
-      dbLogged,
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Function unhandled error:', error);
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: `Internal error: ${error instanceof Error ? error.message : 'Unknown error'}` 
-    }), {
+    console.error('Error:', error);
+    return new Response(JSON.stringify({ success: false, error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
