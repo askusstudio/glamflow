@@ -1,38 +1,40 @@
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Input } from "@/components/ui/input"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import AddAppointment from "@/components/home/Appoinments"
+import AddTask from "@/components/home/tasks"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 import {
   Calendar,
-  Target,
-  TrendingUp,
   Plus,
-  Clock,
-  DollarSign,
   Users,
   Sparkles,
   CheckCircle2,
-  AlertCircle,
-  Star,
   Pen,
-  IndianRupee,
   Laugh
 } from "lucide-react"
 
 interface Task {
   id: string
   title: string
-  priority: 'low' | 'medium' | 'high'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
   completed: boolean
   created_at: string
   user_id: string
   updated_at: string
+  description?: string
+  status: string
 }
 
 interface Appointment {
@@ -44,27 +46,18 @@ interface Appointment {
   created_at: string
   user_id: string
   updated_at: string
+  amount?: number
 }
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [recentBookings, setRecentBookings] = useState<Appointment[]>([])
+  const [monthlyEarnings, setMonthlyEarnings] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [newTaskTitle, setNewTaskTitle] = useState('')
   const [showAddTask, setShowAddTask] = useState(false)
   const [showAddAppointment, setShowAddAppointment] = useState(false)
-  const [newAppointmentData, setNewAppointmentData] = useState({
-    client_name: '',
-    service: '',
-    appointment_time: ''
-  })
   const { toast } = useToast()
-
-  // These should also be fetched from your database eventually
-  const todayEarnings = 8500
-  const monthlyGoal = 50000
-  const progress = (todayEarnings / monthlyGoal) * 100
 
   useEffect(() => {
     fetchData()
@@ -73,128 +66,241 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-
-      const { data: tasksData, error: tasksError } = await supabase
+  
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+  
+      // FETCH ALL TASKS
+      const { data: tasksData } = await supabase
         .from('tasks')
         .select('*')
-        .order('created_at', { ascending: false })
-
-      const today = new Date().toISOString().split('T')[0]
-      const { data: appointmentsData, error: appointmentsError } = await supabase
+        .eq('user_id', user.id)
+  
+      // FETCH ALL APPOINTMENTS
+      const { data: appointmentsData } = await supabase
         .from('appointments')
         .select('*')
-        .gte('appointment_time', today)
-        .lt('appointment_time', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-        .order('appointment_time', { ascending: true })
-
-      // Fetch bookings from last 24 hours
-      const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      const { data: recentBookingsData, error: recentBookingsError } = await supabase
-        .from('appointments')
-        .select('*')
-        .gte('created_at', last24Hours)
-        .order('created_at', { ascending: false })
-
-      if (tasksError) {
-        console.error('Tasks error:', tasksError)
-        toast({
-          title: "Error",
-          description: "Failed to fetch tasks. Please try again.",
-          variant: "destructive"
-        })
-        setTasks([])
-      } else {
-        setTasks(tasksData as Task[] || [])
-      }
-
-      if (appointmentsError) {
-        console.error('Appointments error:', appointmentsError)
-        toast({
-          title: "Error",
-          description: "Failed to fetch appointments. Please try again.",
-          variant: "destructive"
-        })
-        setAppointments([])
-      } else {
-        setAppointments(appointmentsData as Appointment[] || [])
-      }
-
-      if (recentBookingsError) {
-        console.error('Recent bookings error:', recentBookingsError)
-        toast({
-          title: "Error",
-          description: "Failed to fetch recent bookings. Please try again.",
-          variant: "destructive"
-        })
-        setRecentBookings([])
-      } else {
-        setRecentBookings(recentBookingsData as Appointment[] || [])
-      }
+        .eq('user_id', user.id)
+  
+      setTasks(tasksData || [])
+      setAppointments(appointmentsData || [])
+      setRecentBookings(appointmentsData || [])
+  
     } catch (error) {
-      console.error('Error fetching data:', error)
-      toast({
-        title: "Error",
-        description: "Failed to load dashboard data. Please refresh the page.",
-        variant: "destructive"
-      })
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
   }
+  
+  
+  
+  
 
-  const addTask = async () => {
-    if (!newTaskTitle.trim()) return
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+  const handleAddTask = async (taskData: any) => {
+    const { data: { user } } = await supabase.auth.getUser()
+  
     if (!user) {
       toast({
         title: "Error",
-        description: "You must be logged in to add a task.",
+        description: "You must be logged in.",
         variant: "destructive"
       })
       return
     }
-
+  
     try {
+      // Clean the data - remove empty optional date fields
+      const cleanedTaskData: any = {
+        title: taskData.title,
+        description: taskData.description || "",
+        priority: taskData.priority,
+        status: taskData.status,
+        completed: taskData.completed,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+  
+      // Only add optional fields if they have values
+      if (taskData.assigned_to && taskData.assigned_to !== "") {
+        cleanedTaskData.assigned_to = taskData.assigned_to
+      }
+  
+      if (taskData.estimated_duration && taskData.estimated_duration !== "") {
+        cleanedTaskData.estimated_duration = taskData.estimated_duration
+      }
+  
+      if (taskData.task_type && taskData.task_type !== "") {
+        cleanedTaskData.task_type = taskData.task_type
+      }
+  
+      // Handle date fields
+      if (taskData.start_date) {
+        cleanedTaskData.start_date = taskData.start_date.toISOString()
+      }
+  
+      if (taskData.due_date) {
+        cleanedTaskData.due_date = taskData.due_date.toISOString()
+      }
+  
       const { data, error } = await supabase
         .from('tasks')
-        .insert([{
-          title: newTaskTitle.trim(),
-          priority: 'medium' as const,
-          completed: false,
-          user_id: user.id
-        }])
+        .insert([cleanedTaskData])
         .select()
-
+  
       if (error) throw error
-
+  
       if (data && data[0]) {
-        setTasks(prev => [data[0] as Task, ...prev])
-        setNewTaskTitle('')
         setShowAddTask(false)
         toast({
           title: "Success",
           description: "Task added successfully!"
         })
+        fetchData() // Refresh all data
       }
     } catch (error) {
       console.error('Error adding task:', error)
       toast({
         title: "Error",
-        description: "Failed to add task. Please try again.",
+        description: "Failed to add task.",
         variant: "destructive"
       })
     }
   }
+  
+
+  const handleAddAppointment = async (appointmentData: any) => {
+    const { data: { user } } = await supabase.auth.getUser()
+  
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in.",
+        variant: "destructive"
+      })
+      return
+    }
+  
+    try {
+      const appointmentDate = appointmentData.appointment_date
+      const appointmentTime = appointmentData.appointment_time
+      
+      if (!appointmentDate || !appointmentTime) {
+        throw new Error("Date and time are required")
+      }
+  
+      // Format date as YYYY-MM-DD
+      let dateString: string
+      if (appointmentDate instanceof Date) {
+        const year = appointmentDate.getFullYear()
+        const month = String(appointmentDate.getMonth() + 1).padStart(2, '0')
+        const day = String(appointmentDate.getDate()).padStart(2, '0')
+        dateString = `${year}-${month}-${day}`
+      } else {
+        dateString = appointmentDate
+      }
+  
+      // Combine date and time
+      const dateTimeString = `${dateString}T${appointmentTime}:00`
+      const appointmentDateTime = new Date(dateTimeString)
+  
+      if (isNaN(appointmentDateTime.getTime())) {
+        throw new Error("Invalid date or time format")
+      }
+  
+      // Clean up the data
+      const cleanedData: any = {
+        client_name: appointmentData.client_name,
+        client_email: appointmentData.client_email,
+        client_phone: appointmentData.client_phone,
+        service: appointmentData.service,
+        appointment_date: dateString,
+        appointment_time: appointmentDateTime.toISOString(),
+        location: appointmentData.location,
+        status: appointmentData.status || 'pending',
+        payment_status: appointmentData.payment_status || 'unpaid',
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+  
+      // Only add optional fields if they have actual values
+      if (appointmentData.event_type && appointmentData.event_type !== "") {
+        cleanedData.event_type = appointmentData.event_type
+      }
+      
+      if (appointmentData.duration_estimate && appointmentData.duration_estimate !== "") {
+        cleanedData.duration_estimate = appointmentData.duration_estimate
+      }
+      
+      if (appointmentData.skin_type && appointmentData.skin_type !== "") {
+        cleanedData.skin_type = appointmentData.skin_type
+      }
+      
+      if (appointmentData.allergies_concerns && appointmentData.allergies_concerns !== "") {
+        cleanedData.allergies_concerns = appointmentData.allergies_concerns
+      }
+      
+      if (appointmentData.makeup_look_preference && appointmentData.makeup_look_preference !== "") {
+        cleanedData.makeup_look_preference = appointmentData.makeup_look_preference
+      }
+      
+      if (appointmentData.message && appointmentData.message !== "") {
+        cleanedData.message = appointmentData.message
+      }
+  
+      if (appointmentData.number_of_people && appointmentData.number_of_people !== "" && !isNaN(Number(appointmentData.number_of_people))) {
+        cleanedData.number_of_people = Number(appointmentData.number_of_people)
+      }
+      
+      if (appointmentData.amount && appointmentData.amount !== "" && !isNaN(Number(appointmentData.amount))) {
+        cleanedData.amount = Number(appointmentData.amount)
+      }
+  
+      console.log('Adding appointment with cleaned data:', cleanedData)
+  
+      const { data, error } = await supabase
+        .from('appointments')
+        .insert([cleanedData])
+        .select()
+  
+      console.log('Appointment insert result:', { data, error })
+  
+      if (error) throw error
+  
+      if (data && data[0]) {
+        setShowAddAppointment(false)
+        toast({
+          title: "Success",
+          description: "Appointment added successfully!"
+        })
+        
+        // Add appointment to state immediately (same as tasks)
+        setAppointments(prev => [...prev, data[0] as Appointment])
+        setRecentBookings(prev => [data[0] as Appointment, ...prev])
+        
+        // Also refresh from database
+        await fetchData()
+      }
+    } catch (error: any) {
+      console.error('Error adding appointment:', error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add appointment.",
+        variant: "destructive"
+      })
+    }
+  }
+  
+  
+  
 
   const toggleTask = async (taskId: string, completed: boolean) => {
     try {
       const { error } = await supabase
         .from('tasks')
-        .update({ completed: !completed })
+        .update({ completed: !completed, updated_at: new Date().toISOString() })
         .eq('id', taskId)
 
       if (error) throw error
@@ -211,67 +317,7 @@ const Dashboard = () => {
       console.error('Error updating task:', error)
       toast({
         title: "Error",
-        description: "Failed to update task. Please try again.",
-        variant: "destructive"
-      })
-    }
-  }
-
-  const addAppointment = async () => {
-    if (!newAppointmentData.client_name || !newAppointmentData.service || !newAppointmentData.appointment_time) {
-      toast({
-        title: "Error",
-        description: "Please fill in all appointment details.",
-        variant: "destructive"
-      })
-      return
-    }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to add an appointment.",
-        variant: "destructive"
-      })
-      return
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([{
-          ...newAppointmentData,
-          user_id: user.id,
-          status: 'pending' as const,
-          client_email: 'temp@example.com',
-          client_phone: '0000000000'
-        } as any])
-        .select()
-
-      if (error) throw error
-
-      if (data && data[0]) {
-        setAppointments(prev => [...prev, data[0] as Appointment])
-        setNewAppointmentData({
-          client_name: '',
-          service: '',
-          appointment_time: ''
-        })
-        setShowAddAppointment(false)
-        toast({
-          title: "Success",
-          description: "Appointment added successfully!"
-        })
-      }
-    } catch (error) {
-      console.error('Error adding appointment:', error)
-      toast({
-        title: "Error",
-        description: "Failed to add appointment. Please try again.",
+        description: "Failed to update task.",
         variant: "destructive"
       })
     }
@@ -281,7 +327,7 @@ const Dashboard = () => {
     try {
       const { error } = await supabase
         .from('appointments')
-        .update({ status: newStatus })
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', appointmentId)
 
       if (error) throw error
@@ -298,7 +344,7 @@ const Dashboard = () => {
       console.error('Error updating appointment:', error)
       toast({
         title: "Error",
-        description: "Failed to update appointment status. Please try again.",
+        description: "Failed to update appointment status.",
         variant: "destructive"
       })
     }
@@ -306,22 +352,16 @@ const Dashboard = () => {
 
   const formatTime = (timeString: string) => {
     try {
-      return new Date(timeString).toLocaleTimeString('en-US', {
+      const date = new Date(timeString)
+      if (isNaN(date.getTime())) return 'Invalid time'
+      
+      return date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       })
     } catch {
       return 'Invalid time'
-    }
-  }
-
-  const handleQuickAdd = () => {
-    // Toggle between showing add task or add appointment
-    if (Math.random() > 0.5) {
-      setShowAddTask(true)
-    } else {
-      setShowAddAppointment(true)
     }
   }
 
@@ -338,43 +378,20 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#DB6C79]/10">
-      {/* Header */}
-  
-
       <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl md:text-4xl font-bold">Welcome back, Beautiful! </h1>
-            {/* <p className="text-muted-foreground text-sm md:text-base">Here's what's happening with your beauty business today.</p> */}
+            <h1 className="text-2xl md:text-4xl font-bold">Welcome back, Beautiful!</h1>
           </div>
-          {/* <Button
-            onClick={handleQuickAdd}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Quick Add
-          </Button> */}
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {/* <Card className="hover:shadow-soft transition-all">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today's Earnings</CardTitle>
-              <DollarSign className="h-4 w-4 text-success" />
-            </CardHeader>
-            <CardContent>
-              {/* <div className="text-2xl font-bold text-success">₹{todayEarnings.toLocaleString()}</div> */}
-          {/* <p className="text-xs text-muted-foreground">+12% from yesterday</p>
-            </CardContent>
-          </Card> */}
-
           <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-2xl font-medium">Appointments Today</CardTitle>
-              <Calendar className="h-12 w-12 " />
-              {/* <Calendar className="h-16 w-16 text-primary" /> */}
+              <Calendar className="h-12 w-12" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{appointments.length}</div>
@@ -396,6 +413,7 @@ const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
+
           <Card className="hover:shadow-soft transition-all bg-blue-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-2xl font-medium">Tasks Pending</CardTitle>
@@ -404,61 +422,43 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
               <p className="text-xs text-muted-foreground">
-                {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
+                {tasks.filter(t => !t.completed && (t.priority === 'high' || t.priority === 'urgent')).length} high priority items
               </p>
             </CardContent>
           </Card>
+
           <Card className="hover:shadow-soft transition-all bg-yellow-200 w-full sm:col-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-2xl font-medium">Happy Earing!</CardTitle>
-              {/* <IndianRupee className="h-12 w-12" /> */}
-              < Laugh className="h-12 w-12" />
-            </CardHeader>
-            {/* <CardContent>
-              <div className="text-2xl font-bold">{tasks.filter(t => !t.completed).length}</div>
-              <p className="text-xs text-muted-foreground">
-                {tasks.filter(t => !t.completed && t.priority === 'high').length} high priority items
-              </p>
-            </CardContent> */}
-          </Card>
-
-
-          {/* <Card className="hover:shadow-soft transition-all">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Progress</CardTitle>
-              <TrendingUp className="h-4 w-4 text-accent" />
+              <CardTitle className="text-2xl font-medium">Happy Earning!</CardTitle>
+              <Laugh className="h-12 w-12" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{progress.toFixed(1)}%</div>
-              <p className="text-xs text-muted-foreground">of ₹{monthlyGoal.toLocaleString()} goal</p>
+              <div className="text-2xl font-bold">₹{monthlyEarnings.toLocaleString('en-IN')}</div>
+              <p className="text-xs text-muted-foreground">
+                Earnings in last 30 days
+              </p>
             </CardContent>
-          </Card> */}
-
+          </Card>
         </div>
 
         {/* Today's Schedule */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 ">
-          {/* The main card container */}
-          <Card > {/* Removed bg-gray-50 for a cleaner white background */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {/* Appointments Card */}
+          <Card>
             <CardHeader>
-              <CardTitle className="font-bold text-lg "> {/* Made title bolder */}
-                Today's Appointments
-              </CardTitle>
-              {/* CardDescription was removed to match the image */}
+              <CardTitle className="font-bold text-lg">Today's Appointments</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3"> {/* Adjusted spacing */}
+            <CardContent className="space-y-3">
               {appointments.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
                   No appointments scheduled for today
                 </p>
               ) : (
                 appointments.map((appointment) => (
-                  // This is the updated appointment item card
                   <div
                     key={appointment.id}
                     className="flex items-center justify-between p-3 bg-muted/40 rounded-lg"
                   >
-                    {/* Left side: Avatar + Client Info */}
                     <div className="flex items-center gap-4">
                       <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-foreground text-primary font-bold shrink-0">
                         {appointment.client_name.charAt(0).toUpperCase()}
@@ -469,15 +469,13 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {/* Right side: Status Badge + Time */}
                     <div className="flex flex-col items-end">
                       <Badge
-                        className={`capitalize border-none text-xs font-semibold
-                  ${appointment.status === 'pending'
+                        className={`capitalize border-none text-xs font-semibold cursor-pointer
+                          ${appointment.status === 'pending'
                             ? 'bg-yellow-400/20 text-yellow-600 dark:bg-yellow-400/30 dark:text-yellow-400'
                             : 'bg-green-400/20 text-green-600 dark:bg-green-400/30 dark:text-green-400'
                           }`}
-                        // The onClick handler is kept from your original code
                         onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
                       >
                         {appointment.status}
@@ -490,50 +488,30 @@ const Dashboard = () => {
                 ))
               )}
 
-              {/* The "Add Appointment" form and button from your original code */}
-              {showAddAppointment && (
-                <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
-                  <Input
-                    placeholder="Client name"
-                    value={newAppointmentData.client_name}
-                    onChange={(e) => setNewAppointmentData(prev => ({ ...prev, client_name: e.target.value }))}
-                  />
-                  <Input
-                    placeholder="Service"
-                    value={newAppointmentData.service}
-                    onChange={(e) => setNewAppointmentData(prev => ({ ...prev, service: e.target.value }))}
-                  />
-                  <Input
-                    type="datetime-local"
-                    value={newAppointmentData.appointment_time}
-                    onChange={(e) => setNewAppointmentData(prev => ({ ...prev, appointment_time: e.target.value }))}
-                  />
-                  <div className="flex gap-2">
-                    <Button onClick={addAppointment} size="sm">Add</Button>
-                    <Button onClick={() => setShowAddAppointment(false)} variant="outline" size="sm">Cancel</Button>
-                  </div>
-                </div>
-              )}
-
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setShowAddAppointment(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Appointment
-              </Button>
+              <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Appointment
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Add New Appointment</DialogTitle>
+                    <DialogDescription>
+                      Fill in the appointment details below
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AddAppointment onSubmit={handleAddAppointment} />
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
 
-
-
-          <Card> {/* Removed bg-gray-50 for a clean white look */}
+          {/* Tasks Card */}
+          <Card>
             <CardHeader>
-              <CardTitle className="font-bold text-lg"> {/* Bolder title */}
-                Priority Tasks
-              </CardTitle>
-              {/* CardDescription was removed to simplify the header */}
+              <CardTitle className="font-bold text-lg">Priority Tasks</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {tasks.length === 0 ? (
@@ -542,7 +520,6 @@ const Dashboard = () => {
                 </p>
               ) : (
                 tasks.map((task) => (
-                  // This is the updated task item
                   <div
                     key={task.id}
                     className="flex items-center gap-4 p-3 bg-muted/40 rounded-lg"
@@ -561,7 +538,7 @@ const Dashboard = () => {
                     </div>
                     <Badge
                       className={`capitalize border-none text-xs font-semibold
-                ${task.priority === "high"
+                        ${task.priority === "high" || task.priority === "urgent"
                           ? 'bg-red-400/20 text-red-600 dark:bg-red-400/30 dark:text-red-400'
                           : task.priority === "medium"
                             ? 'bg-blue-400/20 text-blue-600 dark:bg-blue-400/30 dark:text-blue-400'
@@ -574,69 +551,26 @@ const Dashboard = () => {
                 ))
               )}
 
-              {/* The "Add Task" form and button from your original code */}
-              {showAddTask && (
-                <div className="space-y-3 p-3 border rounded-lg bg-muted/50">
-                  <Input
-                    placeholder="Enter task title"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addTask()}
-                  />
-                  <div className="flex gap-2">
-                    <Button onClick={addTask} size="sm">Add</Button>
-                    <Button onClick={() => setShowAddTask(false)} variant="outline" size="sm">Cancel</Button>
-                  </div>
-                </div>
-              )}
-
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setShowAddTask(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Task
-              </Button>
+              <Dialog open={showAddTask} onOpenChange={setShowAddTask}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogDescription>
+                      Create a new task to manage your workflow
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AddTask onSubmit={handleAddTask} />
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </div>
-
-        {/* Quick Actions */}
-        {/* <Card className="bg-gradient-hero border-primary/20 bg-muted/5">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Speed up your workflow with these shortcuts</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <Button 
-                variant="outline" 
-                className="h-auto flex-col gap-2 p-4"
-                onClick={() => setShowAddAppointment(true)}
-              >
-                <Calendar className="h-6 w-6" />
-                <span className="text-sm">Book Gig</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto flex-col gap-2 p-4"
-                onClick={() => setShowAddTask(true)}
-              >
-                <Target className="h-6 w-6" />
-                <span className="text-sm">Add Task</span>
-              </Button>
-              <Button variant="outline" className="h-auto flex-col gap-2 p-4">
-                <Users className="h-6 w-6" />
-                <span className="text-sm">New Client</span>
-              </Button>
-              <Button variant="outline" className="h-auto flex-col gap-2 p-4">
-                <TrendingUp className="h-6 w-6" />
-                <span className="text-sm">View Analytics</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
     </div>
   )
