@@ -255,7 +255,8 @@ export const RazorpayPaymentDialog = ({
         <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
             <Label htmlFor="amount" className="text-sm">
-              Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)})
+              {/* Amount to Pay (Suggested: ₹{expectedAmount.toFixed(2)}) */}
+              Amount to Pay
             </Label>
             <Input 
               id="amount"
@@ -264,7 +265,8 @@ export const RazorpayPaymentDialog = ({
               min="1"
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder={`Enter amount (e.g., ${expectedAmount.toFixed(2)})`}
+              placeholder={`Enter amount (e.g., 200)`}
+              // placeholder={`Enter amount (e.g., ${expectedAmount.toFixed(2)})`}
               className="w-full"
             />
           </div>
@@ -305,7 +307,7 @@ export const RazorpayPaymentDialog = ({
               type="tel"
               value={payerPhone}
               onChange={(e) => setPayerPhone(e.target.value.replace(/\D/g, ''))}
-              placeholder="Enter 10-digit number (e.g., 1234567890)"
+              placeholder="Enter 10-digit number (e.g., 8726XXXXXX)"
               maxLength={10}
               className="w-full"
             />

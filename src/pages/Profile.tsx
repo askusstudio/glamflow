@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, Upload, X, User, Instagram, Twitter, Facebook, Linkedin, Youtube, Plus, Trash2 } from "lucide-react";
+import ImageCropDialog from '@/components/settings/ImageCropDialog';
 
 type Profile = {
   id: string;
@@ -54,11 +55,11 @@ const categories = [
 ];
 
 const priceRanges = [
-  'Budget ($-$$)',
-  'Mid-range ($$$)',
-  'Premium ($$$$)',
-  'Luxury ($$$$$)',
-  'Custom'
+  // 'Budget ($-$$)',
+  // 'Mid-range ($$$)',
+  // 'Premium ($$$$)',
+  // 'Luxury ($$$$$)',
+  // 'Custom'
 ];
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -328,7 +329,8 @@ export default function ProfilePage() {
                 <div className="flex flex-col md:flex-row md:items-center gap-6">
                   {/* Avatar Section */}
                   <div className="flex flex-col items-center gap-4">
-                    <div className="relative group">
+                    <div className="relative group cursor-pointer"
+                    onClick={()=> document.getElementById('avatar-upload')?.click()}>
                       <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background shadow-lg">
                         <AvatarImage src={formData.avatar_url || ""} />
                         <AvatarFallback className="text-xl md:text-2xl">
@@ -418,81 +420,87 @@ export default function ProfilePage() {
 
             {/* Banner Image */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Banner Image
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Profile Banner</Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Upload a banner image that will be displayed at the top of your public profile
-                    </p>
-                  </div>
-                  
-                  {formData.banner_url ? (
-                    <div className="relative group">
-                      <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden bg-muted">
-                        <img
-                          src={formData.banner_url}
-                          alt="Profile banner"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="text-white text-center">
-                          <Camera className="w-8 h-8 mx-auto mb-2" />
-                          <p className="text-sm">Click to change banner</p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                      <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-muted-foreground mb-2">No banner image uploaded</p>
-                      <p className="text-sm text-muted-foreground">Upload a banner to showcase your profile</p>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) uploadImage(file, false, true); // isBanner = true
-                        }}
-                        disabled={uploading}
-                        className="hidden"
-                        id="banner-upload"
-                      />
-                      <Label
-                        htmlFor="banner-upload"
-                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm w-full justify-center"
-                      >
-                        <Upload className="w-4 h-4" />
-                        {uploading ? "Uploading..." : formData.banner_url ? "Change Banner" : "Upload Banner"}
-                      </Label>
-                    </div>
-                    {formData.banner_url && (
-                      <Button
-                        variant="outline"
-                        onClick={() => handleInputChange("banner_url", null)}
-                        disabled={uploading}
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Remove
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+  <CardHeader>
+    <CardTitle className="flex items-center gap-2">
+      <Badge variant="secondary" className="px-3 py-1">
+        Banner Image
+      </Badge>
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Upload a banner image that will be displayed at the top of your public profile
+        </p>
+      </div>
+      
+      {formData.banner_url ? (
+        <div 
+          className="relative group cursor-pointer"
+          onClick={() => document.getElementById('banner-upload')?.click()}
+        >
+          <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden bg-muted">
+            <img
+              src={formData.banner_url}
+              alt="Profile banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="text-white text-center">
+              <Camera className="w-8 h-8 mx-auto mb-2" />
+              <p className="text-sm">Click to change banner</p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div 
+          className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer"
+          onClick={() => document.getElementById('banner-upload')?.click()}
+        >
+          <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground mb-2">No banner image uploaded</p>
+          <p className="text-sm text-muted-foreground">Upload a banner to showcase your profile</p>
+        </div>
+      )}
+      
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadImage(file, false, true);
+            }}
+            disabled={uploading}
+            className="hidden"
+            id="banner-upload"
+          />
+          <Label
+            htmlFor="banner-upload"
+            className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm w-full justify-center"
+          >
+            <Upload className="w-4 h-4" />
+            {uploading ? "Uploading..." : formData.banner_url ? "Change Banner" : "Upload Banner"}
+          </Label>
+        </div>
+        {formData.banner_url && (
+          <Button
+            variant="outline"
+            onClick={() => handleInputChange("banner_url", null)}
+            disabled={uploading}
+          >
+            <X className="w-4 h-4 mr-2" />
+            Remove
+          </Button>
+        )}
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
 
             {/* Services and Pricing */}
             <Card>
@@ -515,8 +523,8 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="price_range">Price Range</Label>
-                  <Select
+                  {/* <Label htmlFor="price_range">Price Range</Label> */}
+                  {/* <Select
                     value={formData.price_range || ""}
                     onValueChange={(val) => {
                       handleInputChange("price_range", val);
@@ -531,10 +539,11 @@ export default function ProfilePage() {
                         <SelectItem key={range} value={range}>{range}</SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
                   {formData.price_range === "Custom" && (
                     <div className="mt-3">
-                      <Label htmlFor="custom_price">Custom Price</Label>
+                      <Label htmlFor="custom_price">Payment Amount (₹)</Label>
+                      {/* <Label htmlFor="custom_price">Custom Price</Label> */}
                       <Input
                         id="custom_price"
                         value={customPrice}
@@ -545,7 +554,7 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </div>
-                <div>
+                {/* <div>
                   <Label htmlFor="expected_payment_amount">Expected Payment Amount (₹)</Label>
                   <Input
                     id="expected_payment_amount"
@@ -558,7 +567,7 @@ export default function ProfilePage() {
                   <p className="text-xs text-muted-foreground mt-1">
                     This is the total amount clients will pay (25% advance + 75% final)
                   </p>
-                </div>
+                </div> */}
                 <div>
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
