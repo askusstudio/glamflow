@@ -81,10 +81,22 @@ const Dashboard = () => {
         .from('appointments')
         .select('*')
         .eq('user_id', user.id)
+
+      // FETCH ACCOUNT BALANCE FROM PROFILE
+      const {data: profileData}= await supabase
+      .from ('profiles')
+      .select('account_balance')
+      .eq('id', user.id)
+      .single()
   
       setTasks(tasksData || [])
       setAppointments(appointmentsData || [])
       setRecentBookings(appointmentsData || [])
+
+      // set monthly earnings from profile's account_balance
+      if(profileData?.account_balance){
+        setMonthlyEarnings(profileData.account_balance)
+      }
   
     } catch (error) {
       console.error('Error:', error)
