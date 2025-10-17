@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Download, Plus, Trash2, Calendar, User, Mail, Phone, MapPin } from 'lucide-react';
+import { Download, Plus, Trash2, Calendar, User, Mail, Phone, MapPin, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { supabase } from "@/integrations/supabase/client"
 
 interface ServiceItem {
   id: string;
@@ -40,7 +41,36 @@ interface InvoiceData {
 export default function InvoicePage() {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  
+  const [profileData, setProfileData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchUserProfile()
+  }, [])
+
+  const fetchUserProfile = async () => {
+    try {
+      setLoading(true)
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      
+      setProfileData(profile)
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const [invoiceData, setInvoiceData] = useState<InvoiceData>({
     invoiceNumber: `INV-${Date.now().toString().slice(-6)}`,
     date: new Date().toISOString().split('T')[0],
@@ -111,7 +141,7 @@ export default function InvoicePage() {
 
   const calculateTotals = () => {
     const subtotal = invoiceData.services.reduce((sum, service) => sum + service.amount, 0);
-    const tax = subtotal * 0.18; // 18% GST for India
+    const tax = subtotal * 0.18;
     const total = subtotal + tax;
     
     setInvoiceData(prev => ({
@@ -121,10 +151,6 @@ export default function InvoicePage() {
       total
     }));
   };
-
-  React.useEffect(() => {
-    calculateTotals();
-  }, [invoiceData.services]);
 
   const generatePDF = async () => {
     if (!invoiceRef.current) return;
@@ -181,63 +207,19 @@ export default function InvoicePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form Section */}
           <div className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Your Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="freelancerName">Full Name</Label>
-                  <Input
-                    id="freelancerName"
-                    value={invoiceData.freelancerName}
-                    onChange={(e) => updateField('freelancerName', e.target.value)}
-                    placeholder="Enter your full name"
-                  />
+            {/* <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+              <h3 className="font-bold text-lg">From:</h3>
+              {profileData ? (
+                <div className="space-y-1">
+                  <p className="font-semibold text-lg">{profileData.fullname}</p>
+                  <p className="text-sm">{profileData.email}</p>
+                  <p className="text-sm">{profileData.phone}</p>
+                  <p className="text-sm">{profileData.city}</p>
                 </div>
-                <div>
-                  <Label htmlFor="freelancerTitle">Professional Title</Label>
-                  <Input
-                    id="freelancerTitle"
-                    value={invoiceData.freelancerTitle}
-                    onChange={(e) => updateField('freelancerTitle', e.target.value)}
-                    placeholder="e.g., Makeup Artist, Hair Stylist"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="freelancerEmail">Email</Label>
-                  <Input
-                    id="freelancerEmail"
-                    type="email"
-                    value={invoiceData.freelancerEmail}
-                    onChange={(e) => updateField('freelancerEmail', e.target.value)}
-                    placeholder="your@email.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="freelancerPhone">Phone</Label>
-                  <Input
-                    id="freelancerPhone"
-                    value={invoiceData.freelancerPhone}
-                    onChange={(e) => updateField('freelancerPhone', e.target.value)}
-                    placeholder="+91 XXXXX XXXXX"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="freelancerAddress">Address</Label>
-                  <Textarea
-                    id="freelancerAddress"
-                    value={invoiceData.freelancerAddress}
-                    onChange={(e) => updateField('freelancerAddress', e.target.value)}
-                    placeholder="Your business address"
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+              ) : (
+                <p className="text-sm text-muted-foreground">Loading profile...</p>
+              )}
+            </div> */}
 
             <Card>
               <CardHeader>
@@ -404,30 +386,30 @@ export default function InvoicePage() {
                     </div>
                   </div>
 
-                  {/* From/To Section */}
+                  {/* From/To Section - UPDATED WITH PROFILE DATA */}
                   <div className="grid grid-cols-2 gap-8 mb-8">
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-3">From:</h3>
                       <div className="text-gray-700">
-                        <p className="font-medium text-lg">{invoiceData.freelancerName || 'Your Name'}</p>
-                        <p className="text-pink-500 font-medium">{invoiceData.freelancerTitle || 'Professional Title'}</p>
+                        <p className="font-medium text-lg">{profileData?.full_name || 'Your Name'}</p>
+                        <p className="text-pink-500 font-medium">{profileData?.category || 'Professional Title'}</p>
                         <div className="mt-2 space-y-1">
-                          {invoiceData.freelancerEmail && (
+                          {profileData?.email && (
                             <p className="flex items-center gap-2">
                               <Mail className="h-4 w-4" />
-                              {invoiceData.freelancerEmail}
+                              {profileData.email}
                             </p>
                           )}
-                          {invoiceData.freelancerPhone && (
+                          {profileData?.phone && (
                             <p className="flex items-center gap-2">
                               <Phone className="h-4 w-4" />
-                              {invoiceData.freelancerPhone}
+                              {profileData.phone}
                             </p>
                           )}
-                          {invoiceData.freelancerAddress && (
+                          {profileData?.city && (
                             <p className="flex items-start gap-2">
                               <MapPin className="h-4 w-4 mt-0.5" />
-                              <span>{invoiceData.freelancerAddress}</span>
+                              <span>{profileData.city}</span>
                             </p>
                           )}
                         </div>

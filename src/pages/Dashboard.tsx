@@ -24,6 +24,15 @@ import {
   Pen,
   Laugh
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreVertical, Pencil, Trash2 } from "lucide-react"
+
 
 interface Task {
   id: string
@@ -106,6 +115,37 @@ const Dashboard = () => {
   }
   
   
+  const handleEditAppointment = (appointment: Appointment) => {
+    // Set appointment data for editing
+    // Open edit dialog
+    console.log('Edit appointment:', appointment)
+  }
+  
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('appointments')
+        .delete()
+        .eq('id', appointmentId)
+  
+      if (error) throw error
+  
+      setAppointments(prev => prev.filter(a => a.id !== appointmentId))
+      setRecentBookings(prev => prev.filter(a => a.id !== appointmentId))
+  
+      toast({
+        title: "Success",
+        description: "Appointment deleted successfully!"
+      })
+    } catch (error) {
+      console.error('Error deleting appointment:', error)
+      toast({
+        title: "Error",
+        description: "Failed to delete appointment.",
+        variant: "destructive"
+      })
+    }
+  }
   
   
 
@@ -457,68 +497,93 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Appointments Card */}
           <Card>
-            <CardHeader>
-              <CardTitle className="font-bold text-lg">Today's Appointments</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {appointments.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">
-                  No appointments scheduled for today
-                </p>
-              ) : (
-                appointments.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="flex items-center justify-between p-3 bg-muted/40 rounded-lg"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-foreground text-primary font-bold shrink-0">
-                        {appointment.client_name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="space-y-0">
-                        <p className="font-semibold text-sm">{appointment.client_name}</p>
-                        <p className="text-xs text-muted-foreground">{appointment.service}</p>
-                      </div>
-                    </div>
+  <CardHeader>
+    <CardTitle className="font-bold text-lg">Today's Appointments</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    {appointments.length === 0 ? (
+      <p className="text-muted-foreground text-center py-4">
+        No appointments scheduled for today
+      </p>
+    ) : (
+      appointments.map((appointment) => (
+        <div
+          key={appointment.id}
+          className="flex items-center justify-between p-3 bg-muted/40 rounded-lg"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-foreground text-primary font-bold shrink-0">
+              {appointment.client_name.charAt(0).toUpperCase()}
+            </div>
+            <div className="space-y-0">
+              <p className="font-semibold text-sm">{appointment.client_name}</p>
+              <p className="text-xs text-muted-foreground">{appointment.service}</p>
+            </div>
+          </div>
 
-                    <div className="flex flex-col items-end">
-                      <Badge
-                        className={`capitalize border-none text-xs font-semibold cursor-pointer
-                          ${appointment.status === 'pending'
-                            ? 'bg-yellow-400/20 text-yellow-600 dark:bg-yellow-400/30 dark:text-yellow-400'
-                            : 'bg-green-400/20 text-green-600 dark:bg-green-400/30 dark:text-green-400'
-                          }`}
-                        onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
-                      >
-                        {appointment.status}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatTime(appointment.appointment_time)}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col items-end">
+              <Badge
+                className={`capitalize border-none text-xs font-semibold cursor-pointer
+                  ${appointment.status === 'pending'
+                    ? 'bg-yellow-400/20 text-yellow-600 dark:bg-yellow-400/30 dark:text-yellow-400'
+                    : 'bg-green-400/20 text-green-600 dark:bg-green-400/30 dark:text-green-400'
+                  }`}
+                onClick={() => updateAppointmentStatus(appointment.id, appointment.status === 'confirmed' ? 'pending' : 'confirmed')}
+              >
+                {appointment.status}
+              </Badge>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatTime(appointment.appointment_time)}
+              </p>
+            </div>
 
-              <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Appointment
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Add New Appointment</DialogTitle>
-                    <DialogDescription>
-                      Fill in the appointment details below
-                    </DialogDescription>
-                  </DialogHeader>
-                  <AddAppointment onSubmit={handleAddAppointment} />
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {/* <DropdownMenuItem onClick={() => handleEditAppointment(appointment)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuSeparator /> */}
+                <DropdownMenuItem 
+                  onClick={() => handleDeleteAppointment(appointment.id)}
+                  className="text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      ))
+    )}
+
+    <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Appointment
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Appointment</DialogTitle>
+          <DialogDescription>
+            Fill in the appointment details below
+          </DialogDescription>
+        </DialogHeader>
+        <AddAppointment onSubmit={handleAddAppointment} />
+      </DialogContent>
+    </Dialog>
+  </CardContent>
+</Card>
+
 
           {/* Tasks Card */}
           <Card>
